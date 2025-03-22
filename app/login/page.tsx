@@ -17,9 +17,6 @@ const Login: React.FC = () => {
   const router = useRouter();
   const apiService = useApi();
   const [form] = Form.useForm();
-  // useLocalStorage hook example use
-  // The hook returns an object with the value and two functions
-  // Simply choose what you need from the hook:
   const {
     // value: token, // is commented out because we do not need the token value
     set: setToken, // we need this method to set the value of the token to the one we receive from the POST request to the backend server API
