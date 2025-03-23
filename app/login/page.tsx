@@ -1,9 +1,9 @@
 "use client"; // For. components that need React hooks and browser APIs, SSR (server side rendering) has to be disabled. Read more here: https://nextjs.org/docs/pages/building-your-application/rendering/server-side-rendering
 
 import { useRouter } from "next/navigation"; // use NextJS router for navigation
-import { useApi } from "@/hooks/useApi";
+//import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
-import { User } from "@/types/user";
+//import { User } from "@/types/user";
 import { Button, Form, Input } from "antd";
 
 interface FormFieldProps {
@@ -13,7 +13,7 @@ interface FormFieldProps {
 
 const Login: React.FC = () => {
   const router = useRouter();
-  const apiService = useApi();
+  //const apiService = useApi();
   const [form] = Form.useForm();
   const {
     // value: token, // is commented out because we do not need the token value
@@ -25,15 +25,18 @@ const Login: React.FC = () => {
   const handleLogin = async (values: FormFieldProps) => {
     try {
       // Call the API service and let it handle JSON serialization and error handling
-      const response = await apiService.post<User>("/users", values);
-
+      //const response = await apiService.post<User>("/users", values);
+      const mockUserId = 1;
       // Use the useLocalStorage hook that returned a setter function (setToken in line 41) to store the token if available
-      if (response.token) {
-        setToken(response.token);
-      }
+      localStorage.setItem("currentUserId", String(mockUserId));
+      setToken("mock-token");
+      //if (response.token) {
+      //  setToken(response.token);
+      
 
       // Navigate to the user overview
-      router.push("/users");
+      //router.push("/users");
+      router.push(`/users/${mockUserId}/projects`);
     } catch (error) {
       if (error instanceof Error) {
         alert(`Something went wrong during the login:\n${error.message}`);
