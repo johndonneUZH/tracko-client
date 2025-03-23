@@ -6,10 +6,10 @@ import useLocalStorage from "@/hooks/useLocalStorage";
 //import { User } from "@/types/user";
 import { Button, Form, Input } from "antd";
 
-interface FormFieldProps {
-  label: string;
-  value: string;
-}
+//interface FormFieldProps {
+//  label: string;
+//  value: string;
+//}
 
 const Login: React.FC = () => {
   const router = useRouter();
@@ -22,7 +22,7 @@ const Login: React.FC = () => {
   } = useLocalStorage<string>("token", ""); // note that the key we are selecting is "token" and the default value we are setting is an empty string
   // if you want to pick a different token, i.e "usertoken", the line above would look as follows: } = useLocalStorage<string>("usertoken", "");
 
-  const handleLogin = async (values: FormFieldProps) => {
+  const handleLogin = async () => {
     try {
       // Call the API service and let it handle JSON serialization and error handling
       //const response = await apiService.post<User>("/users", values);
