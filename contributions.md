@@ -44,8 +44,8 @@ reason).
 |                    |    | https://github.com/johndonneUZH/sopra-fs25-group-46-server/commit/b1c936127e6301d8df58c4b31cbb6da6bf4aee70 | added PUT /projects/{projectId} which allows you to modify the project settings and add/remove people |  |
 |                    |   | https://github.com/johndonneUZH/sopra-fs25-group-46-server/commit/a6d2633fe23896840817bf7a5f37365e881ba90c | Implemented IdeaController and managed to create an Idea in the DB, still more to do | |
 |                    |    | https://github.com/johndonneUZH/sopra-fs25-group-46-server/commit/ffd02fe1950a0cec8121711d9f51aa38a966f159 | Implemented subIdeas creation, Modification of ideas, Get spefic ideas by ProjectId |  |
-| **fabiotilor** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **fabiotilor** | 26.03.2025   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/pull/1/commits/d948302b57c0dbb434b198c2efa84da401edf97f | Added the Login and Registering page | Hard to use website without it, huh? |
+|                    | 27.03.2025   |https://github.com/johndonneUZH/sopra-fs25-group-46-client/pull/5/commits/94993cd485b7982705ddc350962dfe5955afdc63 | Additional styling | To increase shareholder value |
 | **manueltuor** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **JMAVITE** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
