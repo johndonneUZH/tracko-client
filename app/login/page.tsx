@@ -2,7 +2,6 @@
 
 import { useRouter } from "next/navigation"; // use NextJS router for navigation
 //import { useApi } from "@/hooks/useApi";
-import useLocalStorage from "@/hooks/useLocalStorage";
 //import { User } from "@/types/user";
 import { Button, Form, Input } from "antd";
 
@@ -15,11 +14,11 @@ const Login: React.FC = () => {
   const router = useRouter();
   //const apiService = useApi();
   const [form] = Form.useForm();
-  const {
+  //const {
     // value: token, // is commented out because we do not need the token value
-    set: setToken, // we need this method to set the value of the token to the one we receive from the POST request to the backend server API
+     // we need this method to set the value of the token to the one we receive from the POST request to the backend server API
     // clear: clearToken, // is commented out because we do not need to clear the token when logging in
-  } = useLocalStorage<string>("token", ""); // note that the key we are selecting is "token" and the default value we are setting is an empty string
+// note that the key we are selecting is "token" and the default value we are setting is an empty string
   // if you want to pick a different token, i.e "usertoken", the line above would look as follows: } = useLocalStorage<string>("usertoken", "");
 
   const handleLogin = async () => {
@@ -28,8 +27,8 @@ const Login: React.FC = () => {
       //const response = await apiService.post<User>("/users", values);
       const mockUserId = 1;
       // Use the useLocalStorage hook that returned a setter function (setToken in line 41) to store the token if available
-      localStorage.setItem("currentUserId", String(mockUserId));
-      setToken("mock-token");
+      sessionStorage.setItem("currentUserId", String(mockUserId));
+      sessionStorage.setItem("token", "mock-token");
       //if (response.token) {
       //  setToken(response.token);
       
