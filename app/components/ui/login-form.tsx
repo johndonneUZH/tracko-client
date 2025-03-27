@@ -1,7 +1,6 @@
-"use client"; // Ensure the file is a client component
+"use client";
 
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -11,6 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button";
 import { useRouter } from "next/navigation";
 
 export function LoginForm({
@@ -20,12 +20,12 @@ export function LoginForm({
   const router = useRouter();
 
   const handleSignUpClick = () => {
-    router.push("/register"); 
+    router.push("/register");
   };
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card>
+      <Card className="relative rounded-lg">
         <CardHeader>
           <CardTitle className="text-2xl">Login</CardTitle>
           <CardDescription>
@@ -56,9 +56,9 @@ export function LoginForm({
                 </div>
                 <Input id="password" type="password" required />
               </div>
-              <Button type="submit" className="w-full">
+              <InteractiveHoverButton>
                 Login
-              </Button>
+                </InteractiveHoverButton>
             </div>
             <div className="mt-4 text-center text-sm">
                 Don&apos;t have an account?{" "}
