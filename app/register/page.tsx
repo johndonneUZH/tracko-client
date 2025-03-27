@@ -1,9 +1,15 @@
 import { RegisterForm } from "@/components/ui/register-form"
+import { cn } from "@/lib/utils";
+import { DotPattern } from "../../components/magicui/dot-pattern";
 
 export default function Page() {
   return (
     <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
-      <div className="w-full max-w-sm">
+      <DotPattern
+        glow={true}
+        className={cn("[mask-image:radial-gradient(600px_circle_at_center,white,transparent)] absolute inset-0")}
+      />
+      <div className="w-full max-w-sm relative">
         <RegisterForm />
       </div>
     </div>
