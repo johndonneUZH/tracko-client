@@ -6,7 +6,8 @@ import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import IdeaModal, { Idea } from "./IdeaModal"; 
 import { Comment } from "./comments"; 
-//import ChangeLog, {LogEntry} from "./ChangeLog";
+import ChangeLog, {LogEntry} from "./ChangeLog";
+import { useCurrentUserId } from "./useCurrentUserId";
 
 export default function ProjectLayout({
   children,
@@ -15,35 +16,33 @@ export default function ProjectLayout({
 }) {
   const { id, projectId, ideaId } = useParams();
   const router = useRouter();
-
+  const currentUserId = useCurrentUserId();
   const [ideas, setIdeas] = useState<Idea[]>([]);
   const [nextId, setNextId] = useState(1);
 
   // list of the ideas for the project
   const storageKey = `ideas-${projectId}`;
   //log entries state
- /////////////////////// const [logEntries, setLogEntries] = useState<LogEntry[]>([]);
+  const [logEntries, setLogEntries] = useState<LogEntry[]>([]);
   // Change when the backend is ready
   //////////////////////////////////////
   //Log
   
-  // function addLogEntry(action: string, ideaTitle: string) {
-  //   const now = new Date();
-  //   const dateStr = now.toLocaleDateString();
-  //   const timeStr = now.toLocaleTimeString(); 
-  //   const rawUserId = sessionStorage.getItem("currentUserId");
-  //   const currentUserId = rawUserId ? parseInt(rawUserId, 10) : 0;
+  function addLogEntry(action: string, ideaTitle: string) {
+    const now = new Date();
+    const dateStr = now.toLocaleDateString();
+    const timeStr = now.toLocaleTimeString(); 
 
-  //   const newEntry: LogEntry = {
-  //     id: currentUserId,
-  //     date: dateStr,
-  //     time: timeStr,
-  //     action: action,
-  //     ideaTitle: ideaTitle || "Untitled",
-  //   };
+    const newEntry: LogEntry = {
+      id: currentUserId,
+      date: dateStr,
+      time: timeStr,
+      action: action,
+      ideaTitle: ideaTitle || "Untitled",
+    };
 
-  //   setLogEntries((prev) => [...prev, newEntry]);
-  // }
+    setLogEntries((prev) => [...prev, newEntry]);
+  }
   //////////////////////////////////////////////////////////////////
   // Load saved ideas
   useEffect(() => {
@@ -80,11 +79,10 @@ export default function ProjectLayout({
   /////////////////////////////////////////////////////////////////////////
   // Creates an idea
   const createIdea = () => {
-    const rawUserId = sessionStorage.getItem("currentUserId");
-    const currentUserId = rawUserId ? parseInt(rawUserId, 10) : 0;
+    const newId = nextId;
 
     const newIdea: Idea = {
-      id: nextId,
+      id: newId,
       title: "",
       body: "",
       x: 100 + nextId * 15,
@@ -96,7 +94,7 @@ export default function ProjectLayout({
     setIdeas((prev) => [...prev, newIdea]);
     setNextId((prev) => prev + 1);
     // log creation
-   // addLogEntry("Created idea", newIdea.title);
+    addLogEntry("Created idea", newIdea.title);
 
     // changes url without changing page
     router.push(`/users/${id}/projects/${projectId}/ideas/${nextId}`);
@@ -123,7 +121,7 @@ export default function ProjectLayout({
       if (!confirmed) return;
   }
     // log deletion
-    //addLogEntry("Deleted idea", ideaToDelete.title);
+    addLogEntry("Deleted idea", ideaToDelete.title);
     // If empty or confirmed, delete immediately
     setIdeas((prev) => prev.filter((idea) => idea.id !== ideaId));
     router.push(`/users/${id}/projects/${projectId}`);
@@ -142,7 +140,7 @@ export default function ProjectLayout({
     );
 
     // log editing
-   // addLogEntry("Edited idea", newTitle || oldTitle);
+    addLogEntry("Edited idea", newTitle || oldTitle);
   };
 
   /////////////////////////////////////////////////////////////////////////
@@ -155,8 +153,6 @@ export default function ProjectLayout({
    * If parentId is not provided, it's a root-level comment.
    */
   const addComment = (ideaId: number, content: string, parentId?: number) => {
-    const rawUserId = sessionStorage.getItem("currentUserId");
-    const currentUserId = rawUserId ? parseInt(rawUserId, 10) : 0;
 
     setIdeas((prev) =>
       prev.map((idea) => {
@@ -210,8 +206,6 @@ export default function ProjectLayout({
    * Deletes a comment from the specified idea if the currentUser is the author
    */
   const deleteComment = (ideaId: number, commentId: number) => {
-    const rawUserId = sessionStorage.getItem("currentUserId");
-    const currentUserId = rawUserId ? parseInt(rawUserId, 10) : 0;
 
     setIdeas((prev) =>
       prev.map((idea) => {
@@ -259,8 +253,7 @@ export default function ProjectLayout({
 
   // Render the modal if there's a selected idea
   let modal = null;
-  const rawUserId = sessionStorage.getItem("currentUserId");
-  const currentUserId = rawUserId ? parseInt(rawUserId, 10) : 0;
+
 
   if (selectedIdea) {
     const canEdit = selectedIdea.creatorId === currentUserId;
@@ -313,6 +306,40 @@ export default function ProjectLayout({
           flexDirection: "row",
         }}
         >
+        <h1
+          style={{
+            position: "fixed",
+            top: "20px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            textAlign: "center",
+            marginBottom: "1rem",
+            zIndex: 1000,
+            background: "#eaf4fc", // opcional, para que no se mezcle con el fondo
+            padding: "0.5rem 1rem",
+            borderRadius: "8px",
+          }}
+        >
+          Project {projectId}
+        </h1>
+        
+        <div
+          style={{
+            width: "16%",
+            height: "45vh",      
+            position: "fixed",
+            top: "20px",           
+            right: "20px",        
+            background: "#f1f1f1",
+            borderLeft: "2px dashed #ccc",
+            overflow: "auto",
+            borderRadius: "8px",   
+            boxShadow: "0 2px 6px rgba(0,0,0,0.1)", 
+            zIndex: 1000,
+          }}
+        >
+          <ChangeLog logEntries={logEntries} />
+        </div>
 
         {/* main board*/}
         <div
@@ -341,6 +368,8 @@ export default function ProjectLayout({
                 position: "relative",
               }}
             >
+
+
               {/* ideas no buttons */}
               {ideas.map((idea) => (
                 <div
