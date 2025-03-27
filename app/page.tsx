@@ -2,17 +2,9 @@
 import "@ant-design/v5-patch-for-react-19";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import styles from "@/styles/page.module.css";
 import { DotPattern } from "../components/magicui/dot-pattern";
 import { cn } from "@/lib/utils";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardFooter,
-  CardTitle
-} from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 
 export default function Home() {
   const router = useRouter();
