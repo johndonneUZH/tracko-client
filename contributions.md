@@ -50,8 +50,8 @@ reason).
 |                    | 27.03.25   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/4408a87c29e080b6f810214359bc03c2420f64ed | added the landing page | first page that you see when going onto the webapp |
 | **JMAVITE** | [25.03.2025]   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/9c6744fd800337a1b5b58520d7e778308036c9fc | Structure to the project | It is the structure of the pages |
 |                    | 28.03.2025   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/a505ee26c4b9d7c529f8608b9e8d28ab98fc956e | It is almost the whole dashboard | It is most of user stories |
-| **RonaldDomi** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **RonaldDomi** | [27.03.2025]  | https://github.com/johndonneUZH/sopra-fs25-group-46-server/commit/c5c74a36d54696d1d3ada6094d2b8dd43e43ee82 | Create the basic structure of the unit testing | Tests are always important |
+|                    |        | https://github.com/johndonneUZH/sopra-fs25-group-46-server/commit/c58cb335112dad90c4af57bfe4a6f29ad295ed2b | Update the tests for the Idea module | Updating tests |
 
 ---
 
