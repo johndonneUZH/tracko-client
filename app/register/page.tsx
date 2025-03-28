@@ -1,4 +1,4 @@
-import { LoginForm } from "@/components/ui/login-form"
+import { RegisterForm } from "@/components/ui/register-form"
 import { cn } from "@/lib/utils";
 import { DotPattern } from "../../components/magicui/dot-pattern";
 
@@ -10,7 +10,7 @@ export default function Page() {
         className={cn("[mask-image:radial-gradient(600px_circle_at_center,white,transparent)] absolute inset-0")}
       />
       <div className="w-full max-w-sm relative">
-        <LoginForm/>
+        <RegisterForm />
       </div>
     </div>
   )
