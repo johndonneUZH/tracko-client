@@ -61,7 +61,6 @@ export default function ProjectLayout({
     localStorage.setItem(storageKey, JSON.stringify(ideas));
   }, [ideas, storageKey]);
 
-  // If you want the outside-click close, uncomment this block:
   // useEffect(() => {
   //   const handleClickOutside = (event: MouseEvent) => {
   //     const target = event.target as HTMLElement;
