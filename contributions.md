@@ -46,8 +46,8 @@ reason).
 |                    |    | https://github.com/johndonneUZH/sopra-fs25-group-46-server/commit/ffd02fe1950a0cec8121711d9f51aa38a966f159 | Implemented subIdeas creation, Modification of ideas, Get spefic ideas by ProjectId |  |
 | **fabiotilor** | 26.03.2025   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/pull/1/commits/d948302b57c0dbb434b198c2efa84da401edf97f | Added the Login and Registering page | Hard to use website without it, huh? |
 |                    | 27.03.2025   |https://github.com/johndonneUZH/sopra-fs25-group-46-client/pull/5/commits/94993cd485b7982705ddc350962dfe5955afdc63 | Additional styling | To increase shareholder value |
-| **manueltuor** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **manueltuor** | 22.03.2025   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/3755dcb25d3b291b9203448eeb77dab3db32e0c1 | Set up the frontend frameworks (tailwind, shadcn, magicui) | Relevant because we will stick to those for the rest of the project |
+|                    | 27.03.25   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/4408a87c29e080b6f810214359bc03c2420f64ed | added the landing page | first page that you see when going onto the webapp |
 | **JMAVITE** | [25.03.2025]   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/9c6744fd800337a1b5b58520d7e778308036c9fc | Structure to the project | It is the structure of the pages |
 |                    | 28.03.2025   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/a505ee26c4b9d7c529f8608b9e8d28ab98fc956e | It is almost the whole dashboard | It is most of user stories |
 | **RonaldDomi** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
