@@ -3,11 +3,12 @@
 import React from "react";
 
 export interface LogEntry {
-  id: number;  // 
-  date: string;        // e.g. "2025-03-26"
-  time: string;        // e.g. "14:05:30"
-  action: string;      // e.g. "Created idea", "Deleted idea", "Added comment", ...
-  ideaTitle: string;   // the title of the idea
+  projectId: number;     // Never shown in the log table
+  userId: number;        
+  date: string;
+  time: string;
+  action: string;
+  ideaTitle: string;
 }
 
 interface ChangeLogProps {
@@ -21,7 +22,7 @@ export default function ChangeLog({ logEntries }: ChangeLogProps) {
       <table style={{ width: "100%", borderCollapse: "collapse" }}>
         <thead>
           <tr style={{ borderBottom: "1px solid #ccc" }}>
-            <th style={{ textAlign: "left", padding: "0.5rem" }}>id</th>
+            <th style={{ textAlign: "left", padding: "0.5rem" }}>User</th>
             <th style={{ textAlign: "left", padding: "0.5rem" }}>Date</th>
             <th style={{ textAlign: "left", padding: "0.5rem" }}>Time</th>
             <th style={{ textAlign: "left", padding: "0.5rem" }}>Action</th>
@@ -29,9 +30,9 @@ export default function ChangeLog({ logEntries }: ChangeLogProps) {
           </tr>
         </thead>
         <tbody>
-          {logEntries.map((entry) => (
-            <tr key={entry.id+90} style={{ borderBottom: "1px solid #eee" }}>
-              <td style={{ padding: "0.5rem" }}>{entry.id}</td>
+          {logEntries.map((entry, index) => (
+            <tr key={index} style={{ borderBottom: "1px solid #eee" }}>
+              <td style={{ padding: "0.5rem" }}>{entry.userId}</td>
               <td style={{ padding: "0.5rem" }}>{entry.date}</td>
               <td style={{ padding: "0.5rem" }}>{entry.time}</td>
               <td style={{ padding: "0.5rem" }}>{entry.action}</td>

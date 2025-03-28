@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import Comments, { Comment } from "./comments";
+import Comments, { Comment } from "./Comments";
 
 export interface Idea {
   id: number;
@@ -11,6 +11,8 @@ export interface Idea {
   y: number;
   creatorId: number;
   comments: Comment[];
+  upvotesL: number[];   
+downvotesL: number[];
 }
 
 interface IdeaModalProps {
@@ -22,6 +24,7 @@ interface IdeaModalProps {
   currentUserId: number;
   onAddComment: (content: string, parentId?: number) => void;
   onDeleteComment: (commentId: number) => void;
+  onLogComment?: (action: string, title: string) => void;
 }
 
 export default function IdeaModal({
@@ -34,6 +37,7 @@ export default function IdeaModal({
   currentUserId,
   onAddComment,
   onDeleteComment,
+  onLogComment,
 }: IdeaModalProps) {
   const [title, setTitle] = useState(idea.title);
   const [body, setBody] = useState(idea.body);
@@ -174,9 +178,13 @@ export default function IdeaModal({
             <Comments
               comments={idea.comments}
               currentUserId={currentUserId}
-              onAddComment={onAddComment}
+              onAddComment={(content, parentId) => {
+                onAddComment(content, parentId);
+                onLogComment?.("Added comment", idea.title);
+              }}
               onDeleteComment={onDeleteComment}
             />
+
           </>
         )}
       </div>
