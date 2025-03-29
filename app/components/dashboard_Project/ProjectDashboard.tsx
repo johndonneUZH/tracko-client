@@ -29,24 +29,6 @@ export default function ProjectDashboard({
 
   const currentUserId = useCurrentUserId();
 
-  // Returns true if the moved box overlaps with any other idea box
-  const isColliding = (
-    x: number,
-    y: number,
-    ideaId: number,
-    ideaWidth: number,
-    ideaHeight: number
-  ) => {
-    return ideas.some((other) => {
-      if (other.id === ideaId) return false;
-      return (
-        x < other.x + ideaWidth &&
-        x + ideaWidth > other.x &&
-        y < other.y + ideaHeight &&
-        y + ideaHeight > other.y
-      );
-    });
-  };
 
   // Adjusts the position so that the moved box doesn't overlap any other box.
   // It "snaps" the moved box to the edge of any colliding box.
