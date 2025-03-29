@@ -4,11 +4,11 @@ import { AuroraText } from "../magicui/aurora-text";
 export function Numbers() {
   
     return (
-    <Card className="max-w-150 p-6 shadow-lg bg-white dark:bg-gray-800 rounded-lg border-none shadow-none mt-20 text-left flex">
+    <Card className="p-6 shadow-lg bg-white dark:bg-gray-800 rounded-lg border-none shadow-none mt-20 text-left flex">
         <CardHeader>
             <CardTitle className="text-2xl font-bold text-black dark:text-white">Key Numbers About Tracko</CardTitle>
             <CardDescription className="text-md text-gray-600 dark:text-gray-400">
-                Discover how our tracko is making team collaboration more efficient and productive. The numbers are as reported by our users.
+                Discover how Tracko is making team collaboration more efficient and productive. The numbers are as reported by our users.
             </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
