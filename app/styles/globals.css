@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -82,7 +83,7 @@ a {
   --sidebar-border: oklch(0.92 0.004 286.32);
   --sidebar-ring: oklch(0.705 0.015 286.067);
   --background: oklch(1 0 0);
-  --foreground: oklch(0.147 0.004 49.25);
+  --foreground: oklch(0.141 0.005 285.823);
 }
 
 .dark {

@@ -6,7 +6,7 @@ import {
     MagicWandIcon,
   } from "@radix-ui/react-icons";
    
-  import { BentoCard, BentoGrid } from "../magicui/bento-grid";
+  import { BentoCard, BentoGrid } from "./bento-grid";
    
   const features = [
     {

@@ -6,12 +6,12 @@
   "tailwind": {
     "config": "tailwind.config.js",
     "css": "app/styles/globals.css",
-    "baseColor": "stone",
+    "baseColor": "zinc",
     "cssVariables": true,
     "prefix": ""
   },
   "aliases": {
-    "components": "@/components",
+    "components": "@/components/magicui",
     "utils": "@/lib/utils",
     "ui": "@/components/ui",
     "lib": "@/lib",

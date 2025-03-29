@@ -2,13 +2,13 @@
 import "@ant-design/v5-patch-for-react-19";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { AuroraText } from "../components/magicui/aurora-text";
+import { AuroraText } from "./components/magicui/aurora-text";
 import { Card } from "@/components/ui/card";
 import { Linechart } from "@/components/ui/linechart";
-import { Reviews } from "../components/magicui/reviews";
+import { Reviews } from "./components/magicui/reviews";
 import { ArrowDownOutlined } from "@ant-design/icons";
-import { Functions } from "../components/magicui/functions";
-import { Numbers } from "../components/magicui/numbers";
+import { Functions } from "./components/magicui/functions";
+import { Numbers } from "./components/magicui/numbers";
 
 export default function Home() {
   const router = useRouter();
@@ -45,7 +45,7 @@ export default function Home() {
             <div className="text-left items-center justify-center max-w-100 sm:max-w-100 md:max-w-150 lg:max-w-200 mx-auto">
               <Numbers/>
             </div>
-            <h2 className="text-2xl font-bold min-w-auto mt-20">Research has proven our tools effectivity in practice</h2>
+            <h2 className="text-2xl font-bold min-w-auto mt-20 mb-2">Research has proven our tools effectivity in practice</h2>
             <div className="items-center justify-center max-w-100 sm:max-w-100 md:max-w-150 lg:max-w-200 mx-auto">
               <Linechart/>
             </div>

@@ -1,10 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { AuroraText } from "../magicui/aurora-text";
+import { AuroraText } from "./aurora-text";
 
 export function Numbers() {
   
     return (
-    <Card className="p-6 shadow-lg bg-white dark:bg-gray-800 rounded-lg border-none shadow-none mt-20 text-left flex">
+    <Card className="p-6 shadow-lg bg-white dark:bg-gray-800 rounded-lg mt-20 text-left flex">
         <CardHeader>
             <CardTitle className="text-2xl font-bold text-black dark:text-white">Key Numbers About Tracko</CardTitle>
             <CardDescription className="text-md text-gray-600 dark:text-gray-400">
