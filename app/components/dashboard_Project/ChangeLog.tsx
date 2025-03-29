@@ -18,7 +18,7 @@ interface ChangeLogProps {
 export default function ChangeLog({ logEntries }: ChangeLogProps) {
   return (
     <div style={{ padding: "1rem", overflowY: "auto", height: "100%" }}>
-      <h2>Change Log</h2>
+      <h2>Latest changes:</h2>
       <table style={{ width: "100%", borderCollapse: "collapse" }}>
         <thead>
           <tr style={{ borderBottom: "1px solid #ccc" }}>
