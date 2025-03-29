@@ -1,19 +1,18 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
 import { useCurrentUserId } from "@/lib/dashboard_utils/useCurrentUserId";
 import { useIdeaStorage } from "@/lib/dashboard_utils/useIdeaStorage";
 import { useComments } from "@/lib/dashboard_utils/useComments";
 import { addLogEntry } from "@/lib/dashboard_utils/logHelpers";
 import { isIdeaEmpty } from "@/lib/dashboard_utils/ideaHelpers";
 import { toggleVoteInIdeas } from "@/lib/dashboard_utils/toggleVote";
+import { useStoreLog } from "@/lib/dashboard_utils/useStoreLog";
 import ProjectDashboard from "@/components/dashboard_Project/ProjectDashboard";
 import NewIdeaButton from "@/components/dashboard_Project/NewIdeaButton";
 import ChangeLogSidebar from "@/components/dashboard_Project/ChangeLogSidebar";
 import ProjectHeader from "@/components/dashboard_Project/ProjectHeader";
 import IdeaModal from "@/components/dashboard_Project/IdeaModal";
-import type { LogEntry } from "@/components/dashboard_Project/ChangeLog";
 
 export default function ProjectLayout({
   children,
@@ -24,7 +23,7 @@ export default function ProjectLayout({
   const router = useRouter();
   const currentUserId = useCurrentUserId();
 
-  const [logEntries, setLogEntries] = useState<LogEntry[]>([]);
+  const { logEntries, pushLog } = useStoreLog(projectId as string);
 
   const {
     ideas,
@@ -54,8 +53,7 @@ export default function ProjectLayout({
       const confirmed = window.confirm("This idea will be permanently deleted, proceed?");
       if (!confirmed) return;
     }
-
-    addLogEntry(setLogEntries, currentUserId, "Deleted idea", ideaToDelete.title, projectId as string);
+    addLogEntry(pushLog, currentUserId, "Deleted idea", ideaToDelete.title, projectId as string);
     deleteIdea(ideaId);
     router.push(`/users/${id}/projects/${projectId}`);
   };
@@ -67,7 +65,8 @@ export default function ProjectLayout({
     saveIdea(id, title, body);
 
     const action = oldTitle.trim() === "" ? "Created idea" : "Edited idea";
-    addLogEntry(setLogEntries, currentUserId, action, title || oldTitle, projectId as string);
+    addLogEntry(pushLog, currentUserId, action, title || oldTitle, projectId as string);
+
   };
 
   const handleCancel = (idea: typeof selectedIdea) => {
@@ -132,7 +131,7 @@ export default function ProjectLayout({
           onAddComment={(content, parentId) => addComment(selectedIdea.id, content, parentId)}
           onDeleteComment={(commentId) => deleteComment(selectedIdea.id, commentId)}
           onLogComment={(action, title) =>
-            addLogEntry(setLogEntries, currentUserId, action, title, projectId as string)
+            addLogEntry(pushLog, currentUserId, action, title, projectId as string)
           }
         />
       )}

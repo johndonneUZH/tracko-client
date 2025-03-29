@@ -3,7 +3,7 @@
 import React from "react";
 
 export interface LogEntry {
-  projectId: number;     // Never shown in the log table
+  projectId: number;     
   userId: number;        
   date: string;
   time: string;
@@ -30,7 +30,7 @@ export default function ChangeLog({ logEntries }: ChangeLogProps) {
           </tr>
         </thead>
         <tbody>
-          {logEntries.map((entry, index) => (
+          {[...logEntries].reverse().map((entry, index) => (
             <tr key={index} style={{ borderBottom: "1px solid #eee" }}>
               <td style={{ padding: "0.5rem" }}>{entry.userId}</td>
               <td style={{ padding: "0.5rem" }}>{entry.date}</td>
