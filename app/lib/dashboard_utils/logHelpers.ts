@@ -1,7 +1,7 @@
 import { LogEntry } from "@/components/dashboard_Project/ChangeLog";
 
 export function addLogEntry(
-  setLogEntries: React.Dispatch<React.SetStateAction<LogEntry[]>>,
+  pushLog: (entry: LogEntry) => void,
   currentUserId: number,
   action: string,
   ideaTitle: string,
@@ -20,5 +20,5 @@ export function addLogEntry(
     ideaTitle: ideaTitle || "Untitled",
   };
 
-  setLogEntries((prev) => [...prev, newEntry]);
+  pushLog(newEntry);
 }
