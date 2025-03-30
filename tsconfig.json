@@ -22,10 +22,14 @@
         "name": "next"
       }
     ],
+    "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./app/*"
-      ]
+      "@/*": ["./app/*"],
+      "@components/*": ["app/components/*"],
+      "@lib/*": ["lib/*"],
+      "@hooks/*": ["hooks/*"],
+      "@magicui/*": ["app/components/magicui/*"],
+      "@ui/*": ["app/components/ui/*"]
     }
   },
   "include": [

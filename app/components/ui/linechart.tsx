@@ -39,7 +39,7 @@ const chartConfig = {
 
 export function Linechart() {
   return (
-    <Card className="border-none shadow-none">
+    <Card className="shadow-lg">
       <CardHeader>
         <CardTitle>Time spent in Meetings</CardTitle>
         <CardDescription>January - June 2024</CardDescription>

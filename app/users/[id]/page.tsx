@@ -1,23 +1,55 @@
-// your code here for S2 to display a single user profile after having clicked on it
-// each user has their own slug /[id] (/1, /2, /3, ...) and is displayed using this file
-// try to leverage the component library from antd by utilizing "Card" to display the individual user
-// import { Card } from "antd"; // similar to /app/users/page.tsx
-
 "use client";
-// For components that need React hooks and browser APIs,
-// SSR (server side rendering) has to be disabled.
-// Read more here: https://nextjs.org/docs/pages/building-your-application/rendering/server-side-rendering
 
 import React from "react";
 
-const Profile: React.FC = () => {
+import { AppSidebar } from "@/components/ui/app-sidebar"
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
+import { Separator } from "@/components/ui/separator"
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar"
+export default function Page() {
   return (
-    <div className="card-container">
-      <p>
-        <strong>SampleUser</strong>
-      </p>
-    </div>
-  );
-};
-
-export default Profile;
+    <SidebarProvider>
+      <AppSidebar />
+      <SidebarInset>
+        <header className="flex h-16 shrink-0 items-center gap-2">
+          <div className="flex items-center gap-2 px-4">
+            <SidebarTrigger className="-ml-1" />
+            <Separator orientation="vertical" className="mr-2 h-4" />
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem className="hidden md:block">
+                  <BreadcrumbLink href="#">
+                    Account
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator className="hidden md:block" />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>Profile</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+          </div>
+        </header>
+        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+          <div className="grid auto-rows-min gap-4 md:grid-cols-3">
+            <div className="aspect-video rounded-xl bg-muted/50" />
+            <div className="aspect-video rounded-xl bg-muted/50" />
+            <div className="aspect-video rounded-xl bg-muted/50" />
+          </div>
+          <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
+        </div>
+      </SidebarInset>
+    </SidebarProvider>
+  )
+}

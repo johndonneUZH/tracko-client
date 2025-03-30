@@ -6,7 +6,7 @@ import {
     MagicWandIcon,
   } from "@radix-ui/react-icons";
    
-  import { BentoCard, BentoGrid } from "../magicui/bento-grid";
+  import { BentoCard, BentoGrid } from "./bento-grid";
    
   const features = [
     {
@@ -59,7 +59,7 @@ import {
    
   export function Functions() {
     return (
-      <BentoGrid className="lg:grid-rows-3">
+      <BentoGrid className="sm:grid-rows-1 md:grid-rows-2 lg:grid-rows-3">
         {features.map((feature) => (
           <BentoCard key={feature.name} {...feature} />
         ))}

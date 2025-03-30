@@ -1,6 +1,6 @@
 import { RegisterForm } from "@/components/ui/register-form"
 import { cn } from "@/lib/utils";
-import { DotPattern } from "../../components/magicui/dot-pattern";
+import { DotPattern } from "../components/magicui/dot-pattern";
 
 export default function Page() {
   return (
