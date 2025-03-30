@@ -12,7 +12,7 @@ export interface Idea {
   creatorId: number;
   comments: Comment[];
   upvotesL: number[];   
-downvotesL: number[];
+  downvotesL: number[];
 }
 
 interface IdeaModalProps {
@@ -33,7 +33,6 @@ export default function IdeaModal({
   onSave,
   onDelete,
   onCancel,
-
   currentUserId,
   onAddComment,
   onDeleteComment,
@@ -41,12 +40,27 @@ export default function IdeaModal({
 }: IdeaModalProps) {
   const [title, setTitle] = useState(idea.title);
   const [body, setBody] = useState(idea.body);
-  // detects changes on content
+  // Detect changes on content
   const hasChanges = title !== idea.title || body !== idea.body;
   const handleDiscardChanges = () => {
     setTitle(idea.title);
     setBody(idea.body);
   };
+
+  // Array with 8 pastel colors
+  const pastelColors = [
+    "#FFB3BA", // pastel red
+    "#FFDFBA", // pastel orange
+    "#FFFFBA", // pastel yellow
+    "#BAFFC9", // pastel green
+    "#BAE1FF", // pastel blue
+    "#E6E6FA", // lavender
+    "#FADADD", // pastel pink
+    "#D1C4E9", // pastel purple
+  ];
+  // Determine the modal background color based on idea.id
+  const modalBackground = pastelColors[idea.id % pastelColors.length];
+
   return (
     <div
       className="idea-modal"
@@ -70,7 +84,7 @@ export default function IdeaModal({
     >
       <div
         style={{
-          background: "#fff",
+          background: modalBackground, // Use pastel background color
           padding: "2rem",
           borderRadius: "8px",
           width: "400px",
@@ -79,7 +93,7 @@ export default function IdeaModal({
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        <h2>Idea {idea.id}</h2>
+        {/* <h2>Idea {idea.title}</h2> */}
 
         <label>Title:</label>
         <input
@@ -97,7 +111,7 @@ export default function IdeaModal({
           style={{ width: "100%", height: "120px" }}
         />
 
-        {/* Save / Cancel / Delete */}
+        {/* Save / Cancel / Delete buttons */}
         <div style={{ marginTop: "1rem", textAlign: "right" }}>
           {canEdit ? (
             hasChanges ? (
@@ -184,7 +198,6 @@ export default function IdeaModal({
               }}
               onDeleteComment={onDeleteComment}
             />
-
           </>
         )}
       </div>
