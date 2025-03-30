@@ -1,19 +1,17 @@
 "use client"
 
-"use client"
-
 import * as React from "react"
 import {
   University,
-  BookOpen,
-  Bot,
-  Frame,
-  Map,
-  PieChart,
+  ChartLine,
   Settings2,
   Apple,
   Brain,
-  LayoutDashboard
+  LayoutDashboard,
+  FileClock,
+  Users,
+  Calendar,
+  Bell
 } from "lucide-react"
 
 import { NavMain } from "@/components/ui/nav-main"
@@ -59,60 +57,75 @@ const data = {
       isActive: true,
       items: [
         {
-          title: "Members",
+          title: "Item 1",
           url: "#",
         },
         {
-          title: "Changelog",
+          title: "Item 2",
           url: "#",
         },
         {
-          title: "Settings",
+          title: "Item 3",
           url: "#",
         },
       ],
     },
     {
-      title: "AI",
+      title: "Changelog",
       url: "#",
-      icon: Bot,
+      icon: FileClock,
       items: [
         {
-          title: "Genesis",
+          title: "Item 1",
           url: "#",
         },
         {
-          title: "Explorer",
+          title: "Item 2",
           url: "#",
         },
         {
-          title: "Quantum",
+          title: "Item 3",
           url: "#",
         },
       ],
     },
     {
-      title: "Documentation",
+      title: "Members",
       url: "#",
-      icon: BookOpen,
+      icon: Users,
       items: [
         {
-          title: "Introduction",
+          title: "Item 1",
           url: "#",
         },
         {
-          title: "Get Started",
+          title: "Item 2",
           url: "#",
         },
         {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
+          title: "Item 3",
           url: "#",
         },
       ],
+    },
+    {
+        title: "Calendar",
+        url: "#",
+        icon: Calendar,
+        items: [
+          {
+            title: "Item 1",
+            url: "#",
+          },
+          {
+            title: "Item 2",
+            url: "#",
+          },
+          {
+            title: "Item 3",
+            url: "#",
+          },
+        ],
     },
     {
       title: "Settings",
@@ -120,19 +133,15 @@ const data = {
       icon: Settings2,
       items: [
         {
-          title: "General",
+          title: "Item 1",
           url: "#",
         },
         {
-          title: "Team",
+          title: "Item 2",
           url: "#",
         },
         {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
+          title: "Item 3",
           url: "#",
         },
       ],
@@ -140,19 +149,19 @@ const data = {
   ],
   projects: [
     {
-      name: "Design Engineering",
+      name: "Notifications",
       url: "#",
-      icon: Frame,
+      icon: Bell,
     },
     {
-      name: "Sales & Marketing",
+      name: "Friends",
       url: "#",
-      icon: PieChart,
+      icon: Users,
     },
     {
-      name: "Travel",
+      name: "Insights",
       url: "#",
-      icon: Map,
+      icon: ChartLine,
     },
   ],
 }
