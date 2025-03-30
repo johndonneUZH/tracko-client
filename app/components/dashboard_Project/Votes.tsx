@@ -17,6 +17,11 @@ export default function Votes({ idea, currentUserId, onToggleVote }: VotesProps)
     onToggleVote(idea.id, currentUserId, type);
   };
 
+  // CalculaTE VOTES
+  const netVotes = idea.upvotesL.length - idea.downvotesL.length;
+ 
+  const netDisplay = netVotes > 0 ? `+${netVotes}` : netVotes.toString();
+
   return (
     <div
       style={{
@@ -24,41 +29,44 @@ export default function Votes({ idea, currentUserId, onToggleVote }: VotesProps)
         alignItems: "center",
         gap: "0.4rem",
         marginTop: "0.5rem",
-        justifyContent: "flex-start",
       }}
     >
+      {/* COUNT */}
+      <span style={{ fontWeight: "bold", color: "#000" }}>{netDisplay}</span>
+
+      {/* Upvote */}
       <button
         onClick={(e) => {
           e.stopPropagation();
           handleVote("up");
         }}
         style={{
-          padding: "2px 6px",
-          borderRadius: "4px",
-          border: "1px solid #ccc",
-          backgroundColor: hasUpvoted ? "#e6f7ff" : "#f9f9f9",
+          border: "none",
+          backgroundColor: hasUpvoted ? "#eafff2" : "transparent",
           cursor: "pointer",
+          borderRadius: "4px",
+          padding: "2px 6px",
         }}
       >
-        ⬆️
+        ▲
       </button>
-      <span>{idea.upvotesL.length}</span>
+
+      {/* Downvote */}
       <button
         onClick={(e) => {
           e.stopPropagation();
           handleVote("down");
         }}
         style={{
-          padding: "2px 6px",
-          borderRadius: "4px",
-          border: "1px solid #ccc",
-          backgroundColor: hasDownvoted ? "#fff1f0" : "#f9f9f9",
+          border: "none",
+          backgroundColor: hasDownvoted ? "#fff1f0" : "transparent",
           cursor: "pointer",
+          borderRadius: "4px",
+          padding: "2px 6px",
         }}
       >
-        ⬇️
+        ▼
       </button>
-      <span>{idea.downvotesL.length}</span>
     </div>
   );
 }
