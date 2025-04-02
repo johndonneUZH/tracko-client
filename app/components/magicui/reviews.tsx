@@ -38,6 +38,18 @@ const reviews = [
     body: "Nobody scrums better than Tracko. I'm impressed!",
     img: "https://avatar.vercel.sh/james",
   },
+  {
+    name: "George Hotz",
+    username: "@geohot",
+    body: "Please accept my pull request!",
+    img: "https://avatar.vercel.sh/john",
+  },
+  {
+    name: "Jonathan Blow",
+    username: "@Jonathan_Blow",
+    body: "Finally some shippable code.",
+    img: "https://avatar.vercel.sh/jill",
+  },
 ];
 
 const firstRow = reviews.slice(0, reviews.length / 2);
