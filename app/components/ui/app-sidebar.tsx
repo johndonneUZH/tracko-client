@@ -9,7 +9,7 @@ import {
   LayoutDashboard,
   FileClock,
   Users,
-  Calendar
+  Calendar,
 } from "lucide-react"
 
 import { NavMain } from "@/components/ui/nav-main"
@@ -22,7 +22,7 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar"
-
+const mockUserId = 1 //To be changed with the backend
 const data = {
   user: {
     name: "Max Muster",
@@ -49,7 +49,7 @@ const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "#",
+      url: `/users/${mockUserId}/projects`,
       icon: LayoutDashboard,
       isActive: true,
     },

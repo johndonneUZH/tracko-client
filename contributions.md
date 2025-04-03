@@ -56,14 +56,14 @@ reason).
 ---
 
 ## Template
-## Contributions Week X - [Begin Date] to [End Date]
+## Contributions Week 7 - 28.03 to 04.04
 
 | **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
 | ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
-| **[@githubUser1]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-| **[@githubUser2]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **fabiotilor** | 03.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/90e626e52a6c0b6249749382aa30eb032a55f1cc| Reworked the UI for the Projects Page with creation and deletion | Critical User Story to manage Projects |
+|                    | 03.04  | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/1e95a1cab66b311d587d1debde60827eecb7fd19| Created the links between pages and user friendliness (e.g. confirm deletion) | To get the sidebar dashboard to the projects page |
+| **manueltuor** | 29.03 | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/8b7f86575ff8e7f5afec451f18fe80213eacbdda) | finished the landing page for the app | first page you see on when visiting |
+|                    | 03.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/32f16a533068d6d18dd158c5c7f04e2a8decfb5b | added profile page UI and sidebar | sidebar will be main means of navigation, relevant for most user stories, profile page will be used to edit users |
 | **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
