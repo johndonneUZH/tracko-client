@@ -3,7 +3,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
 import {
   Dialog,
   DialogContent,
@@ -95,13 +94,13 @@ const columns: ColumnDef<Project>[] = [
     accessorKey: "name",
     header: "Name",
     cell: ({ row }) => {
-      const { id: userId } = useParams(); // Access the userId from the URL
+// Access the userId from the URL
       const projectId = row.getValue("id");
       const projectName = row.getValue("name") as string; // Ensure it's a string
   
       return (
         <Link
-          href={`/users/${userId}/projects/${projectId}`}
+          href={`/users/1/projects/${projectId}`} //mock id
           className="cursor-pointer hover:underline"
         >
           {projectName}
@@ -121,7 +120,6 @@ const columns: ColumnDef<Project>[] = [
 ];
 
 export default function UserProjectsPage() {
-  const { id: userId } = useParams();
   const [projects, setProjects] = useState<Project[]>([]);
   const [nextId, setNextId] = useState(101);
   const [newProjectName, setNewProjectName] = useState("");
