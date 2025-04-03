@@ -1,28 +1,49 @@
 "use client";
 
-
-import { Project } from "@/lib/browser_utils/type";
-import { useReactTable, ColumnDef, flexRender } from "@tanstack/react-table";
+import { useState } from "react";
+import Link from "next/link";
 import {
+  useReactTable,
+  ColumnDef,
+  flexRender,
   getCoreRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   getFilteredRowModel,
-} from "@tanstack/react-table";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { ChevronDown, Trash2 } from "lucide-react";
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-
-import { useState } from "react";
-import {
   ColumnFiltersState,
   SortingState,
   VisibilityState,
 } from "@tanstack/react-table";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ChevronDown, Trash2 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+
+import { Project } from "@/lib/browser_utils/type";
 
 interface UserProjectsTableProps {
   userId: string;
@@ -35,7 +56,9 @@ export function UserProjectsTable({ userId, projects, onDeleteSelected }: UserPr
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
+  const [selectedProjectIds, setSelectedProjectIds] = useState<number[]>([]);
 
+  // Define table columns with selection and project link
   const columns: ColumnDef<Project>[] = [
     {
       id: "select",
@@ -65,7 +88,10 @@ export function UserProjectsTable({ userId, projects, onDeleteSelected }: UserPr
       cell: ({ row }) => {
         const project = row.original;
         return (
-          <Link href={`/users/${userId}/projects/${project.id}`}>
+          <Link
+            href={`/users/${userId}/projects/${project.id}`}
+            className="cursor-pointer hover:underline"
+          >
             {project.name}
           </Link>
         );
@@ -100,21 +126,23 @@ export function UserProjectsTable({ userId, projects, onDeleteSelected }: UserPr
     },
   });
 
-  // Handle deletion of selected rows
-  function handleDeleteSelected() {
-    const selectedRowIds = Object.keys(rowSelection);
-    const selectedProjectIds = selectedRowIds
+  // Gather selected project IDs from rowSelection and open the AlertDialog
+  const handleDeleteSelectedClick = () => {
+    const selectedIds = Object.keys(rowSelection)
       .map((rowId) => {
+        // We assume the row id is the index (or use a lookup method)
         const row = table.getRowModel().rows.find((r) => r.id === rowId);
         return row?.original.id;
       })
-      .filter(Boolean) as number[];
+      .filter((id): id is number => id !== undefined);
+    setSelectedProjectIds(selectedIds);
+  };
 
-    if (selectedProjectIds.length > 0) {
-      onDeleteSelected(selectedProjectIds);
-      setRowSelection({});
-    }
-  }
+  // Confirm deletion via callback
+  const handleConfirmDelete = () => {
+    onDeleteSelected(selectedProjectIds);
+    setSelectedProjectIds([]);
+  };
 
   return (
     <div className="w-full">
@@ -142,7 +170,9 @@ export function UserProjectsTable({ userId, projects, onDeleteSelected }: UserPr
                   key={column.id}
                   className="capitalize"
                   checked={column.getIsVisible()}
-                  onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                  onCheckedChange={(value) =>
+                    column.toggleVisibility(!!value)
+                  }
                 >
                   {column.id}
                 </DropdownMenuCheckboxItem>
@@ -169,10 +199,7 @@ export function UserProjectsTable({ userId, projects, onDeleteSelected }: UserPr
           <TableBody>
             {table.getRowModel().rows.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
+                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -211,17 +238,32 @@ export function UserProjectsTable({ userId, projects, onDeleteSelected }: UserPr
         </Button>
       </div>
 
-      {/* Delete Button */}
+      {/* Delete Selected Button and AlertDialog */}
       <div className="flex justify-end py-4">
         <Button
           variant="destructive"
-          onClick={handleDeleteSelected}
+          onClick={handleDeleteSelectedClick}
           disabled={Object.keys(rowSelection).length === 0}
         >
           <Trash2 className="mr-2" />
           Delete Selected
         </Button>
       </div>
+
+      <AlertDialog open={selectedProjectIds.length > 0} onOpenChange={() => setSelectedProjectIds([])}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete {selectedProjectIds.length} project(s).
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmDelete}>Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

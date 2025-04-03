@@ -1,11 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-
-// If you want to use the shadcn <Input />, import it. 
-// Or you can just use a regular <input /> as well.
 import { Input } from "@/components/ui/input";
+import { CirclePlus } from "lucide-react";
 
 interface AddProjectFormProps {
   onAddProject: (projectName: string) => void;
@@ -13,30 +19,63 @@ interface AddProjectFormProps {
 
 export function AddProjectForm({ onAddProject }: AddProjectFormProps) {
   const [newProjectName, setNewProjectName] = useState("");
+  const [error, setError] = useState("");
+  const [dialogOpen, setDialogOpen] = useState(false);
 
-  // Handle pressing Enter key in the input
+  // Handle adding a new project
+  const handleAddProject = () => {
+    const trimmedName = newProjectName.trim();
+    if (!trimmedName) {
+      setError("Project name cannot be empty.");
+      return;
+    }
+    setError("");
+    onAddProject(trimmedName);
+    setNewProjectName("");
+    setDialogOpen(false);
+  };
+
+  // Handle Enter key press in input
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
+      e.preventDefault();
       handleAddProject();
     }
   };
 
-  function handleAddProject() {
-    onAddProject(newProjectName);
-    setNewProjectName("");
-  }
-
   return (
-    <div className="flex gap-2">
-      <Input
-        type="text"
-        placeholder="Enter project name"
-        value={newProjectName}
-        onChange={(e) => setNewProjectName(e.target.value)}
-        onKeyDown={handleKeyDown}
-        className="flex-1"
-      />
-      <Button onClick={handleAddProject}>Add</Button>
-    </div>
+    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+      <DialogTrigger asChild>
+        <Button className="h-10 flex items-center gap-2">
+          <CirclePlus className="w-5 h-5" />
+          Create Project
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Create New Project</DialogTitle>
+          <DialogDescription>Please enter the name of the project.</DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4">
+          <Input
+            placeholder="Enter project name"
+            value={newProjectName}
+            onChange={(e) => {
+              setNewProjectName(e.target.value);
+              setError("");
+            }}
+            onKeyDown={handleKeyDown}
+            className="w-full"
+          />
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+          <div className="flex justify-end gap-2 pt-4">
+            <Button variant="outline" onClick={() => setDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleAddProject}>Add</Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }

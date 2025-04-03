@@ -3,9 +3,16 @@
 import { useParams } from "next/navigation";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/ui/app-sidebar";
-import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
-import { Separator } from "@/components/ui/separator";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 import { useUserProjects } from "@/lib/browser_utils/useProjectStorage";
 import { AddProjectForm } from "@/components/project_browser/AddProjectForm";
@@ -14,35 +21,45 @@ import { UserProjectsTable } from "@/components/project_browser/UserProjectsTabl
 export default function UserProjectsPage() {
   const { id } = useParams() as { id: string };
 
-  // Use the custom hook to handle local storage and state
-  const {
-    projects,
-    addProject,
-    deleteProjects,
-  } = useUserProjects(id);
+  const { projects, addProject, deleteProjects } = useUserProjects(id);
 
-  // When user confirms deletion from the table
-  function handleDeleteSelected(projectIds: number[]) {
+  // Callback when deletion is confirmed from the table
+  const handleDeleteSelected = (selectedIds: number[]) => {
     const isConfirmed = window.confirm(
-      `Are you sure you want to delete ${projectIds.length} project(s)?`
+      `Are you sure you want to delete ${selectedIds.length} project(s)?`
     );
     if (isConfirmed) {
-      deleteProjects(projectIds);
+      deleteProjects(selectedIds);
     }
-  }
+  };
 
   return (
     <SidebarProvider>
-      <div className="flex justify-center items-center min-h-screen">
-        <AppSidebar />
-        <SidebarInset className="flex-1 max-w-7xl px-4">
-          <header className="flex h-16 shrink-0 items-center gap-2 px-4">
-            <SidebarTrigger className="-ml-1" />
-            <Separator orientation="vertical" className="mr-2 h-4" />
-            <h1 className="text-xl font-bold">Projects for User {id}</h1>
+      <div className="flex h-screen">
+        {/* Sidebar */}
+        <AppSidebar className="w-64 shrink-0" />
+
+        {/* Main Content Wrapper */}
+        <div className="flex flex-col flex-1">
+          {/* Fixed Header with Breadcrumb */}
+          <header className="flex h-16 items-center gap-2 px-4">
+            <SidebarTrigger className="-ml-1 mr-2" />
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem className="hidden md:block">
+                  <BreadcrumbLink href="#">Home</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator className="hidden md:block" />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>Profile</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
           </header>
 
-          <div className="flex flex-col items-center p-8">
+          {/* Main Content */}
+          <div className="flex flex-col flex-1 p-4">
+            <h1 className="text-xl font-bold">Projects for User {id}</h1>
             <Card className="w-full max-w-xl mb-6">
               <CardHeader>
                 <CardTitle>Project Management</CardTitle>
@@ -59,7 +76,7 @@ export default function UserProjectsPage() {
               onDeleteSelected={handleDeleteSelected}
             />
           </div>
-        </SidebarInset>
+        </div>
       </div>
     </SidebarProvider>
   );
