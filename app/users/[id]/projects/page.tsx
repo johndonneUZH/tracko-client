@@ -1,24 +1,30 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
-import { useParams } from "next/navigation";
 import { useState } from "react";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
-import { AppSidebar } from "@/components/ui/app-sidebar";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
+import { ChevronDown, Trash2, CirclePlus } from "lucide-react";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -31,13 +37,6 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ChevronDown, Trash2 } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Table,
@@ -47,22 +46,25 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { AppSidebar } from "@/components/ui/app-sidebar";
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 // Type definition for the Project
 export type Project = {
   id: number;
   name: string;
-  lastModified: string; // Last modified field as a string (ISO format for simplicity)
+  lastModified: string;
 };
 
-// Columns definition for the DataTable
 const columns: ColumnDef<Project>[] = [
   {
     id: "select",
     header: ({ table }) => (
       <Checkbox
         checked={
-          table.getIsAllRowsSelected() || (table.getIsSomeRowsSelected() && "indeterminate")
+          table.getIsAllRowsSelected() ||
+          (table.getIsSomeRowsSelected() && "indeterminate")
         }
         onCheckedChange={(value) => table.toggleAllRowsSelected(!!value)}
         aria-label="Select all"
@@ -87,35 +89,41 @@ const columns: ColumnDef<Project>[] = [
     accessorKey: "lastModified",
     header: "Last Modified",
     cell: ({ row }) => {
-      const lastModified = "2025-03-04"; // TODO: API call last modified date
+      const lastModified = "2025-03-04";
       const date = new Date(lastModified);
-      return <div>{date.toLocaleString()}</div>; // Format the date as a string
+      return <div>{date.toLocaleString()}</div>;
     },
   },
 ];
 
 export default function UserProjectsPage() {
-  const { id } = useParams();
   const [projects, setProjects] = useState<Project[]>([]);
   const [nextId, setNextId] = useState(101);
   const [newProjectName, setNewProjectName] = useState("");
+  const [error, setError] = useState("");
+  const [dialogOpen, setDialogOpen] = useState(false); // Dialog open state
+  const [selectedProjectIds, setSelectedProjectIds] = useState<number[]>([]); // Track selected project IDs for deletion
 
   const handleAddProject = () => {
-    if (newProjectName.trim() === "") return; // Do not add if name is empty
+    const trimmedName = newProjectName.trim();
+
+    if (!trimmedName) {
+      setError("Project name cannot be empty.");
+      return; // Stop execution if the name is empty
+    }
+
+    setError(""); // Clear any previous error message
+
     const newProject: Project = {
       id: nextId,
-      name: newProjectName.trim(),
-      lastModified: new Date().toISOString(), // Set current date as lastModified
+      name: trimmedName,
+      lastModified: new Date().toISOString(),
     };
+
     setProjects([...projects, newProject]);
     setNextId(nextId + 1);
     setNewProjectName(""); // Clear the input field
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      handleAddProject();
-    }
+    setDialogOpen(false); // Close the dialog after adding the project
   };
 
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -143,31 +151,23 @@ export default function UserProjectsPage() {
   });
 
   const handleDeleteSelected = () => {
-    // Get selected row IDs (which are indexes by default)
-    const selectedRowIds = Object.keys(rowSelection);
-  
-    // Convert selected row indexes to actual project IDs
-    const selectedProjectIds = selectedRowIds.map((rowId) => projects[Number(rowId)]?.id);
-  
-    // Filter out undefined values (in case of an issue)
-    const validSelectedProjectIds = selectedProjectIds.filter((id): id is number => id !== undefined);
-  
-    // If user confirmed deletion
-    const isConfirmed = window.confirm(
-      `Are you sure you want to delete ${validSelectedProjectIds.length} project(s)?`
-    );
-  
-    if (!isConfirmed) return; // If the user cancels, return without deleting
-  
-    // Remove all selected projects across all pages
-    const remainingProjects = projects.filter(
-      (project) => !validSelectedProjectIds.includes(project.id)
-    );
-  
-    setProjects(remainingProjects);
-    setRowSelection({}); // Clear selection after deletion
+    const validSelectedProjectIds = Object.keys(rowSelection).map((rowId) => {
+      const project = projects[Number(rowId)];
+      return project ? project.id : null;
+    }).filter((id): id is number => id !== null);
+
+    setSelectedProjectIds(validSelectedProjectIds); // Update the selected projects for deletion
   };
-  
+
+  const handleConfirmDelete = () => {
+    const remainingProjects = projects.filter(
+      (project) => !selectedProjectIds.includes(project.id)
+    );
+
+    setProjects(remainingProjects);
+    setRowSelection({});
+    setSelectedProjectIds([]); // Reset selected projects after deletion
+  };
 
   return (
     <SidebarProvider>
@@ -176,43 +176,55 @@ export default function UserProjectsPage() {
         <SidebarInset className="flex-1 max-w-7xl px-4">
           <header className="flex h-16 shrink-0 items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
-            <Separator orientation="vertical" className="mr-2 h-4" />
-            <h1 className="text-xl font-bold">Projects for User {id}</h1>
+            <h1 className="text-xl font-bold">Projects</h1>
           </header>
 
           <div className="flex flex-col items-center p-8">
-            <Card className="w-full max-w-xl mb-6">
-              <CardHeader>
-                <CardTitle>Add Project</CardTitle>
-                <CardDescription>Add user projects</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
+            {/* Add Project Button */}
+            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+              <DialogTrigger asChild>
+                <Button className="h-10 flex items-center gap-2">
+                  <CirclePlus className="w-5 h-5" />
+                  Create Project
+                </Button>
+              </DialogTrigger>
+
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Create New Project</DialogTitle>
+                  <DialogDescription>
+                    Please enter the name of the project.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <Input
                     placeholder="Enter project name"
                     value={newProjectName}
-                    onChange={(e) => setNewProjectName(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    className="flex-1 p-2 border rounded h-10"
+                    onChange={(e) => {
+                      setNewProjectName(e.target.value);
+                      setError(""); // Clear error message when user types
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault(); // Prevents accidental form submission
+                        handleAddProject();
+                      }
+                    }}
+                    className="w-full"
                   />
-                  <Button className="h-10" onClick={handleAddProject}>
-                    Add
-                  </Button>
+                  {error && <p className="text-red-500 text-sm">{error}</p>} {/* Error message */}
+                  <div className="flex justify-end gap-2 pt-4">
+                    <Button variant="outline" onClick={() => setDialogOpen(false)}>
+                      Cancel
+                    </Button>
+                    <Button onClick={handleAddProject}>Add</Button>
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
+              </DialogContent>
+            </Dialog>
 
-            <div className="w-full">
+            <div className="w-full mt-8">
               <div className="flex items-center py-4">
-                <Input
-                  placeholder="Filter projects..."
-                  value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-                  onChange={(event) =>
-                    table.getColumn("name")?.setFilterValue(event.target.value)
-                  }
-                  className="max-w-sm"
-                />
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" className="ml-auto">
@@ -223,20 +235,18 @@ export default function UserProjectsPage() {
                     {table
                       .getAllColumns()
                       .filter((column) => column.getCanHide())
-                      .map((column) => {
-                        return (
-                          <DropdownMenuCheckboxItem
-                            key={column.id}
-                            className="capitalize"
-                            checked={column.getIsVisible()}
-                            onCheckedChange={(value) =>
-                              column.toggleVisibility(!!value)
-                            }
-                          >
-                            {column.id}
-                          </DropdownMenuCheckboxItem>
-                        );
-                      })}
+                      .map((column) => (
+                        <DropdownMenuCheckboxItem
+                          key={column.id}
+                          className="capitalize"
+                          checked={column.getIsVisible()}
+                          onCheckedChange={(value) =>
+                            column.toggleVisibility(!!value)
+                          }
+                        >
+                          {column.id}
+                        </DropdownMenuCheckboxItem>
+                      ))}
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
@@ -262,10 +272,7 @@ export default function UserProjectsPage() {
                   <TableBody>
                     {table.getRowModel().rows.length ? (
                       table.getRowModel().rows.map((row) => (
-                        <TableRow
-                          key={row.id}
-                          data-state={row.getIsSelected() && "selected"}
-                        >
+                        <TableRow key={row.id}>
                           {row.getVisibleCells().map((cell) => (
                             <TableCell key={cell.id}>
                               {flexRender(
@@ -278,10 +285,7 @@ export default function UserProjectsPage() {
                       ))
                     ) : (
                       <TableRow>
-                        <TableCell
-                          colSpan={columns.length}
-                          className="h-24 text-center"
-                        >
+                        <TableCell colSpan={columns.length} className="h-24 text-center">
                           No results.
                         </TableCell>
                       </TableRow>
@@ -323,6 +327,22 @@ export default function UserProjectsPage() {
               </div>
             </div>
           </div>
+
+          {/* Alert Dialog for Deletion */}
+          <AlertDialog open={selectedProjectIds.length > 0} onOpenChange={() => setSelectedProjectIds([])}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete {selectedProjectIds.length} project(s).
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleConfirmDelete}>Delete</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </SidebarInset>
       </div>
     </SidebarProvider>
