@@ -61,7 +61,7 @@ reason).
 | **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
 | ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
 | **fabiotilor** | 03.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/90e626e52a6c0b6249749382aa30eb032a55f1cc| Reworked the UI for the Projects Page with creation and deletion | Critical User Story to manage Projects |
-|                    | 03.04  | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/1e95a1cab66b311d587d1debde60827eecb7fd19| Created the links between pages and user friendliness (e.g. confirm deletion) | To get from projects overview page to the project page |
+|                    | 03.04  | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/1e95a1cab66b311d587d1debde60827eecb7fd19| Created the links between pages and user friendliness (e.g. confirm deletion) | To get the sidebar dashboard to the projects page |
 | **[@githubUser2]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
