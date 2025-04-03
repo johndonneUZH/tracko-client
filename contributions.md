@@ -64,10 +64,13 @@ reason).
 |                    | 03.04  | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/1e95a1cab66b311d587d1debde60827eecb7fd19| Created the links between pages and user friendliness (e.g. confirm deletion) | To get the sidebar dashboard to the projects page |
 | **manueltuor** | 29.03 | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/8b7f86575ff8e7f5afec451f18fe80213eacbdda) | finished the landing page for the app | first page you see on when visiting |
 |                    | 03.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/32f16a533068d6d18dd158c5c7f04e2a8decfb5b | added profile page UI and sidebar | sidebar will be main means of navigation, relevant for most user stories, profile page will be used to edit users |
-| **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **johndonneUZH** | 02.04  | https://github.com/johndonneUZH/sopra-fs25-group-46-server/commit/c0c0966a904c0dd7f084aac0908f1da072216f14 | Added changes endpoint | Completing REST endpoints config |
+|                    |   | https://github.com/johndonneUZH/sopra-fs25-group-46-server/commit/422fc3e390e210bddfa227626ef86150990d879d | Starting setting up comments | Completing REST endpoints config |
+|                    | 03.04  | https://github.com/johndonneUZH/sopra-fs25-group-46-server/commit/4598981b06cb5129cd70af93d628b3e7b6e56d2b | Implement createComment endpoint and update CommentRegister model | Completing REST endpoints config |
+|                    |    | https://github.com/johndonneUZH/sopra-fs25-group-46-server/commit/f24e8c7c037987285539eba67e58d922ffa96407 | Add support for nested comments and update Comment model | Completing REST endpoints config |
 | **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-
+| **[@githubUser5]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 ---
 
