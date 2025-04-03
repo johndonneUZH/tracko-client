@@ -3,7 +3,6 @@
 import * as React from "react"
 import {
   University,
-  ChartLine,
   Settings2,
   Apple,
   Brain,
@@ -11,7 +10,8 @@ import {
   FileClock,
   Users,
   Calendar,
-  Bell
+  Bell,
+  User
 } from "lucide-react"
 
 import { NavMain } from "@/components/ui/nav-main"
@@ -78,6 +78,11 @@ const data = {
     },
   ],
   projects: [
+    {
+      name: "My Profile",
+      url: "#",
+      icon: User,
+    },
     {
       name: "Notifications",
       url: "#",
