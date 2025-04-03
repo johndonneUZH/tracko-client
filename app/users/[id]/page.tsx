@@ -3,6 +3,15 @@
 import React from "react";
 
 import { AppSidebar } from "@/components/ui/app-sidebar"
+import { Separator } from "@/components/ui/separator"
+import { Button } from "@/components/ui/button"
+import { useRouter } from "next/navigation";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar"
+
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -11,13 +20,28 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
-import { Separator } from "@/components/ui/separator"
+
 import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar"
+  Avatar,
+  AvatarImage,
+} from "@/components/ui/avatar"
+
+import { ProjectsTable } from "@/components/ui/projects-table"
+import { FriendsTable } from "@/components/ui/friends-table"
+
+import {
+  Mail,
+  Gift,
+  Calendar1,
+  ShieldCheck,
+  Pencil,
+  LogOut,
+} from "lucide-react"
+import { ContributionsChart } from "@/components/ui/contributions-chart";
+
 export default function Page() {
+  const router = useRouter();
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -30,7 +54,7 @@ export default function Page() {
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
                   <BreadcrumbLink href="#">
-                    Account
+                    Home
                   </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
@@ -41,13 +65,95 @@ export default function Page() {
             </Breadcrumb>
           </div>
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-            <div className="aspect-video rounded-xl bg-muted/50" />
-            <div className="aspect-video rounded-xl bg-muted/50" />
-            <div className="aspect-video rounded-xl bg-muted/50" />
+        <div className="m-4 space-y-4">
+          <div className="flex justify-between">
+            <div className="flex space-x-4 items-center">
+              <Avatar className="h-16 w-16 rounded-lg">
+                <AvatarImage src={"https://avatar.vercel.sh/john"} />
+              </Avatar>
+              <div>
+                <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
+                  Max Muster
+                </h3>
+                <p className="leading-7">
+                  @maxmuster
+                </p>
+              </div>
+            </div>
+            <div className="space-x-4 items-center">
+              <Button className="min-w-25 w-auto py-3">
+                <Pencil/> Edit
+              </Button>
+              <Button className="min-w-25 w-auto py-3" onClick= {()=>router.push("/")}>
+                <LogOut/> Log Out
+              </Button>
+            </div>
           </div>
-          <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
+          <div>
+            <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
+              About
+            </h3>
+            <Separator />
+            <div className="space-y-2 my-4">
+              <div className="flex gap-2 items-center">
+                <Mail />
+                <p className="leading-7">
+                  Email: maxmuster@example.com
+                </p>
+              </div>
+              <div className="flex gap-2 items-center">
+                <Gift />
+                <p className="leading-7">
+                  Birthday: 14.12.2003
+                </p>
+              </div>
+              <div className="flex gap-2 items-center">
+                <Calendar1 />
+                <p className="leading-7">
+                  Joined: 03.04.2025
+                </p>
+              </div>
+              <div className="flex gap-2 items-center">
+                <ShieldCheck />
+                <p className="leading-7">
+                  Last Active: 3h ago
+                </p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
+              Projects
+            </h3>
+            <Separator />
+            <div className="space-y-2 my-4">
+              <div className="my-6 w-full overflow-y-auto">
+                <ProjectsTable/>
+              </div>
+            </div>
+          </div>
+          <div>
+            <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
+              Friends
+            </h3>
+            <Separator />
+            <div className="space-y-2 my-4">
+              <div className="my-6 w-full overflow-y-auto">
+                <FriendsTable/>
+              </div>
+            </div>
+          </div>
+          <div>
+            <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
+              Activity
+            </h3>
+            <Separator />
+            <div className="space-y-2 my-4">
+              <div className="my-6 w-full overflow-y-auto">
+                <ContributionsChart/>
+              </div>
+            </div>
+          </div>
         </div>
       </SidebarInset>
     </SidebarProvider>
