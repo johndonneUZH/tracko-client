@@ -22,7 +22,6 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar"
-import { mock } from "node:test"
 const mockUserId = 1 //To be changed with the backend
 const data = {
   user: {
