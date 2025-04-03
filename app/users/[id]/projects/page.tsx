@@ -143,27 +143,31 @@ export default function UserProjectsPage() {
   });
 
   const handleDeleteSelected = () => {
+    // Get selected row IDs (which are indexes by default)
     const selectedRowIds = Object.keys(rowSelection);
-    const selectedProjects = selectedRowIds.map((rowId) => {
-      const row = table.getRowModel().rows.find((r) => r.id === rowId);
-      return row?.original;
-    }).filter(Boolean) as Project[];
-
+  
+    // Convert selected row indexes to actual project IDs
+    const selectedProjectIds = selectedRowIds.map((rowId) => projects[Number(rowId)]?.id);
+  
+    // Filter out undefined values (in case of an issue)
+    const validSelectedProjectIds = selectedProjectIds.filter((id): id is number => id !== undefined);
+  
     // If user confirmed deletion
     const isConfirmed = window.confirm(
-      `Are you sure you want to delete ${selectedProjects.length} project(s)?`
+      `Are you sure you want to delete ${validSelectedProjectIds.length} project(s)?`
     );
-
+  
     if (!isConfirmed) return; // If the user cancels, return without deleting
-
-    // Delete selected projects across all pages (not just current page)
-    const remainingProjects = projects.filter((project) =>
-      !selectedProjects.some((selectedProject) => selectedProject.id === project.id)
+  
+    // Remove all selected projects across all pages
+    const remainingProjects = projects.filter(
+      (project) => !validSelectedProjectIds.includes(project.id)
     );
-
+  
     setProjects(remainingProjects);
-    setRowSelection({});
+    setRowSelection({}); // Clear selection after deletion
   };
+  
 
   return (
     <SidebarProvider>
@@ -179,8 +183,8 @@ export default function UserProjectsPage() {
           <div className="flex flex-col items-center p-8">
             <Card className="w-full max-w-xl mb-6">
               <CardHeader>
-                <CardTitle>Project Management</CardTitle>
-                <CardDescription>Add and manage user projects</CardDescription>
+                <CardTitle>Add Project</CardTitle>
+                <CardDescription>Add user projects</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex gap-2">
