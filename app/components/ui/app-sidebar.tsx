@@ -3,19 +3,16 @@
 import * as React from "react"
 import {
   University,
-  ChartLine,
   Settings2,
   Apple,
   Brain,
   LayoutDashboard,
   FileClock,
   Users,
-  Calendar,
-  Bell
+  Calendar
 } from "lucide-react"
 
 import { NavMain } from "@/components/ui/nav-main"
-import { NavProfile } from "@/components/ui/nav-profile"
 import { NavUser } from "@/components/ui/nav-user"
 import { TeamSwitcher } from "@/components/ui/team-switcher"
 import {
@@ -77,18 +74,6 @@ const data = {
       icon: Settings2,
     },
   ],
-  projects: [
-    {
-      name: "Notifications",
-      url: "#",
-      icon: Bell,
-    },
-    {
-      name: "Friends",
-      url: "#",
-      icon: Users,
-    },
-  ],
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -99,7 +84,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavProfile projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />
