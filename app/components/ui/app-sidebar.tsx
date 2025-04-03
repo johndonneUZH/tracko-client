@@ -15,7 +15,7 @@ import {
 } from "lucide-react"
 
 import { NavMain } from "@/components/ui/nav-main"
-import { NavProjects } from "@/components/ui/nav-projects"
+import { NavProfile } from "@/components/ui/nav-profile"
 import { NavUser } from "@/components/ui/nav-user"
 import { TeamSwitcher } from "@/components/ui/team-switcher"
 import {
@@ -55,96 +55,26 @@ const data = {
       url: "#",
       icon: LayoutDashboard,
       isActive: true,
-      items: [
-        {
-          title: "Item 1",
-          url: "#",
-        },
-        {
-          title: "Item 2",
-          url: "#",
-        },
-        {
-          title: "Item 3",
-          url: "#",
-        },
-      ],
     },
     {
       title: "Changelog",
       url: "#",
       icon: FileClock,
-      items: [
-        {
-          title: "Item 1",
-          url: "#",
-        },
-        {
-          title: "Item 2",
-          url: "#",
-        },
-        {
-          title: "Item 3",
-          url: "#",
-        },
-      ],
     },
     {
       title: "Members",
       url: "#",
       icon: Users,
-      items: [
-        {
-          title: "Item 1",
-          url: "#",
-        },
-        {
-          title: "Item 2",
-          url: "#",
-        },
-        {
-          title: "Item 3",
-          url: "#",
-        },
-      ],
     },
     {
         title: "Calendar",
         url: "#",
         icon: Calendar,
-        items: [
-          {
-            title: "Item 1",
-            url: "#",
-          },
-          {
-            title: "Item 2",
-            url: "#",
-          },
-          {
-            title: "Item 3",
-            url: "#",
-          },
-        ],
     },
     {
       title: "Settings",
       url: "#",
       icon: Settings2,
-      items: [
-        {
-          title: "Item 1",
-          url: "#",
-        },
-        {
-          title: "Item 2",
-          url: "#",
-        },
-        {
-          title: "Item 3",
-          url: "#",
-        },
-      ],
     },
   ],
   projects: [
@@ -158,11 +88,6 @@ const data = {
       url: "#",
       icon: Users,
     },
-    {
-      name: "Insights",
-      url: "#",
-      icon: ChartLine,
-    },
   ],
 }
 
@@ -174,7 +99,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
+        <NavProfile projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />
