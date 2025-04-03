@@ -18,7 +18,7 @@ import NewIdeaButton from "@/components/dashboard_Project/NewIdeaButton";
 import ChangeLogSidebar from "@/components/dashboard_Project/ChangeLogSidebar";
 import ProjectHeader from "@/components/dashboard_Project/ProjectHeader";
 import IdeaModal from "@/components/dashboard_Project/IdeaModal";
-import WebSocketMonitor from "@/components/WebSocketMonitor";
+//import WebSocketMonitor from "@/components/WebSocketMonitor";
 
 export default function ProjectLayout({
   children,
@@ -93,10 +93,10 @@ export default function ProjectLayout({
     };
   }, [currentUserId, projectId]);
 
-  const sendWebSocketMessage = (destination: string, body: string) => {
-    if (!stompClient || !connected) return console.error("WebSocket not connected");
-    stompClient.publish({ destination, body: JSON.stringify(body) });
-  };
+  // const sendWebSocketMessage = (destination: string, body: string) => {
+  //   if (!stompClient || !connected) return console.error("WebSocket not connected");
+  //   stompClient.publish({ destination, body: JSON.stringify(body) });
+  // };
 
   const handleCreate = () => {
     const newIdea = createIdea();
@@ -173,12 +173,12 @@ export default function ProjectLayout({
         />
       )}
 
-      <WebSocketMonitor 
+      {/* <WebSocketMonitor 
         connected={connected} 
         messages={messages} 
         clearMessages={() => setMessages([])} 
         sendMessage={(content: string) => sendWebSocketMessage("/app/test-message", content || "Test message")} 
-      />
+      /> */}
     </>
   );
 }
