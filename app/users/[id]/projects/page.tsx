@@ -2,6 +2,8 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 import {
   Dialog,
   DialogContent,
@@ -21,6 +23,16 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
+
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -47,8 +59,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { AppSidebar } from "@/components/ui/app-sidebar";
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 
 // Type definition for the Project
 export type Project = {
@@ -83,7 +94,20 @@ const columns: ColumnDef<Project>[] = [
   {
     accessorKey: "name",
     header: "Name",
-    cell: ({ row }) => <div>{row.getValue("name")}</div>,
+    cell: ({ row }) => {
+      const { id: userId } = useParams(); // Access the userId from the URL
+      const projectId = row.getValue("id");
+      const projectName = row.getValue("name") as string; // Ensure it's a string
+  
+      return (
+        <Link
+          href={`/users/${userId}/projects/${projectId}`}
+          className="cursor-pointer hover:underline"
+        >
+          {projectName}
+        </Link>
+      );
+    },
   },
   {
     accessorKey: "lastModified",
@@ -97,6 +121,7 @@ const columns: ColumnDef<Project>[] = [
 ];
 
 export default function UserProjectsPage() {
+  const { id: userId } = useParams();
   const [projects, setProjects] = useState<Project[]>([]);
   const [nextId, setNextId] = useState(101);
   const [newProjectName, setNewProjectName] = useState("");
@@ -171,131 +196,69 @@ export default function UserProjectsPage() {
 
   return (
     <SidebarProvider>
-      <div className="flex justify-center items-center min-h-screen">
-        <AppSidebar />
-        <SidebarInset className="flex-1 max-w-7xl px-4">
-          <header className="flex h-16 shrink-0 items-center gap-2 px-4">
-            <SidebarTrigger className="-ml-1" />
-            <h1 className="text-xl font-bold">Projects</h1>
-          </header>
+  <div className="flex h-screen">
+    {/* Sidebar */}
+    <AppSidebar className="w-64 shrink-0" />
 
-          <div className="flex flex-col items-center p-8">
-            {/* Add Project Button */}
-            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-              <DialogTrigger asChild>
-                <Button className="h-10 flex items-center gap-2">
-                  <CirclePlus className="w-5 h-5" />
-                  Create Project
-                </Button>
-              </DialogTrigger>
-
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Create New Project</DialogTitle>
-                  <DialogDescription>
-                    Please enter the name of the project.
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="space-y-4">
-                  <Input
-                    placeholder="Enter project name"
-                    value={newProjectName}
-                    onChange={(e) => {
-                      setNewProjectName(e.target.value);
-                      setError(""); // Clear error message when user types
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault(); // Prevents accidental form submission
-                        handleAddProject();
-                      }
-                    }}
-                    className="w-full"
-                  />
-                  {error && <p className="text-red-500 text-sm">{error}</p>} {/* Error message */}
-                  <div className="flex justify-end gap-2 pt-4">
-                    <Button variant="outline" onClick={() => setDialogOpen(false)}>
-                      Cancel
-                    </Button>
-                    <Button onClick={handleAddProject}>Add</Button>
-                  </div>
-                </div>
-              </DialogContent>
-            </Dialog>
-
-            <div className="w-full mt-8">
-              <div className="flex items-center py-4">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="ml-auto">
-                      Columns <ChevronDown />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    {table
-                      .getAllColumns()
-                      .filter((column) => column.getCanHide())
-                      .map((column) => (
-                        <DropdownMenuCheckboxItem
-                          key={column.id}
-                          className="capitalize"
-                          checked={column.getIsVisible()}
-                          onCheckedChange={(value) =>
-                            column.toggleVisibility(!!value)
-                          }
-                        >
-                          {column.id}
-                        </DropdownMenuCheckboxItem>
-                      ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-
-              <div className="rounded-md border overflow-x-auto">
-                <Table className="min-w-full">
-                  <TableHeader>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                      <TableRow key={headerGroup.id}>
-                        {headerGroup.headers.map((header) => (
-                          <TableHead key={header.id}>
-                            {header.isPlaceholder
-                              ? null
-                              : flexRender(
-                                  header.column.columnDef.header,
-                                  header.getContext()
-                                )}
-                          </TableHead>
-                        ))}
-                      </TableRow>
+    {/* Main Content Wrapper */}
+    <div className="flex flex-col flex-1">
+      {/* Fixed Header */}
+      <header className="flex h-16 items-center gap-2 px-4 ">
+        <SidebarTrigger className="-ml-1 mr-2" />
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem className="hidden md:block">
+              <BreadcrumbLink href="#">Home</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator className="hidden md:block" />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Profile</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      </header>
+      {/* Main Content */}
+      <div className="flex flex-col flex-1 p-4">
+        <h1 className="text-xl font-bold">Projects</h1>
+        <div className="w-full rounded-md border overflow-auto">
+          <Table className="w-full">
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(header.column.columnDef.header, header.getContext())}
+                    </TableHead>
+                  ))}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow key={row.id}>
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
                     ))}
-                  </TableHeader>
-                  <TableBody>
-                    {table.getRowModel().rows.length ? (
-                      table.getRowModel().rows.map((row) => (
-                        <TableRow key={row.id}>
-                          {row.getVisibleCells().map((cell) => (
-                            <TableCell key={cell.id}>
-                              {flexRender(
-                                cell.column.columnDef.cell,
-                                cell.getContext()
-                              )}
-                            </TableCell>
-                          ))}
-                        </TableRow>
-                      ))
-                    ) : (
-                      <TableRow>
-                        <TableCell colSpan={columns.length} className="h-24 text-center">
-                          No results.
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={columns.length} className="h-24 text-center">
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
 
-              {/* Pagination Controls */}
-              <div className="flex items-center justify-end space-x-2 py-4">
+        {/* Pagination Controls */}
+        <div className="flex items-center justify-end space-x-2 py-4">
                 <Button
                   variant="outline"
                   size="sm"
@@ -313,23 +276,54 @@ export default function UserProjectsPage() {
                   Next
                 </Button>
               </div>
-
-              {/* Delete Button */}
-              <div className="flex justify-end py-4">
-                <Button
-                  variant="destructive"
-                  onClick={handleDeleteSelected}
-                  disabled={Object.keys(rowSelection).length === 0}
-                >
-                  <Trash2 className="mr-2" />
-                  Delete Selected
-                </Button>
+              
+              <div className="flex justify-between items-center w-full py-4">
+        <div className="flex justify-between items-center w-full py-4">
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="h-10 flex items-center gap-2">
+                <CirclePlus className="w-5 h-5" />
+                Create Project
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Create New Project</DialogTitle>
+                <DialogDescription>Please enter the name of the project.</DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4">
+                <Input
+                  placeholder="Enter project name"
+                  value={newProjectName}
+                  onChange={(e) => {
+                    setNewProjectName(e.target.value);
+                    setError("");
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleAddProject();
+                    }
+                  }}
+                  className="w-full"
+                />
+                {error && <p className="text-red-500 text-sm">{error}</p>}
+                <div className="flex justify-end gap-2 pt-4">
+                  <Button variant="outline" onClick={() => setDialogOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button onClick={handleAddProject}>Add</Button>
+                </div>
               </div>
-            </div>
-          </div>
+            </DialogContent>
+          </Dialog>
 
-          {/* Alert Dialog for Deletion */}
-          <AlertDialog open={selectedProjectIds.length > 0} onOpenChange={() => setSelectedProjectIds([])}>
+          <Button variant="destructive" onClick={handleDeleteSelected} disabled={Object.keys(rowSelection).length === 0}>
+            <Trash2 className="mr-2" />
+            Delete Selected
+          </Button>
+           {/* Alert Dialog for Deletion */}
+           <AlertDialog open={selectedProjectIds.length > 0} onOpenChange={() => setSelectedProjectIds([])}>
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
@@ -343,8 +337,11 @@ export default function UserProjectsPage() {
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
-        </SidebarInset>
+        </div>
       </div>
-    </SidebarProvider>
+    </div>
+  </div>
+  </div>
+</SidebarProvider>
   );
 }
