@@ -13,42 +13,55 @@ import { Label } from "@/components/ui/label";
 import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { ApiService } from "@/api/apiService";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
   const router = useRouter();
+  const apiService = new ApiService();
 
-  // To be changed with the backend
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
-  // To be updated with Backend
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!email || !password) {
-      alert("Please fill in both fields.");
+    setError(null); // Reset error state
+  
+    if (!username || !password) {
+      setError("Please fill in both fields.");
       return;
     }
-
+  
     try {
-      const mockUserId = 1;
-      sessionStorage.setItem("currentUserId", String(mockUserId));
-      sessionStorage.setItem("token", "mock-token");
+      const response = await apiService.rawPost("/auth/login", {
+        username,
+        password,
+      });
 
-      router.push(`/users/${mockUserId}/projects`);
+      const token = response.headers.get("Authorization");
+      const userId = response.headers.get("userId");
+  
+      if (!token || !userId) {
+        throw new Error("Missing token or userId in response headers");
+      }
+  
+      sessionStorage.setItem("userId", userId);
+      sessionStorage.setItem("token", token);
+  
+      router.push(`/users/${userId}/projects`);
     } catch (error) {
-      alert("Login failed.");
+      setError("Login failed. Please check your credentials.");
       console.error(error);
     }
   };
+  
 
   const handleSignUpClick = () => {
     router.push("/register");
   };
-
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -56,21 +69,24 @@ export function LoginForm({
         <CardHeader>
           <CardTitle className="text-2xl">Login</CardTitle>
           <CardDescription>
-            Enter your email below to login to your account
+            Enter your username below to login to your account
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin}>
             <div className="flex flex-col gap-6">
+              {error && (
+                <div className="text-red-500 text-sm text-center">{error}</div>
+              )}
               <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="username">Username</Label>
                 <Input
-                  id="email"
-                  type="email"
-                  placeholder="m@example.com"
+                  id="username"
+                  type="username"
+                  placeholder="KingYoussef"
                   required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                 />
               </div>
               <div className="grid gap-2">

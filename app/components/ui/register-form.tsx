@@ -1,26 +1,52 @@
-"use client"; 
-import { cn } from "@/lib/utils"
+"use client";
+import { cn } from "@/lib/utils";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button";
+import { useState } from "react";
+import { ApiService } from "@/api/apiService";
+import { User } from "lucide-react";
 
 export function RegisterForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
   const router = useRouter();
-  
-  // Handle redirect to login page
-  const handleLoginClick = () => {
-    router.push("/login");
+  const apiService = new ApiService();
+
+  // Form state
+  const [formData, setFormData] = useState({
+    name: "",
+    username: "",
+    email: "",
+    password: "",
+  });
+  const [error, setError] = useState<string | null>(null);
+
+  // Handle input changes
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+
+    try {
+      await apiService.post("/auth/register", formData);
+      router.push("/login"); // Redirect to login page on success
+    } catch (err: any) {
+      setError(err.message || "Registration failed. Please try again.");
+    }
   };
 
   return (
@@ -33,7 +59,7 @@ export function RegisterForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
+          <form onSubmit={handleSubmit}>
             <div className="flex flex-col gap-6">
               {/* Name Field */}
               <div className="grid gap-2">
@@ -42,10 +68,25 @@ export function RegisterForm({
                   id="name"
                   type="text"
                   placeholder="Your full name"
+                  value={formData.name}
+                  onChange={handleChange}
                   required
                 />
               </div>
 
+              {/* Username Field */}
+              <div className="grid gap-2">
+                <Label htmlFor="username">Username</Label>
+                <Input
+                  id="username"
+                  type="text"
+                  placeholder="Your username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              
               {/* Email Field */}
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
@@ -53,32 +94,37 @@ export function RegisterForm({
                   id="email"
                   type="email"
                   placeholder="you@example.com"
+                  value={formData.email}
+                  onChange={handleChange}
                   required
                 />
               </div>
 
               {/* Password Field */}
               <div className="grid gap-2">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
-                  <a
-                    href="#"
-                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                  >
-                    {/* Optional link for "Forgot your password?" */}
-                  </a>
-                </div>
-                <Input id="password" type="password" required />
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                />
               </div>
 
-              <InteractiveHoverButton>
+              {/* Display error message */}
+              {error && <p className="text-red-500 text-sm">{error}</p>}
+
+              {/* Submit Button */}
+              <InteractiveHoverButton type="submit">
                 Register
-                </InteractiveHoverButton>
+              </InteractiveHoverButton>
             </div>
             <div className="mt-4 text-center text-sm">
               Already have an account?{" "}
               <button
-                onClick={handleLoginClick}
+                type="button"
+                onClick={() => router.push("/login")}
                 className="underline underline-offset-4 hover:underline cursor-pointer"
               >
                 Login

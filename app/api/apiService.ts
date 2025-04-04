@@ -91,6 +91,21 @@ export class ApiService {
     );
   }
 
+  async rawPost(endpoint: string, body: any): Promise<Response> {
+    const response = await fetch(`${this.baseURL}${endpoint}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+  
+    if (!response.ok) {
+      throw new Error(`Request failed with status ${response.status}`);
+    }
+    return response; 
+  }
+  
   /**
    * PUT request.
    * @param endpoint - The API endpoint (e.g. "/users/123").
