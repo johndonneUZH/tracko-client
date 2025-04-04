@@ -68,8 +68,9 @@ reason).
 |                    |   | https://github.com/johndonneUZH/sopra-fs25-group-46-server/commit/422fc3e390e210bddfa227626ef86150990d879d | Starting setting up comments | Completing REST endpoints config |
 |                    | 03.04  | https://github.com/johndonneUZH/sopra-fs25-group-46-server/commit/4598981b06cb5129cd70af93d628b3e7b6e56d2b | Implement createComment endpoint and update CommentRegister model | Completing REST endpoints config |
 |                    |    | https://github.com/johndonneUZH/sopra-fs25-group-46-server/commit/f24e8c7c037987285539eba67e58d922ffa96407 | Add support for nested comments and update Comment model | Completing REST endpoints config |
-| **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **RonaldDomi**     | 03.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-server/commit/afe19ebc8fdcef70f53d922d83ee6edb85c171de | Adding more tests for all the modules | Tests are always good to have |
+|                    | 02.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-server/commit/9880f3406f66167e97626c0896106db30ba93f8c | Setting up the configuration for web socket use in the future | Critical to have real time interaction |
+|                    | 02.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/f4fd81449070fa82cf1ebfa8271f319cfcedc699 | Setting up the configuration for web sockets on the client | Critical for real time interaction | 
 | **[@githubUser5]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 ---
