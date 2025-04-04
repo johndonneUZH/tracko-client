@@ -71,8 +71,8 @@ reason).
 | **RonaldDomi**     | 03.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-server/commit/afe19ebc8fdcef70f53d922d83ee6edb85c171de | Adding more tests for all the modules | Tests are always good to have |
 |                    | 02.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-server/commit/9880f3406f66167e97626c0896106db30ba93f8c | Setting up the configuration for web socket use in the future | Critical to have real time interaction |
 |                    | 02.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/f4fd81449070fa82cf1ebfa8271f319cfcedc699 | Setting up the configuration for web sockets on the client | Critical for real time interaction | 
-| **JMAVITE** | 29.03   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/73d909b9401f6c5bb8f55e9d572e511211a166e3 | Beutiful boxes and it is interactive | Makes them look closer to the mockups |
-|                    | 03.04| https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/808a5c2d3264f323988ea7e7f7d6ecb4e141ddee | Gives strucutre to the current file | avoids having a 500 lines file, instead we have multiples more specific |
+| **JMAVITE** | 29.03   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/e1e51251e8eed5ae0ba6624ef167683afbf89c89 | Beutiful boxes and it is interactive | Makes them look closer to the mockups |
+|                    | 03.04| https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/e2bfb7c770cd540266cb8218de6abd46959f8bb4 | Gives strucutre to the current file | avoids having a 500 lines file, instead we have multiples more specific |
 
 
 
