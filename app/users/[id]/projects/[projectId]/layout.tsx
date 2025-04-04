@@ -1,9 +1,9 @@
 "use client";
+//Web Sockets are commented for now becasue if not the vercel app cannot be deployed
 
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Client } from "@stomp/stompjs";
-import SockJS from "sockjs-client";
+// import { useEffect, useState } from "react";
+// import { Client } from "@stomp/stompjs";
 
 import { useCurrentUserId } from "@/lib/dashboard_utils/useCurrentUserId";
 import { useIdeaStorage } from "@/lib/dashboard_utils/useIdeaStorage";
@@ -18,7 +18,7 @@ import NewIdeaButton from "@/components/dashboard_Project/NewIdeaButton";
 import ChangeLogSidebar from "@/components/dashboard_Project/ChangeLogSidebar";
 import ProjectHeader from "@/components/dashboard_Project/ProjectHeader";
 import IdeaModal from "@/components/dashboard_Project/IdeaModal";
-import WebSocketMonitor from "@/components/WebSocketMonitor";
+//import WebSocketMonitor from "@/components/WebSocketMonitor";
 
 export default function ProjectLayout({
   children,
@@ -33,70 +33,70 @@ export default function ProjectLayout({
   const { ideas, setIdeas, createIdea, saveIdea, deleteIdea, getSelectedIdea, storageKey } = useIdeaStorage(projectId as string, currentUserId);
   const { addComment, deleteComment } = useComments(setIdeas, currentUserId);
   
-  const [stompClient, setStompClient] = useState<Client | null>(null);
-  const [connected, setConnected] = useState(false);
+ // const [stompClient, setStompClient] = useState<Client | null>(null);
+  //const [connected, setConnected] = useState(false);
 
-  type MessageType = {
-    type: string;
-    content: string;
-    timestamp: number;
-  };
+  // type MessageType = {
+  //   type: string;
+  //   content: string;
+  //   timestamp: number;
+  // };
   
-  const [messages, setMessages] = useState<MessageType[]>([]);
+ // const [messages, setMessages] = useState<MessageType[]>([]);
   // const [messages, setMessages] = useState<any[]>([]);
   
   const selectedIdea = getSelectedIdea(ideaId as string);
   const selectedIdeaId = selectedIdea?.id || null;
 
-  useEffect(() => {
-    if (!currentUserId || !projectId) return;
+  // useEffect(() => {
+  //   if (!currentUserId || !projectId) return;
     
-    const socket = new SockJS("http://localhost:8080/ws");
-    const client = new Client({
-      webSocketFactory: () => socket,
-      connectHeaders: {
-        Authorization: localStorage.getItem("token") ? `Bearer ${localStorage.getItem("token")}` : "",
-      },
-      debug: (str) => console.log("STOMP:", str),
-      reconnectDelay: 5000,
-      heartbeatIncoming: 4000,
-      heartbeatOutgoing: 4000,
-    });
+  //   const socket = new SockJS("http://localhost:8080/ws");
+  //   const client = new Client({
+  //     webSocketFactory: () => socket,
+  //     connectHeaders: {
+  //       Authorization: localStorage.getItem("token") ? `Bearer ${localStorage.getItem("token")}` : "",
+  //     },
+  //     debug: (str) => console.log("STOMP:", str),
+  //     reconnectDelay: 5000,
+  //     heartbeatIncoming: 4000,
+  //     heartbeatOutgoing: 4000,
+  //   });
 
-    client.onConnect = (frame) => {
-      console.log("Connected to WebSocket:", frame);
-      setConnected(true);
-      client.subscribe("/topic/test-responses", (message) => {
-        try {
-          const data = JSON.parse(message.body);
-          setMessages((prev) => [...prev, data]);
-        } catch (error) {
-          console.error("Error processing test message:", error);
-        }
-      });
-    };
+  //   client.onConnect = (frame) => {
+  //     console.log("Connected to WebSocket:", frame);
+  //     setConnected(true);
+  //     client.subscribe("/topic/test-responses", (message) => {
+  //       try {
+  //         const data = JSON.parse(message.body);
+  //         setMessages((prev) => [...prev, data]);
+  //       } catch (error) {
+  //         console.error("Error processing test message:", error);
+  //       }
+  //     });
+  //   };
 
-    client.onStompError = (frame) => {
-      console.error("STOMP error:", frame.headers["message"], frame.body);
-      setConnected(false);
-    };
+  //   client.onStompError = (frame) => {
+  //     console.error("STOMP error:", frame.headers["message"], frame.body);
+  //     setConnected(false);
+  //   };
 
-    setStompClient(client);
-    client.activate();
+  //   setStompClient(client);
+  //   client.activate();
 
-    return () => {
-      if (client.connected) {
-        client.deactivate();
-      }
-      setStompClient(null);
-      setConnected(false);
-    };
-  }, [currentUserId, projectId]);
+  //   return () => {
+  //     if (client.connected) {
+  //       client.deactivate();
+  //     }
+  //     setStompClient(null);
+  //     setConnected(false);
+  //   };
+  // }, [currentUserId, projectId]);
 
-  const sendWebSocketMessage = (destination: string, body: string) => {
-    if (!stompClient || !connected) return console.error("WebSocket not connected");
-    stompClient.publish({ destination, body: JSON.stringify(body) });
-  };
+  // const sendWebSocketMessage = (destination: string, body: string) => {
+  //   if (!stompClient || !connected) return console.error("WebSocket not connected");
+  //   stompClient.publish({ destination, body: JSON.stringify(body) });
+  // };
 
   const handleCreate = () => {
     const newIdea = createIdea();
@@ -173,12 +173,12 @@ export default function ProjectLayout({
         />
       )}
 
-      <WebSocketMonitor 
+      {/* <WebSocketMonitor 
         connected={connected} 
         messages={messages} 
         clearMessages={() => setMessages([])} 
         sendMessage={(content: string) => sendWebSocketMessage("/app/test-message", content || "Test message")} 
-      />
+      /> */}
     </>
   );
 }

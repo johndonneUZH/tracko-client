@@ -62,7 +62,7 @@ reason).
 | ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
 | **fabiotilor** | 03.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/90e626e52a6c0b6249749382aa30eb032a55f1cc| Reworked the UI for the Projects Page with creation and deletion | Critical User Story to manage Projects |
 |                    | 03.04  | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/1e95a1cab66b311d587d1debde60827eecb7fd19| Created the links between pages and user friendliness (e.g. confirm deletion) | To get the sidebar dashboard to the projects page |
-| **manueltuor** | 29.03 | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/8b7f86575ff8e7f5afec451f18fe80213eacbdda) | finished the landing page for the app | first page you see on when visiting |
+| **manueltuor** | 29.03 | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/8b7f86575ff8e7f5afec451f18fe80213eacbdda | finished the landing page for the app | first page you see on when visiting |
 |                    | 03.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/32f16a533068d6d18dd158c5c7f04e2a8decfb5b | added profile page UI and sidebar | sidebar will be main means of navigation, relevant for most user stories, profile page will be used to edit users |
 | **johndonneUZH** | 02.04  | https://github.com/johndonneUZH/sopra-fs25-group-46-server/commit/c0c0966a904c0dd7f084aac0908f1da072216f14 | Added changes endpoint | Completing REST endpoints config |
 |                    |   | https://github.com/johndonneUZH/sopra-fs25-group-46-server/commit/422fc3e390e210bddfa227626ef86150990d879d | Starting setting up comments | Completing REST endpoints config |
@@ -71,7 +71,8 @@ reason).
 | **RonaldDomi**     | 03.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-server/commit/afe19ebc8fdcef70f53d922d83ee6edb85c171de | Adding more tests for all the modules | Tests are always good to have |
 |                    | 02.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-server/commit/9880f3406f66167e97626c0896106db30ba93f8c | Setting up the configuration for web socket use in the future | Critical to have real time interaction |
 |                    | 02.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/f4fd81449070fa82cf1ebfa8271f319cfcedc699 | Setting up the configuration for web sockets on the client | Critical for real time interaction | 
-| **[@githubUser5]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
----
+| **JMAVITE** | 29.03   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/73d909b9401f6c5bb8f55e9d572e511211a166e3 | Beutiful boxes and it is interactive | Makes them look closer to the mockups |
+|                    | 03.04| https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/808a5c2d3264f323988ea7e7f7d6ecb4e141ddee | Gives strucutre to the current file | avoids having a 500 lines file, instead we have multiples more specific |
+
+
 
