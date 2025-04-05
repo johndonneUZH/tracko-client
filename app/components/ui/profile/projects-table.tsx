@@ -19,19 +19,19 @@ export function ProjectsTable() {
                 </tr>
             </thead>
             <tbody>
-                <tr className="border-b border-gray-300 even:bg-gray-100">
+                <tr className="even:bg-gray-100">
                     <td className="px-4 py-2 text-left"><University/></td>
                     <td className="px-4 py-2 text-left">Sopra</td>
                     <td className="px-4 py-2 text-left">Contributor</td>
                     <td className="px-4 py-2 text-left">11</td>
                 </tr>
-                <tr className="border-b border-gray-300 even:bg-gray-100">
+                <tr className="even:bg-gray-100">
                     <td className="px-4 py-2 text-left"><Brain/></td>
                     <td className="px-4 py-2 text-left">Tracko</td>
                     <td className="px-4 py-2 text-left">Admin</td>
                     <td className="px-4 py-2 text-left">5</td>
                 </tr>
-                <tr className="border-b border-gray-300 even:bg-gray-100">
+                <tr className="even:bg-gray-100">
                     <td className="px-4 py-2 text-left"><Apple/></td>
                     <td className="px-4 py-2 text-left">Apple</td>
                     <td className="px-4 py-2 text-left">Contributor</td>

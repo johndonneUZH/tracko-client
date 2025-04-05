@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import { AppSidebar } from "@/components/ui/app-sidebar"
+import { AppSidebar } from "@/components/ui/navigation/app-sidebar"
 import { Separator } from "@/components/ui/separator"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation";
@@ -10,7 +10,7 @@ import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/navigation/sidebar"
 
 import {
   Breadcrumb,
@@ -26,8 +26,8 @@ import {
   AvatarImage,
 } from "@/components/ui/avatar"
 
-import { ProjectsTable } from "@/components/ui/projects-table"
-import { FriendsTable } from "@/components/ui/friends-table"
+import { ProjectsTable } from "@/components/ui/profile/projects-table"
+import { FriendsTable } from "@/components/ui/profile/friends-table"
 
 import {
   Mail,
@@ -37,7 +37,7 @@ import {
   Pencil,
   LogOut,
 } from "lucide-react"
-import { ContributionsChart } from "@/components/ui/contributions-chart";
+import { ContributionsChart } from "@/components/ui/profile/contributions-chart";
 
 export default function Page() {
   const router = useRouter();

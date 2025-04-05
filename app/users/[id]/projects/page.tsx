@@ -1,9 +1,9 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/ui/app-sidebar";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/navigation/sidebar";
+import { AppSidebar } from "@/components/ui/navigation/app-sidebar";
+import { SidebarTrigger } from "@/components/ui/navigation/sidebar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Breadcrumb,

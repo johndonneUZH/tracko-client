@@ -12,16 +12,16 @@ import {
   Calendar,
 } from "lucide-react"
 
-import { NavMain } from "@/components/ui/nav-main"
-import { NavUser } from "@/components/ui/nav-user"
-import { TeamSwitcher } from "@/components/ui/team-switcher"
+import { NavMain } from "@/components/ui/navigation/nav-main"
+import { NavUser } from "@/components/ui/navigation/nav-user"
+import { TeamSwitcher } from "@/components/ui/navigation/team-switcher"
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/navigation/sidebar"
 const mockUserId = 1 //To be changed with the backend
 const data = {
   user: {
