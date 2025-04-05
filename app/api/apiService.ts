@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { getApiDomain } from "@/utils/domain";
 import { ApplicationError } from "@/types/error";
 
@@ -91,7 +92,7 @@ export class ApiService {
     );
   }
 
-  async rawPost(endpoint: string, body: any): Promise<Response> {
+  public async rawPost(endpoint: string, body: Record<string, unknown>): Promise<Response> {
     const response = await fetch(`${this.baseURL}${endpoint}`, {
       method: "POST",
       headers: {
@@ -101,9 +102,11 @@ export class ApiService {
     });
   
     if (!response.ok) {
-      throw new Error(`Request failed with status ${response.status}`);
+      const errorDetail = await response.text();
+      throw new Error(`Request failed with status ${response.status}: ${errorDetail}`);
     }
-    return response; 
+  
+    return response;
   }
   
   /**

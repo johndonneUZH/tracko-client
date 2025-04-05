@@ -13,7 +13,6 @@ import { useRouter } from "next/navigation";
 import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button";
 import { useState } from "react";
 import { ApiService } from "@/api/apiService";
-import { User } from "lucide-react";
 
 export function RegisterForm({
   className,
@@ -44,8 +43,12 @@ export function RegisterForm({
     try {
       await apiService.post("/auth/register", formData);
       router.push("/login"); // Redirect to login page on success
-    } catch (err: any) {
-      setError(err.message || "Registration failed. Please try again.");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Registration failed. Please try again.");
+      }
     }
   };
 
