@@ -41,8 +41,8 @@ export function LoginForm({
         password,
       });
 
-      const token = response.headers.get("authorization");
-      const userId = response.headers.get("userid");
+      const token = response.headers.get("Authorization");
+      const userId = response.headers.get("Userid");
   
       if (!token || !userId) {
         throw new Error("Missing token or userId in response headers");
