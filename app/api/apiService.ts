@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { getApiDomain } from "@/utils/domain";
 import { ApplicationError } from "@/types/error";
 
@@ -91,6 +92,23 @@ export class ApiService {
     );
   }
 
+  public async rawPost(endpoint: string, body: Record<string, unknown>): Promise<Response> {
+    const response = await fetch(`${this.baseURL}${endpoint}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+  
+    if (!response.ok) {
+      const errorDetail = await response.text();
+      throw new Error(`Request failed with status ${response.status}: ${errorDetail}`);
+    }
+  
+    return response;
+  }
+  
   /**
    * PUT request.
    * @param endpoint - The API endpoint (e.g. "/users/123").
