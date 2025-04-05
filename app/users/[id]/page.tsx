@@ -1,11 +1,13 @@
 "use client";
 
-import React from "react";
+import React, { use, useEffect, useState } from "react";
 
 import { AppSidebar } from "@/components/ui/app-sidebar"
 import { Separator } from "@/components/ui/separator"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation";
+import { ApiService } from "@/api/apiService";
+
 import {
   SidebarInset,
   SidebarProvider,
@@ -39,8 +41,76 @@ import {
 } from "lucide-react"
 import { ContributionsChart } from "@/components/ui/contributions-chart";
 
+interface UserData {
+  name: string;
+  username: string;
+  email: string;
+  status: string;
+  avatarUrl: string;
+  projectIds: string[];
+  createAt: string;
+  lastLoginAt: string;
+  friendsIds: string[];
+  friendRequestsIds: string[];
+  friendRequestsSentIds: string[];
+  birthday: string;
+  bio: string;
+}
+
+function makePrettyLastLogin(dateString: string | undefined): string {
+  const nowDate = new Date();
+  const date = dateString ? new Date(dateString) : new Date();
+  const diff = Math.abs(nowDate.getTime() - date.getTime());
+
+  const diffHours = Math.ceil(diff / (1000 * 60 * 60));
+  const diffDays = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const diffMonths = Math.floor(diff / (1000 * 60 * 60 * 24 * 30));
+
+  if (diffHours < 24 && diffDays == 0) {
+    return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+  }
+  else if (diffDays < 30 && diffMonths == 0) {
+    return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+  }
+  else if (diffMonths < 12) {
+    return `${diffMonths} month${diffMonths > 1 ? 's' : ''} ago`;
+  }
+  else {
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
+  }
+}
+
+
 export default function Page() {
+  const [userData, setUserData] = useState<UserData | null>(null);
   const router = useRouter();
+  const apiService = new ApiService();
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const userId = sessionStorage.getItem("userId");
+      const token = sessionStorage.getItem("token");
+  
+      if (!userId || !token) {
+        router.push("/login");
+        return;
+      }
+  
+      try {
+        const data = await apiService.get<UserData>(`/users/${userId}`);
+        setUserData(data);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+  
+    fetchUserData();
+  }, []);
+  
 
   return (
     <SidebarProvider>
@@ -69,14 +139,14 @@ export default function Page() {
           <div className="flex justify-between">
             <div className="flex space-x-4 items-center">
               <Avatar className="h-16 w-16 rounded-lg">
-                <AvatarImage src={"https://avatar.vercel.sh/john"} />
+                <AvatarImage src={userData?.avatarUrl || "https://avatar.vercel.sh/john"} />
               </Avatar>
               <div>
                 <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
-                  Max Muster
+                  {userData?.name || "Loading..."}
                 </h3>
                 <p className="leading-7">
-                  @maxmuster
+                  @{userData?.username}
                 </p>
               </div>
             </div>
@@ -98,25 +168,31 @@ export default function Page() {
               <div className="flex gap-2 items-center">
                 <Mail />
                 <p className="leading-7">
-                  Email: maxmuster@example.com
+                  Email: {userData?.email}
                 </p>
               </div>
-              <div className="flex gap-2 items-center">
-                <Gift />
-                <p className="leading-7">
-                  Birthday: 14.12.2003
-                </p>
-              </div>
+              {userData?.birthday && (
+                <div className="flex gap-2 items-center">
+                  <Gift />
+                  <p className="leading-7">
+                    Birthday: {userData.birthday}
+                  </p>
+                </div>
+              )}
               <div className="flex gap-2 items-center">
                 <Calendar1 />
                 <p className="leading-7">
-                  Joined: 03.04.2025
+                  Joined: {userData?.createAt ? new Date(userData.createAt).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  }) : "Unknown"}
                 </p>
               </div>
               <div className="flex gap-2 items-center">
                 <ShieldCheck />
                 <p className="leading-7">
-                  Last Active: 3h ago
+                  Last Active: {makePrettyLastLogin(userData?.lastLoginAt)}
                 </p>
               </div>
             </div>

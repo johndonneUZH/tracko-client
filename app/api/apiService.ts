@@ -63,10 +63,18 @@ export class ApiService {
    */
   public async get<T>(endpoint: string): Promise<T> {
     const url = `${this.baseURL}${endpoint}`;
+    const token = sessionStorage.getItem("token");
+    
+    const headers = {
+      ...this.defaultHeaders,
+      ...(token ? { Authorization: token } : {}),
+    };
+
     const res = await fetch(url, {
       method: "GET",
-      headers: this.defaultHeaders,
+      headers,
     });
+    
     return this.processResponse<T>(
       res,
       "An error occurred while fetching the data.\n",
