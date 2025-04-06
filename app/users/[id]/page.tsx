@@ -1,6 +1,6 @@
 "use client";
 
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { AppSidebar } from "@/components/ui/app-sidebar"
 import { Separator } from "@/components/ui/separator"
