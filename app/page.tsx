@@ -1,14 +1,14 @@
 "use client"; // Disables SSR for interactive components
 import "@ant-design/v5-patch-for-react-19";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { AuroraText } from "./components/magicui/aurora-text";
-import { Card } from "@/components/ui/card";
-import { Linechart } from "@/components/ui/linechart";
-import { Reviews } from "./components/magicui/reviews";
+import { Button } from "@/components/commons/button";
+import { AuroraText } from "./components/main_page/aurora-text";
+import { Card } from "@/components/commons/card";
+import { Linechart } from "@/components/main_page/linechart";
+import { Reviews } from "./components/main_page/reviews";
 import { ArrowDownOutlined } from "@ant-design/icons";
-import { Functions } from "./components/magicui/functions";
-import { Numbers } from "./components/magicui/numbers";
+import { Functions } from "./components/main_page/functions";
+import { Numbers } from "./components/main_page/numbers";
 
 export default function Home() {
   const router = useRouter();

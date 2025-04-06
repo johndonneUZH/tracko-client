@@ -14,7 +14,7 @@ import {
   SortingState,
   VisibilityState,
 } from "@tanstack/react-table";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Checkbox } from "@/components/project_browser/checkbox";
 import {
   Table,
   TableBody,
@@ -22,16 +22,16 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+} from "@/components/project_browser/table";
+import { Button } from "@/components/commons/button";
+import { Input } from "@/components/commons/input";
 import { ChevronDown, Trash2 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/components/project_browser/dropdown-menu";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -41,7 +41,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+} from "@/components/project_browser/alert-dialog";
 
 import { Project } from "@/lib/browser_utils/type";
 

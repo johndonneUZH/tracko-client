@@ -10,13 +10,13 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/commons/card"
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart"
+} from "@/components/commons/chart"
 const chartData = [
   { month: "January", desktop: 65, mobile: 97 },
   { month: "February", desktop: 52, mobile: 105 },

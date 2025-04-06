@@ -7,7 +7,7 @@ import { useParams, useRouter } from "next/navigation";
 
 import { useCurrentUserId } from "@/lib/dashboard_utils/useCurrentUserId";
 import { useIdeaStorage } from "@/lib/dashboard_utils/useIdeaStorage";
-import { useComments } from "@/lib/dashboard_utils/useComments";
+import { useComments } from "@/lib/dashboard_utils/useCommentStorage";
 import { addLogEntry } from "@/lib/dashboard_utils/logHelpers";
 import { isIdeaEmpty } from "@/lib/dashboard_utils/ideaHelpers";
 import { toggleVoteInIdeas } from "@/lib/dashboard_utils/toggleVote";

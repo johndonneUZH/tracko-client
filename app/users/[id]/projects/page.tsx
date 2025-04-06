@@ -1,10 +1,10 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/ui/app-sidebar";
-import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { SidebarProvider } from "@/components/sidebar/sidebar";
+import { AppSidebar } from "@/components/sidebar/app-sidebar";
+import { SidebarTrigger } from "@/components/sidebar/sidebar";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/commons/card";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -12,7 +12,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+} from "@/components/commons/breadcrumb";
 
 import { useUserProjects } from "@/lib/browser_utils/useProjectStorage";
 import { AddProjectForm } from "@/components/project_browser/AddProjectForm";
