@@ -3,7 +3,7 @@ import React from "react";
 import {
     Avatar,
     AvatarImage,
-} from "@/components/ui/avatar"
+} from "@/components/commons/avatar"
 
 export function FriendsTable() {
 

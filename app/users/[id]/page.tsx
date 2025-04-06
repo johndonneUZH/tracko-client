@@ -2,15 +2,15 @@
 
 import React from "react";
 
-import { AppSidebar } from "@/components/ui/app-sidebar"
-import { Separator } from "@/components/ui/separator"
-import { Button } from "@/components/ui/button"
+import { AppSidebar } from "@/components/sidebar/app-sidebar"
+import { Separator } from "@/components/commons/separator"
+import { Button } from "@/components/commons/button"
 import { useRouter } from "next/navigation";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
-} from "@/components/ui/sidebar"
+} from "@/components/sidebar/sidebar"
 
 import {
   Breadcrumb,
@@ -19,15 +19,15 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
+} from "@/components/commons/breadcrumb"
 
 import {
   Avatar,
   AvatarImage,
-} from "@/components/ui/avatar"
+} from "@/components/commons/avatar"
 
-import { ProjectsTable } from "@/components/ui/projects-table"
-import { FriendsTable } from "@/components/ui/friends-table"
+import { ProjectsTable } from "@/components/user_page/projects-table"
+import { FriendsTable } from "@/components/user_page/friends-table"
 
 import {
   Mail,
@@ -37,7 +37,7 @@ import {
   Pencil,
   LogOut,
 } from "lucide-react"
-import { ContributionsChart } from "@/components/ui/contributions-chart";
+import { ContributionsChart } from "@/components/user_page/contributions-chart";
 
 export default function Page() {
   const router = useRouter();
