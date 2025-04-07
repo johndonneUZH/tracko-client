@@ -1,6 +1,7 @@
 "use client";
 
-import ChangeLog, { LogEntry } from "./ChangeLog";
+import ChangeLog from "./ChangeLog";
+import { LogEntry } from "@/types/logEntry";
 
 export default function ChangeLogSidebar({ logEntries }: { logEntries: LogEntry[] }) {
   return (
