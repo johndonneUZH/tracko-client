@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Project } from "./type";
+import { Project } from "../../types/project";
 
 // Custom hook for managing user projects with local storage.
 export function useUserProjects(userId: string) {

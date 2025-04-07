@@ -43,7 +43,7 @@ import {
   AlertDialogTitle,
 } from "@/components/project_browser/alert-dialog";
 
-import { Project } from "@/lib/browser_utils/type";
+import { Project } from "@/types/project";
 
 interface UserProjectsTableProps {
   userId: string;

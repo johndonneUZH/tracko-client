@@ -1,5 +1,6 @@
 "use client";
 
+
 import { useParams } from "next/navigation";
 import { SidebarProvider } from "@/components/sidebar/sidebar";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
@@ -17,11 +18,23 @@ import {
 import { useUserProjects } from "@/lib/browser_utils/useProjectStorage";
 import { AddProjectForm } from "@/components/project_browser/AddProjectForm";
 import { UserProjectsTable } from "@/components/project_browser/UserProjectsTable";
+import { useEffect, useState } from "react";
+import { getUserById } from "@/lib/commons/userService";
+
 
 export default function UserProjectsPage() {
-  const { id } = useParams() as { id: string };
 
+  const { id } = useParams() as { id: string };
+  //Name call
   const { projects, addProject, deleteProjects } = useUserProjects(id);
+  const [userName, setUserName] = useState<string>("");
+  useEffect(() => {
+    getUserById(id)
+      .then((user) => {
+        setUserName(user.name);
+      })
+      .catch((err) => console.error("Error:", err));
+  }, [id]);
 
   // Callback when deletion is confirmed from the table
   const handleDeleteSelected = (selectedIds: number[]) => {
@@ -59,7 +72,7 @@ export default function UserProjectsPage() {
 
           {/* Main Content */}
           <div className="flex flex-col flex-1 p-4">
-            <h1 className="text-xl font-bold">Projects for User {id}</h1>
+            <h1 className="text-xl font-bold">Projects for {userName}</h1>
             <Card className="w-full max-w-xl mb-6">
               <CardHeader>
                 <CardTitle>Project Management</CardTitle>

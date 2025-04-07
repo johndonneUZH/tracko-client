@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 // import { useEffect, useState } from "react";
 // import { Client } from "@stomp/stompjs";
 
-import { useCurrentUserId } from "@/lib/dashboard_utils/useCurrentUserId";
+import { useCurrentUserId } from "@/lib/commons/useCurrentUserId";
 import { useIdeaStorage } from "@/lib/dashboard_utils/useIdeaStorage";
 import { useComments } from "@/lib/dashboard_utils/useCommentStorage";
 import { addLogEntry } from "@/lib/dashboard_utils/logHelpers";

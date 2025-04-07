@@ -1,4 +1,4 @@
-import { LogEntry } from "@/components/dashboard_Project/ChangeLog";
+import {LogEntry} from "@/types/logEntry";
 
 export function addLogEntry(
   pushLog: (entry: LogEntry) => void,

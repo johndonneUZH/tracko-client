@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect } from "react";
-import { Idea } from "./IdeaModal";
+import { Idea } from "@/types/idea";
 import IdeaBox from "./IdeaBox";
-import { useCurrentUserId } from "@/lib/dashboard_utils/useCurrentUserId";
+import { useCurrentUserId } from "@/lib/commons/useCurrentUserId";
 
 interface ProjectDashboardProps {
   ideas: Idea[];
