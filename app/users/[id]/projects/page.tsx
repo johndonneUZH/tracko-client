@@ -1,7 +1,5 @@
 "use client";
 
-import { ApiService } from "@/api/apiService";
-import { User } from "@/types/user";
 
 import { useParams } from "next/navigation";
 import { SidebarProvider } from "@/components/sidebar/sidebar";
@@ -25,7 +23,7 @@ import { getUserById } from "@/lib/commons/userService";
 
 
 export default function UserProjectsPage() {
-  const api = new ApiService();
+
   const { id } = useParams() as { id: string };
   //Name call
   const { projects, addProject, deleteProjects } = useUserProjects(id);
