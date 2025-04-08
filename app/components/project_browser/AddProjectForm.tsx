@@ -14,24 +14,35 @@ import { Input } from "@/components/commons/input";
 import { CirclePlus } from "lucide-react";
 
 interface AddProjectFormProps {
-  onAddProject: (projectName: string) => void;
+  onAddProject: (projectName: string, projectDescription: string) => void;
 }
 
 export function AddProjectForm({ onAddProject }: AddProjectFormProps) {
   const [newProjectName, setNewProjectName] = useState("");
+  const [newProjectDescription, setNewProjectDescription] = useState("");
   const [error, setError] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
 
   // Handle adding a new project
   const handleAddProject = () => {
     const trimmedName = newProjectName.trim();
-    if (!trimmedName) {
+    const trimmedDescription = newProjectDescription.trim();
+    if (trimmedDescription.length > 100) {
+      setError("Project description cannot exceed 100 characters.");
+      return;
+    }
+    else if (!trimmedDescription) {
+      setError("Project description cannot be empty.");
+      return;
+    }
+    else if (!trimmedName) {
       setError("Project name cannot be empty.");
       return;
     }
     setError("");
-    onAddProject(trimmedName);
+    onAddProject(trimmedName, trimmedDescription);
     setNewProjectName("");
+    setNewProjectDescription("");
     setDialogOpen(false);
   };
 
@@ -67,6 +78,18 @@ export function AddProjectForm({ onAddProject }: AddProjectFormProps) {
             onKeyDown={handleKeyDown}
             className="w-full"
           />
+
+          <Input
+            placeholder="Enter project description"
+            value={newProjectDescription}
+            onChange={(e) => {
+              setNewProjectDescription(e.target.value);
+              setError("");
+            }}
+            onKeyDown={handleKeyDown}
+            className="w-full"
+          />
+
           {error && <p className="text-red-500 text-sm">{error}</p>}
           <div className="flex justify-end gap-2 pt-4">
             <Button variant="outline" onClick={() => setDialogOpen(false)}>
