@@ -91,10 +91,10 @@ export function UserProjectsTable({ userId, projects = [], onDeleteSelected }: U
         const project = row.original;
         return (
           <Link
-            href={`/projects/${project.id}`}
+            href={`/projects/${project.projectId}`}
             className="cursor-pointer hover:underline"
           >
-            {project.name} 
+            {project.projectName} 
           </Link>
         );
       },
@@ -132,7 +132,7 @@ export function UserProjectsTable({ userId, projects = [], onDeleteSelected }: U
     const selectedIds = Object.keys(rowSelection)
       .map((rowId) => {
         const row = table.getRowModel().rows.find((r) => r.id === rowId);
-        return row?.original.id;
+        return row?.original.projectId;
       })
       .filter((id): id is string => id !== undefined);
     setSelectedProjectIds(selectedIds);

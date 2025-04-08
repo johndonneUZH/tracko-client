@@ -20,22 +20,14 @@ export function useUserProjects(userId: string) {
       setLoading(true);
       setError(null);
       try {
-        const response = await apiService.get(`/users/${userId}/projects`) as { data: Project[] };
+        // Remove the type assertion and let TypeScript infer the type
+        const response = await apiService.get<Project[]>(`/users/${userId}/projects`);
         console.log("API Response:", response);
-        const transformedProjects = response.map(proj => ({
-          id: proj.projectId,
-          name: proj.projectName,
-          projectDescription: proj.projectDescription,
-          projectMembers: proj.projectMembers || [],
-          ownerId: proj.ownerId,
-          createdAt: new Date(proj.createdAt),
-          updatedAt: new Date(proj.updatedAt)
-        })) as Project[];
         
-        setProjects(transformedProjects);
+        setProjects(response);
       } catch (err: any) {
         console.error("Failed to fetch projects:", err);
-        setError("Failed to fetch projects.");
+        setError(err.message || "Failed to fetch projects.");
       } finally {
         setLoading(false);
       }
@@ -52,23 +44,12 @@ export function useUserProjects(userId: string) {
     if (trimmedName.trim() === "") return;
   
     try {
-      const response = await apiService.post(`/projects`, {
+      const response = await apiService.post<Project>(`/projects`, {
         projectName: trimmedName,
         projectDescription: trimmedDescription 
       }) as Project ;
       
-      // Transform the added project to match our type
-      const newProject = {
-        id: response.projectId,
-        name: response.projectName,
-        projectDescription: response.projectDescription,
-        projectMembers: response.projectMembers || [],
-        ownerId: response.ownerId,
-        createdAt: new Date(response.createdAt),
-        updatedAt: new Date(response.updatedAt)
-      };
-      
-      setProjects(prev => [...prev, newProject]);
+      setProjects([...projects, response]);
     } catch (err) {
       console.error("Failed to add project:", err);
     }
@@ -83,7 +64,7 @@ export function useUserProjects(userId: string) {
       }
       
       // Only update state if all deletions succeeded
-      setProjects(prev => prev.filter(proj => !projectIds.includes(proj.id)));
+      setProjects(prev => prev.filter(proj => !projectIds.includes(proj.projectId)));
       
       return true; // Indicate success
     } catch (err) {

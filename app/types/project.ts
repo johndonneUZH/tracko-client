@@ -5,12 +5,11 @@ export interface ProjectMember {
 }
 
 export type Project = {
-  id: string;
-  name: string;
+  projectId: string;
+  projectName: string;
   projectDescription: string;
   projectMembers: ProjectMember[];
   ownerId: string;
   createdAt: Date;
   updatedAt: Date;
 };
-  
