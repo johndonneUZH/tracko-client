@@ -1,19 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import Comments, { Comment } from "./Comments";
+import Comments from "./Comments";
+import { Idea } from "@/types/idea";
 
-export interface Idea {
-  id: number;
-  title: string;
-  body: string;
-  x: number;
-  y: number;
-  creatorId: number;
-  comments: Comment[];
-  upvotesL: number[];   
-  downvotesL: number[];
-}
 
 interface IdeaModalProps {
   idea: Idea;

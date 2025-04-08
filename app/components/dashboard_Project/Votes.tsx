@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Idea } from "./IdeaModal";
+import { Idea } from "@/types/idea";
 
 interface VotesProps {
   idea: Idea;

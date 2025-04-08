@@ -1,15 +1,7 @@
 "use client";
 
 import React from "react";
-
-export interface LogEntry {
-  projectId: number;     
-  userId: number;        
-  date: string;
-  time: string;
-  action: string;
-  ideaTitle: string;
-}
+import {LogEntry} from "@/types/logEntry";
 
 interface ChangeLogProps {
   logEntries: LogEntry[];

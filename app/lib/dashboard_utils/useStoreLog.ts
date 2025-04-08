@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { LogEntry } from "@/components/dashboard_Project/ChangeLog";
+import {LogEntry} from "@/types/logEntry";
 
 export function useStoreLog(projectId: string) {
   const storageKey = `log-${projectId}`;

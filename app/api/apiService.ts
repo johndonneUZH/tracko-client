@@ -23,6 +23,15 @@ export class ApiService {
    * @returns Parsed JSON data.
    * @throws ApplicationError if res.ok is false.
    */
+  //Including token to get access
+  private buildHeaders(): HeadersInit {
+    const token = sessionStorage.getItem("token"); 
+    return {
+      ...this.defaultHeaders,
+      ...(token ? { Authorization: token } : {}),
+    };
+  }
+  
   private async processResponse<T>(
     res: Response,
     errorMessage: string,
@@ -72,7 +81,7 @@ export class ApiService {
 
     const res = await fetch(url, {
       method: "GET",
-      headers,
+      headers: this.buildHeaders(),
     });
     
     return this.processResponse<T>(

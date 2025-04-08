@@ -1,5 +1,5 @@
-import { Comment } from "@/components/dashboard_Project/Comments";
-import { Idea } from "@/components/dashboard_Project/IdeaModal"
+import { Comment } from "@/types/comment";
+import { Idea } from "@/types/idea";
 export function useComments(
   setIdeas: React.Dispatch<React.SetStateAction<Idea[]>>,
   currentUserId: number
@@ -11,6 +11,7 @@ export function useComments(
       content,
       replies: [],
     };
+    
 
     setIdeas((prev) =>
       prev.map((idea) => {

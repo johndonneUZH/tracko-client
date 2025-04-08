@@ -6,11 +6,11 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from "@/components/commons/card";
+import { Input } from "@/components/commons/input";
+import { Label } from "@/components/commons/label";
 import { useRouter } from "next/navigation";
-import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button";
+import { InteractiveHoverButton } from "@/components/commons/interactive-hover-button";
 import { useState } from "react";
 import { ApiService } from "@/api/apiService";
 

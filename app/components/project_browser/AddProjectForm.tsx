@@ -8,9 +8,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+} from "@/components/project_browser/dialog";
+import { Button } from "@/components/commons/button";
+import { Input } from "@/components/commons/input";
 import { CirclePlus } from "lucide-react";
 
 interface AddProjectFormProps {
