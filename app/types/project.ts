@@ -5,8 +5,6 @@ export interface ProjectMember {
 }
 
 export type Project = {
-  projectId: any;
-  projectName: any;
   id: string;
   name: string;
   projectDescription: string;

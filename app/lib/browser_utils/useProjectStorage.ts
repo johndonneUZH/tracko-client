@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, use, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Project } from "../../types/project";
 import { ApiService } from "@/api/apiService";
 
@@ -14,9 +14,7 @@ export function useUserProjects(userId: string) {
 
   useEffect(() => {
     if (!userId) return; 
-
-    let isMounted = true;
-
+    
     async function fetchProjects() {
       setLoading(true);
       setError(null);
@@ -43,10 +41,6 @@ export function useUserProjects(userId: string) {
     }
     
     fetchProjects();
-
-    return () => {
-      isMounted = false; // Cleanup function
-    };
   }, [userId, apiService]); 
 
 
@@ -82,14 +76,18 @@ export function useUserProjects(userId: string) {
   // Optional: Delete projects via API
   async function deleteProjects(projectIds: string[]) {
     try {
-      await Promise.all(
-        projectIds.map((id) =>
-          apiService.delete(`/projects/${id}`)
-        )
-      );
-      setProjects((prev) => prev.filter((proj) => !projectIds.includes(proj.id)));
+      // Delete projects in sequence (better error handling than Promise.all)
+      for (const id of projectIds) {
+        await apiService.delete(`/projects/${id}`);
+      }
+      
+      // Only update state if all deletions succeeded
+      setProjects(prev => prev.filter(proj => !projectIds.includes(proj.id)));
+      
+      return true; // Indicate success
     } catch (err) {
-      console.error("Failed to delete projects:", err);
+      console.error('Deletion failed:', err);
+      return false; // Indicate failure
     }
   }
 

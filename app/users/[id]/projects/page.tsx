@@ -35,13 +35,17 @@ export default function UserProjectsPage() {
       .catch((err) => console.error("Error:", err));
   }, [id]);
 
-  // Callback when deletion is confirmed from the table
-  const handleDeleteSelected = (selectedIds: string[]) => {
+  const handleDeleteSelected = async (selectedIds: string[]) => {
     const isConfirmed = window.confirm(
       `Are you sure you want to delete ${selectedIds.length} project(s)?`
     );
-    if (isConfirmed) {
-      deleteProjects(selectedIds);
+    
+    if (!isConfirmed) return;
+  
+    const success = await deleteProjects(selectedIds);
+    
+    if (!success) {
+      alert('Failed to delete some projects. Please try again.');
     }
   };
 
