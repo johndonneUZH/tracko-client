@@ -23,11 +23,10 @@ import { getUserById } from "@/lib/commons/userService";
 
 
 export default function UserProjectsPage() {
-
   const { id } = useParams() as { id: string };
-  //Name call
-  const { projects, addProject, deleteProjects } = useUserProjects(id);
+  const { projects, loading, error, addProject, deleteProjects } = useUserProjects(id);
   const [userName, setUserName] = useState<string>("");
+
   useEffect(() => {
     getUserById(id)
       .then((user) => {
@@ -36,13 +35,17 @@ export default function UserProjectsPage() {
       .catch((err) => console.error("Error:", err));
   }, [id]);
 
-  // Callback when deletion is confirmed from the table
-  const handleDeleteSelected = (selectedIds: number[]) => {
+  const handleDeleteSelected = async (selectedIds: string[]) => {
     const isConfirmed = window.confirm(
       `Are you sure you want to delete ${selectedIds.length} project(s)?`
     );
-    if (isConfirmed) {
-      deleteProjects(selectedIds);
+    
+    if (!isConfirmed) return;
+  
+    const success = await deleteProjects(selectedIds);
+    
+    if (!success) {
+      alert('Failed to delete some projects. Please try again.');
     }
   };
 
@@ -73,21 +76,31 @@ export default function UserProjectsPage() {
           {/* Main Content */}
           <div className="flex flex-col flex-1 p-4">
             <h1 className="text-xl font-bold">Projects for {userName}</h1>
+            
             <Card className="w-full max-w-xl mb-6">
               <CardHeader>
                 <CardTitle>Project Management</CardTitle>
                 <CardDescription>Add and manage user projects</CardDescription>
               </CardHeader>
               <CardContent>
-                <AddProjectForm onAddProject={addProject} />
+                <AddProjectForm onAddProject={(projectName) => addProject(projectName, "")} />
               </CardContent>
             </Card>
 
-            <UserProjectsTable
-              userId={id}
-              projects={projects}
-              onDeleteSelected={handleDeleteSelected}
-            />
+            {loading && <p>Loading projects...</p>}
+            {error && (
+              <p className="text-red-600">
+                Error loading projects: {error}
+              </p>
+            )}
+            
+            {!loading && !error && (
+              <UserProjectsTable
+                userId={id}
+                projects={projects}
+                onDeleteSelected={handleDeleteSelected}
+              />
+            )}
           </div>
         </div>
       </div>
