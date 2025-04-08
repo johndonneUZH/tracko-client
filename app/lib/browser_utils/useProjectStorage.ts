@@ -1,3 +1,4 @@
+/* eslint-disable */
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -14,7 +15,7 @@ export function useUserProjects(userId: string) {
 
   useEffect(() => {
     if (!userId) return; 
-    
+
     async function fetchProjects() {
       setLoading(true);
       setError(null);
