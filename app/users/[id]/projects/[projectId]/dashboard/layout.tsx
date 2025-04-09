@@ -15,8 +15,6 @@ import { useStoreLog } from "@/lib/dashboard_utils/useStoreLog";
 
 import ProjectDashboard from "@/components/dashboard_Project/ProjectDashboard";
 import NewIdeaButton from "@/components/dashboard_Project/NewIdeaButton";
-import ChangeLogSidebar from "@/components/dashboard_Project/ChangeLogSidebar";
-import ProjectHeader from "@/components/dashboard_Project/ProjectHeader";
 import IdeaModal from "@/components/dashboard_Project/IdeaModal";
 //import WebSocketMonitor from "@/components/WebSocketMonitor";
 
@@ -40,7 +38,7 @@ export default function ProjectLayout({
   const { id, projectId, ideaId } = useParams();
   const router = useRouter();
   const currentUserId = useCurrentUserId();
-  const { logEntries, pushLog } = useStoreLog(projectId as string);
+  const { pushLog } = useStoreLog(projectId as string);
   
   const { ideas, setIdeas, createIdea, saveIdea, deleteIdea, getSelectedIdea, storageKey } = useIdeaStorage(projectId as string, currentUserId);
   const { addComment, deleteComment } = useComments(setIdeas, currentUserId);
@@ -150,7 +148,7 @@ export default function ProjectLayout({
 
   return (
     <SidebarProvider>
-      <div className="flex h-screen">
+      <div className="flex h-screen w-full mt-4">
         {/* Sidebar */}
         <AppSidebar className="w-64 shrink-0" />
 
@@ -171,11 +169,12 @@ export default function ProjectLayout({
               </BreadcrumbList>
             </Breadcrumb>
           </header>
-            <div style={{ padding: "2rem", background: "#eaf4fc", display: "flex" }}>
-              <ProjectHeader projectId={projectId as string} />
-              <ChangeLogSidebar logEntries={logEntries} />
-              <div style={{ flex: 1, display: "flex", justifyContent: "center", gap: "2rem" }}>
-                <ProjectDashboard 
+            <div className="flex flex-col flex-1 p-4">
+              <div className="flex justify-between mb-10">
+                <h1 className="text-xl font-bold">Dashboard Project {projectId}</h1>
+                <NewIdeaButton onClick={handleCreate} />
+              </div>
+              <ProjectDashboard 
                   ideas={ideas} 
                   setIdeas={setIdeas}
                   selectedIdeaId={selectedIdeaId} 
@@ -183,8 +182,6 @@ export default function ProjectLayout({
                   onToggleVote={toggleVote} 
                   storageKey={storageKey} />
                 {children}
-              </div>
-              <NewIdeaButton onClick={handleCreate} />
             </div>
 
             {selectedIdea && (
@@ -212,9 +209,6 @@ export default function ProjectLayout({
               clearMessages={() => setMessages([])} 
               sendMessage={(content: string) => sendWebSocketMessage("/app/test-message", content || "Test message")} 
             /> */}
-          <div className="flex flex-col flex-1 p-4">
-            <h1 className="text-xl font-bold">Changelog</h1>
-          </div>
         </div>
       </div>
     </SidebarProvider>
