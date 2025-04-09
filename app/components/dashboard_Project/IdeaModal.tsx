@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import Comments from "./Comments";
+//import Comments from "./Comments";
 import { Idea } from "@/types/idea";
 
 
@@ -11,7 +11,7 @@ interface IdeaModalProps {
   onSave: (title: string, body: string) => void;
   onDelete: () => void;
   onCancel: () => void;
-  currentUserId: number;
+  currentUserId: string;
   onAddComment: (content: string, parentId?: number) => void;
   onDeleteComment: (commentId: number) => void;
   onLogComment?: (action: string, title: string) => void;
@@ -28,13 +28,13 @@ export default function IdeaModal({
   onDeleteComment,
   onLogComment,
 }: IdeaModalProps) {
-  const [title, setTitle] = useState(idea.title);
-  const [body, setBody] = useState(idea.body);
+  const [title, setTitle] = useState(idea.ideaName || "");
+  const [body, setBody] = useState(idea.ideaDescription || "");
   // Detect changes on content
-  const hasChanges = title !== idea.title || body !== idea.body;
+  const hasChanges = title !== idea.ideaName || body !== idea.ideaDescription;
   const handleDiscardChanges = () => {
-    setTitle(idea.title);
-    setBody(idea.body);
+    setTitle(idea.ideaName);
+    setBody(idea.ideaDescription);
   };
 
   // Array with 8 pastel colors
@@ -49,7 +49,7 @@ export default function IdeaModal({
     "#D1C4E9", // pastel purple
   ];
   // Determine the modal background color based on idea.id
-  const modalBackground = pastelColors[idea.id % pastelColors.length];
+  const modalBackground = pastelColors[parseInt(idea.ideaId, 16) % pastelColors.length];
 
   return (
     <div
@@ -74,7 +74,7 @@ export default function IdeaModal({
     >
       <div
         style={{
-          background: modalBackground, // Use pastel background color
+          background: modalBackground, 
           padding: "2rem",
           borderRadius: "8px",
           width: "400px",
@@ -175,7 +175,7 @@ export default function IdeaModal({
           )}
         </div>
 
-        {/* Comments section */}
+        {/* Comments section
         {idea.title.trim() !== "" && idea.body.trim() !== "" && (
           <>
             <hr style={{ margin: "1rem 0" }} />
@@ -189,7 +189,7 @@ export default function IdeaModal({
               onDeleteComment={onDeleteComment}
             />
           </>
-        )}
+        )} */}
       </div>
     </div>
   );

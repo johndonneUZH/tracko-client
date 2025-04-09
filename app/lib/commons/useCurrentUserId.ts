@@ -1,15 +1,16 @@
 "use client";
 import { useEffect, useState } from "react";
 
-export function useCurrentUserId(): number {
-  const [userId, setUserId] = useState(0);
+export function useCurrentUserId(): string {
+  const [userId, setUserId] = useState("");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const raw = sessionStorage.getItem("currentUserId");
-      if (raw) setUserId(parseInt(raw, 10));
+      const raw = sessionStorage.getItem("userId");
+      if (raw) setUserId(raw);
     }
   }, []);
 
   return userId;
 }
+

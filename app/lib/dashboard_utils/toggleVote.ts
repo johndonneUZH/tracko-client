@@ -2,18 +2,18 @@ import { Idea } from "@/types/idea";
 
 export function toggleVoteInIdeas(
   ideas: Idea[],
-  ideaId: number,
-  userId: number,
+  ideaId: string,
+  userId: string,
   type: "up" | "down"
 ): Idea[] {
   return ideas.map((idea) => {
-    if (idea.id !== ideaId) return idea;
+    if (idea.ideaId !== ideaId) return idea;
 
-    const alreadyUpvoted = idea.upvotesL.includes(userId);
-    const alreadyDownvoted = idea.downvotesL.includes(userId);
+    const alreadyUpvoted = idea.upVotes.includes(userId);
+    const alreadyDownvoted = idea.downVotes.includes(userId);
 
-    let upvotesL = [...idea.upvotesL];
-    let downvotesL = [...idea.downvotesL];
+    let upvotesL = [...idea.upVotes];
+    let downvotesL = [...idea.downVotes];
 
     if (type === "up") {
       if (alreadyUpvoted) {

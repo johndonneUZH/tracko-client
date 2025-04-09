@@ -1,14 +1,15 @@
 import { Comment } from "./comment";
 
 export interface Idea {
-  id: number;
-  title: string;
-  body: string;
+  ideaDescription: string;
+  projectId: string,
+  ideaId: string;
+  ideaName: string;
   x: number;
   y: number;
-  creatorId: number;
+  creatorId: string;
   comments: Comment[];
-  upvotesL: number[];
-  downvotesL: number[];
+  upVotes: string[];
+  downVotes: string[];
 }
 

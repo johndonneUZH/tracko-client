@@ -4,7 +4,7 @@ export function useComments(
   setIdeas: React.Dispatch<React.SetStateAction<Idea[]>>,
   currentUserId: number
 ) {
-  const addComment = (ideaId: number, content: string, parentId?: number) => {
+  const addComment = (ideaId: string, content: string, parentId?: number) => {
     const newComment: Comment = {
       id: Date.now(),
       authorId: currentUserId,
@@ -15,7 +15,7 @@ export function useComments(
 
     setIdeas((prev) =>
       prev.map((idea) => {
-        if (idea.id !== ideaId) return idea;
+        if (idea.ideaId !== ideaId) return idea;
 
         if (!parentId) {
           return {
@@ -49,10 +49,10 @@ export function useComments(
     });
   };
 
-  const deleteComment = (ideaId: number, commentId: number) => {
+  const deleteComment = (ideaId: string, commentId: number) => {
     setIdeas((prev) =>
       prev.map((idea) => {
-        if (idea.id !== ideaId) return idea;
+        if (idea.ideaId !== ideaId) return idea;
         return {
           ...idea,
           comments: deleteCommentRecursive(

@@ -1,18 +1,19 @@
 import { Idea } from "@/types/idea";
-export function generateNewIdea(nextId: number, creatorId: number): Idea {
+export function generateNewIdea(proId: string, nextId: string, creatorId: string): Idea {
   return {
-    id: nextId,
-    title: "",
-    body: "",
-    x: 100 + nextId * 15,
-    y: 100 + nextId * 15,
+    projectId: proId,
+    ideaId: nextId,
+    ideaName: "",
+    ideaDescription: "",
+    x: 100 + (parseInt(nextId, 16) % 25)  * 15,
+    y: 100 + (parseInt(nextId, 16) % 25) * 15,
     creatorId,
     comments: [],
-    upvotesL: [],   
-    downvotesL: [],
+    downVotes: [],   
+    upVotes: [],
   };
 }
 
 export function isIdeaEmpty(idea: Idea): boolean {
-  return idea.title.trim() === "" && idea.body.trim() === "";
+  return idea.ideaName.trim() === "" && idea.ideaDescription.trim() === "";
 }
