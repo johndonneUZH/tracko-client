@@ -20,6 +20,18 @@ import ProjectHeader from "@/components/dashboard_Project/ProjectHeader";
 import IdeaModal from "@/components/dashboard_Project/IdeaModal";
 //import WebSocketMonitor from "@/components/WebSocketMonitor";
 
+import { SidebarProvider } from "@/components/sidebar/sidebar";
+import { AppSidebar } from "@/components/sidebar/app-sidebar";
+import { SidebarTrigger } from "@/components/sidebar/sidebar";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/commons/breadcrumb";
+
 export default function ProjectLayout({
   children,
 }: {
@@ -100,14 +112,14 @@ export default function ProjectLayout({
 
   const handleCreate = () => {
     const newIdea = createIdea();
-    router.push(`/users/${id}/projects/${projectId}/ideas/${newIdea.id}`);
+    router.push(`/users/${id}/projects/${projectId}/dashboard/ideas/${newIdea.id}`);
   };
 
   const handleCancel = (idea: typeof selectedIdea) => {
     if (idea && isIdeaEmpty(idea)) {
       deleteIdea(idea.id);
     }
-    router.push(`/users/${id}/projects/${projectId}`);
+    router.push(`/users/${id}/projects/${projectId}/dashboard`);
   };
 
   const toggleVote = (ideaId: number, userId: number, type: "up" | "down") => {
@@ -137,48 +149,74 @@ export default function ProjectLayout({
   };
 
   return (
-    <>
-      <div style={{ height: "100vh", padding: "2rem", background: "#eaf4fc", display: "flex" }}>
-        <ProjectHeader projectId={projectId as string} />
-        <ChangeLogSidebar logEntries={logEntries} />
-        <div style={{ flex: 1, display: "flex", justifyContent: "center", gap: "2rem" }}>
-          <ProjectDashboard 
-            ideas={ideas} 
-            setIdeas={setIdeas}
-            selectedIdeaId={selectedIdeaId} 
-            onIdeaClick={(ideaId) => router.push(`/users/${id}/projects/${projectId}/ideas/${ideaId}`)} 
-            onToggleVote={toggleVote} 
-            storageKey={storageKey} />
-          {children}
+    <SidebarProvider>
+      <div className="flex h-screen">
+        {/* Sidebar */}
+        <AppSidebar className="w-64 shrink-0" />
+
+        {/* Main Content Wrapper */}
+        <div className="flex flex-col flex-1">
+          {/* Fixed Header with Breadcrumb */}
+          <header className="flex h-16 items-center gap-2 px-4">
+            <SidebarTrigger className="-ml-1 mr-2" />
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem className="hidden md:block">
+                  <BreadcrumbLink href="#">Home</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator className="hidden md:block" />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>Dashboard</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+          </header>
+            <div style={{ padding: "2rem", background: "#eaf4fc", display: "flex" }}>
+              <ProjectHeader projectId={projectId as string} />
+              <ChangeLogSidebar logEntries={logEntries} />
+              <div style={{ flex: 1, display: "flex", justifyContent: "center", gap: "2rem" }}>
+                <ProjectDashboard 
+                  ideas={ideas} 
+                  setIdeas={setIdeas}
+                  selectedIdeaId={selectedIdeaId} 
+                  onIdeaClick={(ideaId) => router.push(`/users/${id}/projects/${projectId}/dashboard/ideas/${ideaId}`)} 
+                  onToggleVote={toggleVote} 
+                  storageKey={storageKey} />
+                {children}
+              </div>
+              <NewIdeaButton onClick={handleCreate} />
+            </div>
+
+            {selectedIdea && (
+              <IdeaModal
+                idea={selectedIdea}
+                canEdit={selectedIdea.creatorId === currentUserId}
+                onSave={(title, body) => {
+                  handleSave(selectedIdea.id, title, body);
+                  router.push(`/users/${id}/projects/${projectId}/dashboard/ideas/${selectedIdea.id}`);
+                }}
+                onDelete={() => handleDelete(selectedIdea.id)}
+                onCancel={() => handleCancel(selectedIdea)}
+                currentUserId={currentUserId}
+                onAddComment={(content, parentId) => addComment(selectedIdea.id, content, parentId)}
+                onDeleteComment={(commentId) => deleteComment(selectedIdea.id, commentId)}
+                onLogComment={(action, title) =>
+                  addLogEntry(pushLog, currentUserId, action, title, projectId as string)
+                }
+              />
+            )}
+
+            {/* <WebSocketMonitor 
+              connected={connected} 
+              messages={messages} 
+              clearMessages={() => setMessages([])} 
+              sendMessage={(content: string) => sendWebSocketMessage("/app/test-message", content || "Test message")} 
+            /> */}
+          <div className="flex flex-col flex-1 p-4">
+            <h1 className="text-xl font-bold">Changelog</h1>
+          </div>
         </div>
-        <NewIdeaButton onClick={handleCreate} />
       </div>
-
-      {selectedIdea && (
-        <IdeaModal
-          idea={selectedIdea}
-          canEdit={selectedIdea.creatorId === currentUserId}
-          onSave={(title, body) => {
-            handleSave(selectedIdea.id, title, body);
-            router.push(`/users/${id}/projects/${projectId}/ideas/${selectedIdea.id}`);
-          }}
-          onDelete={() => handleDelete(selectedIdea.id)}
-          onCancel={() => handleCancel(selectedIdea)}
-          currentUserId={currentUserId}
-          onAddComment={(content, parentId) => addComment(selectedIdea.id, content, parentId)}
-          onDeleteComment={(commentId) => deleteComment(selectedIdea.id, commentId)}
-          onLogComment={(action, title) =>
-            addLogEntry(pushLog, currentUserId, action, title, projectId as string)
-          }
-        />
-      )}
-
-      {/* <WebSocketMonitor 
-        connected={connected} 
-        messages={messages} 
-        clearMessages={() => setMessages([])} 
-        sendMessage={(content: string) => sendWebSocketMessage("/app/test-message", content || "Test message")} 
-      /> */}
-    </>
+    </SidebarProvider>
   );
 }

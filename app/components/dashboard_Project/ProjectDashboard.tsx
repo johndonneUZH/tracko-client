@@ -135,7 +135,7 @@ export default function ProjectDashboard({
       <div
         style={{
           width: "1220px",
-          height: "800px",
+          height: "700px",
           position: "relative",
         }}
       >

@@ -26,6 +26,7 @@ import {
   SidebarRail,
 } from "@/components/sidebar/sidebar"
 const mockUserId = 1 //To be changed with the backend
+const mockProjectId = 101 //To be changed with the backend
 const data = {
   user: {
     name: "Max Muster",
@@ -52,23 +53,23 @@ const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: `/users/${mockUserId}/projects`,
+      url: `/users/${mockUserId}/projects/${mockProjectId}/dashboard`,
       icon: LayoutDashboard,
       isActive: true,
     },
     {
       title: "Changelog",
-      url: "#",
+      url: `/users/${mockUserId}/projects/${mockProjectId}/changelog`,
       icon: FileClock,
     },
     {
         title: "Calendar",
-        url: "#",
+        url: `/users/${mockUserId}/projects/${mockProjectId}/calendar`,
         icon: Calendar,
     },
     {
       title: "Settings",
-      url: "#",
+      url: `/users/${mockUserId}/projects/${mockProjectId}/settings`,
       icon: Settings2,
     },
   ],
@@ -81,12 +82,12 @@ const data = {
     },
     {
       title: "Notifications",
-      url: "/users/${mockUserId}/notifications",
+      url: `/users/${mockUserId}/notifications`,
       icon: Bell,
     },
     {
       title: "Friends",
-      url: "/users/${mockUserId}/friends",
+      url: `/users/${mockUserId}/friends`,
       icon: Users,
     },
   ],
