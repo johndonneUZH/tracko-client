@@ -1,6 +1,5 @@
 "use client";
 
-
 import { useParams } from "next/navigation";
 import { SidebarProvider } from "@/components/sidebar/sidebar";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";

@@ -81,12 +81,12 @@ const data = {
     },
     {
       title: "Notifications",
-      url: "#",
+      url: "/users/${mockUserId}/notifications",
       icon: Bell,
     },
     {
       title: "Friends",
-      url: "#",
+      url: "/users/${mockUserId}/friends",
       icon: Users,
     },
   ],
