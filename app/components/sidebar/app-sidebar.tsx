@@ -10,9 +10,12 @@ import {
   FileClock,
   Users,
   Calendar,
+  Archive,
+  Bell
 } from "lucide-react"
 
 import { NavMain } from "@/components/sidebar/nav-main"
+import { NavSecondary } from "@/components/sidebar/nav-secondary"
 import { NavUser } from "@/components/sidebar/nav-user"
 import { TeamSwitcher } from "@/components/sidebar/team-switcher"
 import {
@@ -23,6 +26,7 @@ import {
   SidebarRail,
 } from "@/components/sidebar/sidebar"
 const mockUserId = 1 //To be changed with the backend
+const mockProjectId = 101 //To be changed with the backend
 const data = {
   user: {
     name: "Max Muster",
@@ -49,29 +53,42 @@ const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: `/users/${mockUserId}/projects`,
+      url: `/users/${mockUserId}/projects/${mockProjectId}/dashboard`,
       icon: LayoutDashboard,
       isActive: true,
     },
     {
       title: "Changelog",
-      url: "#",
+      url: `/users/${mockUserId}/projects/${mockProjectId}/changelog`,
       icon: FileClock,
     },
     {
-      title: "Members",
-      url: "#",
-      icon: Users,
-    },
-    {
         title: "Calendar",
-        url: "#",
+        url: `/users/${mockUserId}/projects/${mockProjectId}/calendar`,
         icon: Calendar,
     },
     {
       title: "Settings",
-      url: "#",
+      url: `/users/${mockUserId}/projects/${mockProjectId}/settings`,
       icon: Settings2,
+    },
+  ],
+  navSecondary: [
+    {
+      title: "Project Browser",
+      url: `/users/${mockUserId}/projects`,
+      icon: Archive,
+      isActive: true,
+    },
+    {
+      title: "Notifications",
+      url: `/users/${mockUserId}/notifications`,
+      icon: Bell,
+    },
+    {
+      title: "Friends",
+      url: `/users/${mockUserId}/friends`,
+      icon: Users,
     },
   ],
 }
@@ -84,6 +101,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
+        <NavSecondary items={data.navSecondary} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />

@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { ChevronsUpDown, Plus } from "lucide-react"
+import { ChevronsUpDown, Plus, Search } from "lucide-react"
 
 import {
   DropdownMenu,
@@ -9,7 +9,6 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/project_browser/dropdown-menu"
 import {
@@ -18,6 +17,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/sidebar/sidebar"
+import { Input } from "@/components/commons/input"
 
 export function TeamSwitcher({
   teams,
@@ -30,10 +30,13 @@ export function TeamSwitcher({
 }) {
   const { isMobile } = useSidebar()
   const [activeTeam, setActiveTeam] = React.useState(teams[0])
+  const [search, setSearch] = React.useState("")
 
-  if (!activeTeam) {
-    return null
-  }
+  const filteredTeams = teams.filter(team =>
+    team.name.toLowerCase().includes(search.toLowerCase())
+  )
+
+  if (!activeTeam) return null
 
   return (
     <SidebarMenu>
@@ -56,29 +59,55 @@ export function TeamSwitcher({
               <ChevronsUpDown className="ml-auto" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
+
           <DropdownMenuContent
             className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
             align="start"
             side={isMobile ? "bottom" : "right"}
             sideOffset={4}
           >
-            <DropdownMenuLabel className="text-xs text-muted-foreground">
+            <div className="p-2" onKeyDown={(e) => e.stopPropagation()}>
+              <div className="relative">
+                <Search className="absolute left-2 top-2.5 size-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search projects..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="pl-8 text-sm"
+                    onClick={(e) => e.stopPropagation()}
+                  />
+              </div>
+            </div>
+
+            <DropdownMenuLabel className="text-xs text-muted-foreground px-2">
               Projects
             </DropdownMenuLabel>
-            {teams.map((team, index) => (
-              <DropdownMenuItem
-                key={team.name}
-                onClick={() => setActiveTeam(team)}
-                className="gap-2 p-2"
-              >
-                <div className="flex size-6 items-center justify-center rounded-sm border">
-                  <team.logo className="size-4 shrink-0" />
-                </div>
-                {team.name}
-                <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
-              </DropdownMenuItem>
-            ))}
+            <div className="max-h-[33vh] overflow-y-auto">
+            {filteredTeams.length > 0 ? (
+              filteredTeams.map((team) => (
+                <DropdownMenuItem
+                  key={team.name}
+                  onClick={() => {
+                    setActiveTeam(team)
+                    setSearch("")
+                  }}
+                  className="gap-2 p-2"
+                >
+                  <div className="flex size-6 items-center justify-center rounded-sm border">
+                    <team.logo className="size-4 shrink-0" />
+                  </div>
+                  {team.name}
+                </DropdownMenuItem>
+              ))
+            ) : (
+              <div className="px-3 py-2 text-sm text-muted-foreground">
+                No projects found.
+              </div>
+            )}
+            </div>
+
             <DropdownMenuSeparator />
+
             <DropdownMenuItem className="gap-2 p-2">
               <div className="flex size-6 items-center justify-center rounded-md border bg-background">
                 <Plus className="size-4" />
