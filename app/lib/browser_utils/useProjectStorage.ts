@@ -34,7 +34,7 @@ export function useUserProjects(userId: string) {
     }
     
     fetchProjects();
-  }, [userId, apiService]); 
+  }, [userId, apiService]); // Add projects.length to dependencies
 
 
   // Add project via API
