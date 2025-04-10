@@ -28,8 +28,10 @@ import {
   SidebarRail,
 } from "@/components/sidebar/sidebar";
 import { User } from "@/types/user";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Project } from "@/types/project";
+import { useRouter } from "next/navigation";
+import { useProject } from '@/hooks/useProject'
 
 const apiService = new ApiService();
 
@@ -55,94 +57,111 @@ function getComponentFromString(componentName: string): React.ElementType | null
   return Component; 
 }
 
-async function prepateData(userId: string) {
-  const user = await apiService.getUser<User>(userId);
-  const projects = await apiService.getProjects<Project[]>(userId);
-  const projectId = 1;
-  const teams = [];
-  for (const project of projects) {
-    teams.push({
-      name: project.projectName,
-      logo: getComponentFromString(project.projectLogoUrl),
-      plan: project.projectDescription,
-    });
-  }
-
-
-  const data = {
-    user: {
-      name: user.name,
-      email: user.email,
-      avatar: user.avatarUrl,
-    },
-    teams: teams,
-    navMain: [
-      {
-        title: "Dashboard",
-        url: `/users/${userId}/projects/${projectId}/dashboard`,
-        icon: LayoutDashboard,
-        isActive: true,
-      },
-      {
-        title: "Changelog",
-        url: `/users/${userId}/projects/${projectId}/changelog`,
-        icon: FileClock,
-      },
-      {
-        title: "Calendar",
-        url: `/users/${userId}/projects/${projectId}/calendar`,
-        icon: Calendar,
-      },
-      {
-        title: "Settings",
-        url: `/users/${userId}/projects/${projectId}/settings`,
-        icon: Settings2,
-      },
-    ],
-    navSecondary: [
-      {
-        title: "Project Browser",
-        url: `/users/${userId}/projects`,
-        icon: Archive,
-        isActive: true,
-      },
-      {
-        title: "Notifications",
-        url: `/users/${userId}/notifications`,
-        icon: Bell,
-      },
-      {
-        title: "Friends",
-        url: `/users/${userId}/friends`,
-        icon: Users,
-      },
-    ],
-  };
-  return data;
-}
-
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const [data, setData] = React.useState<any>(null);
-  const [userId, setUserId] = React.useState<string | null>("");
+  const [data, setData] = useState<any>(null);
+  const [userId, setUserId] = useState<string | null>("");
+  const { projectId: currentProjectId } = useProject()
+  const router = useRouter();
 
   useEffect(() => {
-    const sessionUserId = sessionStorage.getItem("userId");
+    const sessionUserId = sessionStorage.getItem("userId")
     if (sessionUserId) {
-      setUserId(sessionUserId);
+      setUserId(sessionUserId)
+    } else {
+      router.push("/login")
     }
-    else {
-      console.error("User ID not found in session storage.");
-      window.location.href = "/login";
-    }
+  }, [router])
+
+  const getNavItems = React.useCallback((userId: string, projectId: string) => {
+    return {
+      navMain: [
+        {
+          title: "Dashboard",
+          url: `/users/${userId}/projects/${projectId}/dashboard`,
+          icon: LayoutDashboard,
+          isActive: true,
+        },
+        {
+          title: "Changelog",
+          url: `/users/${userId}/projects/${projectId}/changelog`,
+          icon: FileClock,
+        },
+        {
+          title: "Calendar",
+          url: `/users/${userId}/projects/${projectId}/calendar`,
+          icon: Calendar,
+        },
+        {
+          title: "Settings",
+          url: `/users/${userId}/projects/${projectId}/settings`,
+          icon: Settings2,
+        },
+      ],
+      navSecondary: [
+        {
+          title: "Project Browser",
+          url: `/users/${userId}/projects`,
+          icon: Archive,
+          isActive: true,
+        },
+        {
+          title: "Notifications",
+          url: `/users/${userId}/notifications`,
+          icon: Bell,
+        },
+        {
+          title: "Friends",
+          url: `/users/${userId}/friends`,
+          icon: Users,
+        },
+      ],
+    };
   }, []);
 
+
   useEffect(() => {
-    if (userId) {
-      prepateData(userId).then((data) => {
-        setData(data);
-      });
-    }
-  }, [userId]);
+    if (!userId) return;
+
+    const fetchData = async () => {
+      try {
+        const [user, projects] = await Promise.all([
+          apiService.getUser<User>(userId),
+          apiService.getProjects<Project[]>(userId),
+        ]);
+
+        const activeProjectId = currentProjectId || projects[0]?.projectId || "";
+        
+        // Only update sessionStorage if it's empty
+        if (!sessionStorage.getItem("projectId") && activeProjectId) {
+          sessionStorage.setItem("projectId", activeProjectId);
+        }
+
+        const teams = projects.map(project => ({
+          id: project.projectId,
+          name: project.projectName,
+          logo: getComponentFromString(project.projectLogoUrl),
+          plan: project.projectDescription,
+        }));
+
+        setData({
+          user: {
+            id: userId,
+            name: user.name,
+            email: user.email,
+            avatar: user.avatarUrl,
+          },
+          teams,
+          ...getNavItems(userId, activeProjectId),
+        });
+      } catch (error) {
+        console.error("Failed to load data:", error);
+      }
+    };
+
+    // Add a small debounce to prevent rapid fires
+    const timer = setTimeout(fetchData, 100);
+    return () => clearTimeout(timer);
+  }, [userId, currentProjectId, getNavItems]);
 
   if (!data) {
     return (
