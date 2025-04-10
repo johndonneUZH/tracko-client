@@ -50,8 +50,10 @@ export function LoginForm({
   
       sessionStorage.setItem("userId", userId);
       sessionStorage.setItem("token", token);
-  
+      
+      //TODO: Implement api check isBlocked: false
       router.push(`/users/${userId}/projects`);
+      //else router.push("/settings"); or something like that
     } catch (error) {
       setError("Login failed. Please check your credentials.");
       console.error(error);
@@ -61,6 +63,10 @@ export function LoginForm({
 
   const handleSignUpClick = () => {
     router.push("/register");
+  };
+
+  const handleForgotPasswordClick = () => {
+    router.push("/forgotpassword");
   };
 
   return (
@@ -93,8 +99,8 @@ export function LoginForm({
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
                   <a
-                    href="#"
-                    className="ml-auto inline-block text-sm hover:underline"
+                    className="ml-auto inline-block text-sm hover:underline cursor-pointer"
+                    onClick={handleForgotPasswordClick}
                   >
                     Forgot your password?
                   </a>

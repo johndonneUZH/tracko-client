@@ -1,6 +1,7 @@
 /* eslint-disable */
 import { getApiDomain } from "@/utils/domain";
 import { ApplicationError } from "@/types/error";
+import { Project } from "@/types/project";
 
 export class ApiService {
   private baseURL: string;
@@ -83,6 +84,31 @@ export class ApiService {
       "An error occurred while fetching the data.\n",
     );
   }
+
+  public async getUser<T>(userId: string): Promise<T> {
+    const url = `${this.baseURL}${'/users/'}${userId}`;
+    const res = await fetch(url, {
+      method: "GET",
+      headers: this.buildHeaders(),
+    });
+    return this.processResponse<T>(
+      res,
+      "An error occurred while fetching the user data.\n",
+    );
+  }
+
+  public async getProjects<T>(userId: string): Promise<T> {
+    const url = `${this.baseURL}${`/users/`}${userId}/projects`;
+    const res = await fetch(url, {
+      method: "GET",
+      headers: this.buildHeaders(),
+    });
+    return this.processResponse<T>(
+      res,
+      "An error occurred while fetching the project data.\n",
+    );
+  }
+
 
   /**
    * POST request.

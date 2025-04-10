@@ -151,10 +151,10 @@ export default function Page() {
               </div>
             </div>
             <div className="space-x-4 items-center">
-              <Button className="min-w-25 w-auto py-3">
+              <Button className="min-w-25 w-auto py-3" onClick= {()=>router.push(`/users/${sessionStorage.getItem("userId")}/edit`)}>
                 <Pencil/> Edit
               </Button>
-              <Button className="min-w-25 w-auto py-3" onClick= {()=>router.push("/")}>
+              <Button className="min-w-25 w-auto py-3" onClick= {()=>router.push("/login")}>
                 <LogOut/> Log Out
               </Button>
             </div>

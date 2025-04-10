@@ -55,7 +55,6 @@ reason).
 
 ---
 
-## Template
 ## Contributions Week 7 - 28.03 to 04.04
 
 | **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
@@ -75,4 +74,39 @@ reason).
 |                    | 03.04| https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/e2bfb7c770cd540266cb8218de6abd46959f8bb4 | Gives strucutre to the current file | avoids having a 500 lines file, instead we have multiples more specific |
 
 
+---
 
+## Contributions Week 8 - 06.04 to 11.04
+
+| **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
+| ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
+| **fabiotilor** | 10.04  | https://github.com/johndonneUZH/sopra-fs25-group-46-client/pull/34/commits/f10d4b85c039a868fc3d483ff95dda482a69b2c2| Fixed a bug and fixed the delete projects confirmation | User was stuck in a weird state where he could not delete projects anymore |
+|                    | 10.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/7b05d5e7ddca2e3d1db71d348728d00eccbbf18f |       Made it more intuitive for the User how the projects are accessible | It was not clear in the demo |
+|                     | 10.04  | https://github.com/johndonneUZH/sopra-fs25-group-46-client/pull/37/commits/a10705030ff2d13d361a4bac8452c1fa4e4e9a6e | Added the forgot password page | The user should not lose their account just because they're forgetful |
+| **[@githubUser2]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+
+---
+
+
+## Template
+---
+
+## Contributions Week X - [Begin Date] to [End Date]
+
+| **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
+| ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
+| **[@githubUser1]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@githubUser2]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+
+---
