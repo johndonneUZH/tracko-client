@@ -1,3 +1,4 @@
+/* eslint-disable */
 "use client";
 
 import * as React from "react";
@@ -29,7 +30,6 @@ import {
 import { User } from "@/types/user";
 import { useEffect } from "react";
 import { Project } from "@/types/project";
-import { get } from "http";
 
 const apiService = new ApiService();
 

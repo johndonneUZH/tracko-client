@@ -1,5 +1,3 @@
-import React from "react";
-
 export interface ProjectMember {
   id: string;
   name: string;
