@@ -32,30 +32,9 @@ import { useEffect, useState } from "react";
 import { Project } from "@/types/project";
 import { useRouter } from "next/navigation";
 import { useProject } from '@/hooks/useProject'
+import { getComponentFromString } from "@/components/sidebar/iconMappings";
 
 const apiService = new ApiService();
-
-const componentMap: Record<string, React.ElementType> = {
-  "University": University,
-  "Settings2": Settings2,
-  "Apple": Apple,
-  "Brain": Brain,
-  "LayoutDashboard": LayoutDashboard,
-  "FileClock": FileClock,
-  "Users": Users,
-  "Calendar": Calendar,
-  "Archive": Archive,
-  "Bell": Bell,
-};
-
-function getComponentFromString(componentName: string): React.ElementType | null {
-  const Component = componentMap[componentName];
-  if (!Component) {
-    console.error(`Component "${componentName}" not found.`);
-    return null;
-  }
-  return Component; 
-}
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [data, setData] = useState<any>(null);
