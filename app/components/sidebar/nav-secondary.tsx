@@ -17,13 +17,9 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-<<<<<<<< HEAD:app/components/ui/navigation/nav-main.tsx
-} from "@/components/ui/navigation/sidebar"
-========
 } from "@/components/sidebar/sidebar"
->>>>>>>> 49cc0026cd237939ab54eae25965739b2c8cd1d7:app/components/sidebar/nav-main.tsx
 
-export function NavMain({
+export function NavSecondary({
   items,
 }: {
   items: {
@@ -39,7 +35,7 @@ export function NavMain({
 }) {
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Project</SidebarGroupLabel>
+      <SidebarGroupLabel>General</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
           <Collapsible key={item.title} asChild defaultOpen={item.isActive}>

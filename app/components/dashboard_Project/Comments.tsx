@@ -1,14 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
+import { Comment } from "@/types/comment";
 
 
-export interface Comment {
-  id: number;
-  authorId: number;
-  content: string;
-  replies: Comment[];
-}
 
 interface CommentsProps {
   comments: Comment[];

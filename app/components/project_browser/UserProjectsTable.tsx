@@ -14,7 +14,7 @@ import {
   SortingState,
   VisibilityState,
 } from "@tanstack/react-table";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Checkbox } from "@/components/project_browser/checkbox";
 import {
   Table,
   TableBody,
@@ -22,16 +22,16 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+} from "@/components/project_browser/table";
+import { Button } from "@/components/commons/button";
+import { Input } from "@/components/commons/input";
 import { ChevronDown, Trash2 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/components/project_browser/dropdown-menu";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -41,24 +41,26 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+} from "@/components/project_browser/alert-dialog";
 
-import { Project } from "@/lib/browser_utils/type";
+import { Project } from "@/types/project";
 
 interface UserProjectsTableProps {
   userId: string;
-  projects: Project[];
-  onDeleteSelected: (selectedIds: number[]) => void;
+  projects: Project[] | undefined;
+  onDeleteSelected: (selectedIds: string[]) => void;
 }
 
-export function UserProjectsTable({ userId, projects, onDeleteSelected }: UserProjectsTableProps) {
+export function UserProjectsTable({ userId, projects = [], onDeleteSelected }: UserProjectsTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
-  const [selectedProjectIds, setSelectedProjectIds] = useState<number[]>([]);
+  const [selectedProjectIds, setSelectedProjectIds] = useState<string[]>([]);
 
-  // Define table columns with selection and project link
+  console.log("User ID:", userId);
+  console.log("Projects:", projects);
+
   const columns: ColumnDef<Project>[] = [
     {
       id: "select",
@@ -83,25 +85,25 @@ export function UserProjectsTable({ userId, projects, onDeleteSelected }: UserPr
       enableHiding: false,
     },
     {
-      accessorKey: "name",
+      accessorKey: "name", 
       header: "Name",
       cell: ({ row }) => {
         const project = row.original;
         return (
           <Link
-            href={`/users/${userId}/projects/${project.id}`}
+            href={`/projects/${project.projectId}`}
             className="cursor-pointer hover:underline"
           >
-            {project.name}
+            {project.projectName} 
           </Link>
         );
       },
     },
     {
-      accessorKey: "lastModified",
+      accessorKey: "updatedAt",  
       header: "Last Modified",
       cell: ({ row }) => {
-        const date = new Date(row.original.lastModified);
+        const date = new Date(row.original.updatedAt);
         return <div>{date.toLocaleString()}</div>;
       },
     },
@@ -126,19 +128,16 @@ export function UserProjectsTable({ userId, projects, onDeleteSelected }: UserPr
     },
   });
 
-  // Gather selected project IDs from rowSelection and open the AlertDialog
   const handleDeleteSelectedClick = () => {
     const selectedIds = Object.keys(rowSelection)
       .map((rowId) => {
-        // We assume the row id is the index (or use a lookup method)
         const row = table.getRowModel().rows.find((r) => r.id === rowId);
-        return row?.original.id;
+        return row?.original.projectId;
       })
-      .filter((id): id is number => id !== undefined);
+      .filter((id): id is string => id !== undefined);
     setSelectedProjectIds(selectedIds);
   };
 
-  // Confirm deletion via callback
   const handleConfirmDelete = () => {
     onDeleteSelected(selectedProjectIds);
     setSelectedProjectIds([]);
@@ -197,7 +196,7 @@ export function UserProjectsTable({ userId, projects, onDeleteSelected }: UserPr
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows.length ? (
+            {table.getRowModel().rows.length > 0 ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
                   {row.getVisibleCells().map((cell) => (
@@ -218,7 +217,6 @@ export function UserProjectsTable({ userId, projects, onDeleteSelected }: UserPr
         </Table>
       </div>
 
-      {/* Pagination Controls */}
       <div className="flex items-center justify-end space-x-2 py-4">
         <Button
           variant="outline"
@@ -238,7 +236,6 @@ export function UserProjectsTable({ userId, projects, onDeleteSelected }: UserPr
         </Button>
       </div>
 
-      {/* Delete Selected Button and AlertDialog */}
       <div className="flex justify-end py-4">
         <Button
           variant="destructive"

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Idea } from "@/components/dashboard_Project/IdeaModal";
+import { Idea } from "@/types/idea";
 
 export function useIdeaStorage(projectId: string, currentUserId: number) {
   const storageKey = `ideas-${projectId}`;

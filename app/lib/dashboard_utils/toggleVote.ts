@@ -1,4 +1,4 @@
-import { Idea } from "@/components/dashboard_Project/IdeaModal";
+import { Idea } from "@/types/idea";
 
 export function toggleVoteInIdeas(
   ideas: Idea[],

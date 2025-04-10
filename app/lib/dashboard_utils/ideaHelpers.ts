@@ -1,5 +1,4 @@
-import { Idea } from "@/components/dashboard_Project/IdeaModal";
-
+import { Idea } from "@/types/idea";
 export function generateNewIdea(nextId: number, creatorId: number): Idea {
   return {
     id: nextId,

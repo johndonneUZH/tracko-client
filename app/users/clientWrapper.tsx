@@ -15,7 +15,7 @@ export default function ClientWrapper({ children }: { children: React.ReactNode 
       return;
     }
 
-    //const userId = Number(sessionStorage.getItem("currentUserId"));
+    // const userId = Number(sessionStorage.getItem("currentUserId"));
     const LOGOUT_AFTER = 30* 60 * 1000; // 30 min
     let logoutTimer: NodeJS.Timeout;
 

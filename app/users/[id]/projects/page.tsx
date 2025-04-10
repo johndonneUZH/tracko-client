@@ -1,10 +1,10 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { SidebarProvider } from "@/components/ui/navigation/sidebar";
-import { AppSidebar } from "@/components/ui/navigation/app-sidebar";
-import { SidebarTrigger } from "@/components/ui/navigation/sidebar";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { SidebarProvider } from "@/components/sidebar/sidebar";
+import { AppSidebar } from "@/components/sidebar/app-sidebar";
+import { SidebarTrigger } from "@/components/sidebar/sidebar";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/commons/card";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -12,24 +12,39 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+} from "@/components/commons/breadcrumb";
 
 import { useUserProjects } from "@/lib/browser_utils/useProjectStorage";
 import { AddProjectForm } from "@/components/project_browser/AddProjectForm";
 import { UserProjectsTable } from "@/components/project_browser/UserProjectsTable";
+import { useEffect, useState } from "react";
+import { getUserById } from "@/lib/commons/userService";
+
 
 export default function UserProjectsPage() {
   const { id } = useParams() as { id: string };
+  const { projects, loading, error, addProject, deleteProjects } = useUserProjects(id);
+  const [userName, setUserName] = useState<string>("");
 
-  const { projects, addProject, deleteProjects } = useUserProjects(id);
+  useEffect(() => {
+    getUserById(id)
+      .then((user) => {
+        setUserName(user.name);
+      })
+      .catch((err) => console.error("Error:", err));
+  }, [id]);
 
-  // Callback when deletion is confirmed from the table
-  const handleDeleteSelected = (selectedIds: number[]) => {
+  const handleDeleteSelected = async (selectedIds: string[]) => {
     const isConfirmed = window.confirm(
       `Are you sure you want to delete ${selectedIds.length} project(s)?`
     );
-    if (isConfirmed) {
-      deleteProjects(selectedIds);
+    
+    if (!isConfirmed) return;
+  
+    const success = await deleteProjects(selectedIds);
+    
+    if (!success) {
+      alert('Failed to delete some projects. Please try again.');
     }
   };
 
@@ -59,22 +74,32 @@ export default function UserProjectsPage() {
 
           {/* Main Content */}
           <div className="flex flex-col flex-1 p-4">
-            <h1 className="text-xl font-bold">Projects for User {id}</h1>
+            <h1 className="text-xl font-bold">Projects for {userName}</h1>
+            
             <Card className="w-full max-w-xl mb-6">
               <CardHeader>
                 <CardTitle>Project Management</CardTitle>
                 <CardDescription>Add and manage user projects</CardDescription>
               </CardHeader>
               <CardContent>
-                <AddProjectForm onAddProject={addProject} />
+                <AddProjectForm onAddProject={(projectName) => addProject(projectName, "")} />
               </CardContent>
             </Card>
 
-            <UserProjectsTable
-              userId={id}
-              projects={projects}
-              onDeleteSelected={handleDeleteSelected}
-            />
+            {loading && <p>Loading projects...</p>}
+            {error && (
+              <p className="text-red-600">
+                Error loading projects: {error}
+              </p>
+            )}
+            
+            {!loading && !error && (
+              <UserProjectsTable
+                userId={id}
+                projects={projects}
+                onDeleteSelected={handleDeleteSelected}
+              />
+            )}
           </div>
         </div>
       </div>
