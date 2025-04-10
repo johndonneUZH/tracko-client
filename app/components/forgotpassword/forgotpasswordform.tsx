@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 "use client";
 
 import emailjs from 'emailjs-com';
@@ -26,7 +28,7 @@ export function ForgotPasswordForm({
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-
+/*
   const sendOTPEmail = (otp: string, time: string, email: string ) => { //limited to 200 email per month (free)
     const templateParams = {
       to_email: email,
@@ -42,7 +44,7 @@ export function ForgotPasswordForm({
         console.error('Failed...', err);
       });
   };
-
+*/
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();  
     setError(null);
