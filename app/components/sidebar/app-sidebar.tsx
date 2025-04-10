@@ -14,27 +14,17 @@ import {
   Bell
 } from "lucide-react"
 
-<<<<<<<< HEAD:app/components/ui/navigation/app-sidebar.tsx
-import { NavMain } from "@/components/ui/navigation/nav-main"
-import { NavUser } from "@/components/ui/navigation/nav-user"
-import { TeamSwitcher } from "@/components/ui/navigation/team-switcher"
-========
 import { NavMain } from "@/components/sidebar/nav-main"
 import { NavSecondary } from "@/components/sidebar/nav-secondary"
 import { NavUser } from "@/components/sidebar/nav-user"
 import { TeamSwitcher } from "@/components/sidebar/team-switcher"
->>>>>>>> 49cc0026cd237939ab54eae25965739b2c8cd1d7:app/components/sidebar/app-sidebar.tsx
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
-<<<<<<<< HEAD:app/components/ui/navigation/app-sidebar.tsx
-} from "@/components/ui/navigation/sidebar"
-========
 } from "@/components/sidebar/sidebar"
->>>>>>>> 49cc0026cd237939ab54eae25965739b2c8cd1d7:app/components/sidebar/app-sidebar.tsx
 const mockUserId = 1 //To be changed with the backend
 const mockProjectId = 101 //To be changed with the backend
 const data = {

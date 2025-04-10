@@ -16,12 +16,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-<<<<<<<< HEAD:app/components/ui/navigation/team-switcher.tsx
-} from "@/components/ui/navigation/sidebar"
-========
 } from "@/components/sidebar/sidebar"
 import { Input } from "@/components/commons/input"
->>>>>>>> 49cc0026cd237939ab54eae25965739b2c8cd1d7:app/components/sidebar/team-switcher.tsx
 
 export function TeamSwitcher({
   teams,
