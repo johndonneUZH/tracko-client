@@ -82,7 +82,7 @@ export default function UserProjectsPage() {
                 <CardDescription>Add and manage user projects</CardDescription>
               </CardHeader>
               <CardContent>
-                <AddProjectForm onAddProject={(projectName) => addProject(projectName, "")} />
+                <AddProjectForm onAddProject={(projectName, projectDescription) => addProject(projectName, projectDescription)} />
               </CardContent>
             </Card>
 

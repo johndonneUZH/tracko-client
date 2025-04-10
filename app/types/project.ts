@@ -1,3 +1,5 @@
+import React from "react";
+
 export interface ProjectMember {
   id: string;
   name: string;
@@ -12,4 +14,5 @@ export type Project = {
   ownerId: string;
   createdAt: Date;
   updatedAt: Date;
+  projectLogoUrl: string;
 };
