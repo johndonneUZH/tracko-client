@@ -63,6 +63,10 @@ export function LoginForm({
     router.push("/register");
   };
 
+  const handleForgotPasswordClick = () => {
+    router.push("/forgotpassword");
+  };
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="relative rounded-lg">
@@ -95,6 +99,7 @@ export function LoginForm({
                   <a
                     href="#"
                     className="ml-auto inline-block text-sm hover:underline"
+                    onClick={handleForgotPasswordClick}
                   >
                     Forgot your password?
                   </a>
