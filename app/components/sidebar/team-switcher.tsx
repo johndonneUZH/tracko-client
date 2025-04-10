@@ -19,14 +19,13 @@ import {
 } from "@/components/sidebar/sidebar"
 import { Input } from "@/components/commons/input"
 import { useRouter } from "next/navigation"
-
 import { useProject } from '@/hooks/useProject'
 
 export function TeamSwitcher({ teams,}: {
   teams: {
     id: string // Make sure your team objects have an id property
     name: string
-    logo: React.ElementType | null // puede ser null ahora
+    logo: React.ElementType
     plan: string
   }[]
 }) {
@@ -56,12 +55,9 @@ export function TeamSwitcher({ teams,}: {
     setSearch("")
   }
 
-
   const filteredTeams = teams.filter(team =>
     team.name.toLowerCase().includes(search.toLowerCase())
   )
-
-  const ActiveLogo = activeTeam.logo || Plus
 
   return (
     <SidebarMenu>
@@ -70,7 +66,6 @@ export function TeamSwitcher({ teams,}: {
           <SidebarMenuButton
             size="lg"
             className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-
             onClick={() => router.push(`/users/${userId}/projects`)}
           >
             <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-sidebar-primary-foreground">
@@ -88,14 +83,12 @@ export function TeamSwitcher({ teams,}: {
                 className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
               >
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-sidebar-primary-foreground">
-
                   <activeTeam.logo className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">
                     {activeTeam.name}
                   </span>
-
                   <span className="truncate text-xs">{activeTeam.plan}</span>
                 </div>
                 <ChevronsUpDown className="ml-auto" />
@@ -124,7 +117,6 @@ export function TeamSwitcher({ teams,}: {
               <DropdownMenuLabel className="text-xs text-muted-foreground px-2">
                 Projects
               </DropdownMenuLabel>
-
               <div className="max-h-[33vh] overflow-y-auto">
                 {filteredTeams.length > 0 ? (
                   filteredTeams.map((team) => (
@@ -139,7 +131,6 @@ export function TeamSwitcher({ teams,}: {
                       {team.name}
                     </DropdownMenuItem>
                   ))
-
                 ) : (
                   <div className="px-3 py-2 text-sm text-muted-foreground">
                     No projects found.
@@ -151,7 +142,6 @@ export function TeamSwitcher({ teams,}: {
 
               <DropdownMenuItem
                 className="gap-2 p-2"
-
                 onClick={() => router.push(`/users/${userId}/projects`)}
               >
                 <div className="flex size-6 items-center justify-center rounded-md border bg-background">
