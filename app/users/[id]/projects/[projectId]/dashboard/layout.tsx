@@ -43,9 +43,9 @@ export default function ProjectLayout({
   // Selected idea obtained by filtering the ideas array
   const selectedIdea = ideas.find((i) => i.ideaId === (ideaId as string)) || null;
   const selectedIdeaId = selectedIdea?.ideaId || null;
-  const { deleteComment } = useComments(projectId as string, selectedIdeaId || "");
+  const { addComment, deleteComment } = useComments(projectId as string, selectedIdeaId || "");
 
-  const { commentMap, refreshComments } = useCommentFetcher(projectId as string, selectedIdeaId || "");
+  const { commentMap, loading: commentLoading, refreshComments } = useCommentFetcher(projectId as string, selectedIdeaId || "");
 
 
   // ----------------------
@@ -59,7 +59,7 @@ export default function ProjectLayout({
       const nextId = crypto.randomUUID();
       const newIdeaData = generateNewIdea(projectId as string, nextId, currentUserId);
       const newIdea = await createIdea(newIdeaData);
-      router.push(`/users/${id}/projects/${projectId}/ideas/${newIdea.ideaId}`);
+      router.push(`/users/${id}/projects/${projectId}/dashboard/ideas/${newIdea.ideaId}`);
     } catch (error) {
       console.error("Error creating idea:", error); // log error creating idea
     }
@@ -69,7 +69,7 @@ export default function ProjectLayout({
     if (idea && isIdeaEmpty(idea)) {
       deleteIdea(idea.ideaId);
     }
-    router.push(`/users/${id}/projects/${projectId}`);
+    router.push(`/users/${id}/projects/${projectId}/dashboard`);
   };
   
   const toggleVote = (ideaId: string, userId: string, type: "up" | "down") => {
@@ -100,7 +100,7 @@ export default function ProjectLayout({
       downVotes: newDownVotes,
     });
   };
-
+  
   
   
 
@@ -112,20 +112,20 @@ export default function ProjectLayout({
     
     //addLogEntry(pushLog, 20, "Deleted idea", ideaToDelete.title, projectId as string);
     await deleteIdea(ideaId);
-    router.push(`/users/${id}/projects/${projectId}`);
+    router.push(`/users/${id}/projects/${projectId}/dashboard`);
   };
 
   // Adapt handleSave: use updateIdea and update properties using title and body
     const handleSave = async (ideaId: string, title: string | undefined, body: string | undefined) => {
       
       const oldIdea = ideas.find((i) => i.ideaId === ideaId);
-      //const oldTitle = oldIdea?.ideaName || "";
+      const oldTitle = oldIdea?.ideaName || "";
       if (!oldIdea) return;
     
       await updateIdea(ideaId, { ideaName: title, ideaDescription: body,  x: oldIdea.x, y: oldIdea.y, } );
     
-      //const action = oldTitle.trim() === "" ? "Created idea" : "Edited idea";
-      router.push(`/users/${id}/projects/${projectId}/ideas/${ideaId}`);
+      const action = oldTitle.trim() === "" ? "Created idea" : "Edited idea";
+      router.push(`/users/${id}/projects/${projectId}/dashboard/ideas/${ideaId}`);
 
     };
   
@@ -143,7 +143,7 @@ export default function ProjectLayout({
         <ProjectDashboard 
           ideas={ideas}
           selectedIdeaId={selectedIdeaId}
-          onIdeaClick={(ideaId) => router.push(`/users/${id}/projects/${projectId}/ideas/${ideaId}`)}
+          onIdeaClick={(ideaId) => router.push(`/users/${id}/projects/${projectId}/dashboard/ideas/${ideaId}`)}
           updateIdea={updateIdea} //
           onToggleVote={toggleVote}
 />
@@ -158,18 +158,18 @@ export default function ProjectLayout({
         canEdit={true}
         onSave={(title, body) => {
           handleSave(selectedIdea.ideaId, title, body);
-          router.push(`/users/${id}/projects/${projectId}/ideas/${selectedIdea.ideaId}`);
+          router.push(`/users/${id}/projects/${projectId}/dashboard/ideas/${selectedIdea.ideaId}`);
         }}
         onDelete={() => handleDelete(selectedIdea.ideaId)}
         onCancel={() => handleCancel(selectedIdea)}
         currentUserId={currentUserId}
-        onAddComment={async () => {
-          //const newComment = await addComment(content, parentId);
-          // if (newComment && !parentId) {
-          //   const updated = await updateIdea(selectedIdea.ideaId, {
-          //     comments: [...(selectedIdea.comments || []), newComment.commentId],
-          //   });
-          // }
+        onAddComment={async (content, parentId) => {
+          const newComment = await addComment(content, parentId);
+          if (newComment && !parentId) {
+            const updated = await updateIdea(selectedIdea.ideaId, {
+              comments: [...(selectedIdea.comments || []), newComment.commentId],
+            });
+          }
           await refreshComments();
           }} 
         onDeleteComment={(commentId) => deleteComment(commentId)}

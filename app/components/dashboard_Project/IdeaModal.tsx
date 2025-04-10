@@ -49,7 +49,7 @@ export default function IdeaModal({
   ];
   const modalBackground = pastelColors[parseInt(idea.ideaId, 16) % pastelColors.length];
 
-  // comment treee
+  // ✅ Comentarios con árbol (sin romper estructura original)
   const buildCommentTree = (rootIds: string[]): CommentWithChildren[] => {
     return rootIds
       .map((id) => {

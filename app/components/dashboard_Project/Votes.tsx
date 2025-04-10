@@ -73,5 +73,3 @@ export default function Votes({ idea, currentUserId, onToggleVote }: VotesProps)
     </div>
   );
 }
-
-

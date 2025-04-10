@@ -91,7 +91,7 @@ export function UserProjectsTable({ userId, projects = [], onDeleteSelected }: U
         const project = row.original;
         return (
           <Link
-            href={`/users/${userId}/projects/${project.projectId}`}
+            href={`/users/${userId}/projects/${project.projectId}/dashboard`}
             className="cursor-pointer hover:underline"
           >
             <ChevronRight className="text-sm" />
