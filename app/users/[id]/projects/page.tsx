@@ -35,12 +35,6 @@ export default function UserProjectsPage() {
   }, [id]);
 
   const handleDeleteSelected = async (selectedIds: string[]) => {
-    const isConfirmed = window.confirm(
-      `Are you sure you want to delete ${selectedIds.length} project(s)?`
-    );
-    
-    if (!isConfirmed) return;
-  
     const success = await deleteProjects(selectedIds);
     
     if (!success) {

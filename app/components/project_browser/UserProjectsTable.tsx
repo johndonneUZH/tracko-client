@@ -180,7 +180,8 @@ export function UserProjectsTable({ userId, projects = [], onDeleteSelected }: U
         </DropdownMenu>
       </div>
 
-      <div className="rounded-md border overflow-x-auto">
+      <div className="rounded-md border overflow-x-auto w-[1000px] max-w-full">
+
         <Table className="min-w-full">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
