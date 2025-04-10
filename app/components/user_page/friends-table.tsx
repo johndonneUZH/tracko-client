@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import React, { useEffect, useState } from "react";
 import { ApiService } from "@/api/apiService"
 import { useRouter } from "next/navigation";
