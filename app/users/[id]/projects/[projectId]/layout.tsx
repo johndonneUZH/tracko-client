@@ -43,9 +43,9 @@ export default function ProjectLayout({
   // Selected idea obtained by filtering the ideas array
   const selectedIdea = ideas.find((i) => i.ideaId === (ideaId as string)) || null;
   const selectedIdeaId = selectedIdea?.ideaId || null;
-  const { addComment, deleteComment } = useComments(projectId as string, selectedIdeaId || "", currentUserId);
+  const { deleteComment } = useComments(projectId as string, selectedIdeaId || "");
 
-  const { commentMap, loading: commentLoading, refreshComments } = useCommentFetcher(projectId as string, selectedIdeaId || "");
+  const { commentMap, refreshComments } = useCommentFetcher(projectId as string, selectedIdeaId || "");
 
 
   // ----------------------
@@ -100,7 +100,7 @@ export default function ProjectLayout({
       downVotes: newDownVotes,
     });
   };
-  
+
   
   
 
@@ -119,12 +119,12 @@ export default function ProjectLayout({
     const handleSave = async (ideaId: string, title: string | undefined, body: string | undefined) => {
       
       const oldIdea = ideas.find((i) => i.ideaId === ideaId);
-      const oldTitle = oldIdea?.ideaName || "";
+      //const oldTitle = oldIdea?.ideaName || "";
       if (!oldIdea) return;
     
       await updateIdea(ideaId, { ideaName: title, ideaDescription: body,  x: oldIdea.x, y: oldIdea.y, } );
     
-      const action = oldTitle.trim() === "" ? "Created idea" : "Edited idea";
+      //const action = oldTitle.trim() === "" ? "Created idea" : "Edited idea";
       router.push(`/users/${id}/projects/${projectId}/ideas/${ideaId}`);
 
     };
@@ -163,13 +163,13 @@ export default function ProjectLayout({
         onDelete={() => handleDelete(selectedIdea.ideaId)}
         onCancel={() => handleCancel(selectedIdea)}
         currentUserId={currentUserId}
-        onAddComment={async (content, parentId) => {
-          const newComment = await addComment(content, parentId);
-          if (newComment && !parentId) {
-            const updated = await updateIdea(selectedIdea.ideaId, {
-              comments: [...(selectedIdea.comments || []), newComment.commentId],
-            });
-          }
+        onAddComment={async () => {
+          //const newComment = await addComment(content, parentId);
+          // if (newComment && !parentId) {
+          //   const updated = await updateIdea(selectedIdea.ideaId, {
+          //     comments: [...(selectedIdea.comments || []), newComment.commentId],
+          //   });
+          // }
           await refreshComments();
           }} 
         onDeleteComment={(commentId) => deleteComment(commentId)}

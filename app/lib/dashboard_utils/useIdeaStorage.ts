@@ -17,15 +17,17 @@ export function useIdeas(projectId: string) {
       setError(null);
       try {
         const response = await apiService.get<Idea[]>(`/projects/${projectId}/ideas`);
-        console.log("Respuesta de ideas:", response);
+        console.log("answer from ideas:", response);
         setIdeas(response);
-      } catch (err: any) {
-        console.error("Error al obtener ideas:", err);
-        setError(err.message || "Error al obtener ideas.");
-      } finally {
-        setLoading(false);
+      } catch (err: unknown) {
+        console.error("Error fetching ideas:", err);
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("Failed to fetch ideas.");
+        }
       }
-    }
+    }      
     
     fetchIdeas();
   }, [projectId, apiService]);
@@ -37,9 +39,13 @@ export function useIdeas(projectId: string) {
       newIdea.downVotes = newIdea.downVotes || [];
       setIdeas((prev) => [...prev, newIdea]);
       return newIdea;
-    } catch (err: any) {
-      console.error("Error al crear idea:", err);
-      throw err;
+    } catch (err: unknown) {
+      console.error("Error creating idea:", err);
+      if (err instanceof Error) {
+        throw err;
+      } else {
+        throw new Error("Unknown error occurred while creating idea.");
+      }
     }
   }
 
@@ -52,10 +58,15 @@ export function useIdeas(projectId: string) {
         prev.map((idea) => (idea.ideaId === ideaId ? updatedIdea : idea))
       );
       return updatedIdea;
-    } catch (err: any) {
-      console.error("Error al actualizar idea:", err);
-      throw err;
+    }  catch (err: unknown) {
+      console.error("Error updating idea:", err);
+      if (err instanceof Error) {
+        throw err;
+      } else {
+        throw new Error("Unknown error occurred while updating idea.");
+      }
     }
+    
   }
   
 
@@ -64,10 +75,11 @@ export function useIdeas(projectId: string) {
       await apiService.delete(`/projects/${projectId}/ideas/${ideaId}`);
       setIdeas((prev) => prev.filter((idea) => idea.ideaId !== ideaId));
       return true;
-    } catch (err: any) {
-      console.error("Error al borrar idea:", err);
+    }  catch (err: unknown) {
+      console.error("Error deleting idea:", err);
       return false;
     }
+    
   }
 
   return {

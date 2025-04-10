@@ -1,5 +1,3 @@
-import { Comment } from "./comment";
-
 export interface Idea {
   ideaDescription: string;
   projectId: string,

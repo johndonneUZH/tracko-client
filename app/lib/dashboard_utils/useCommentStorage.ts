@@ -2,7 +2,7 @@ import { ApiService } from "@/api/apiService";
 import { Comment } from "@/types/comment";
 import { useMemo } from "react";
 
-export function useComments(projectId: string, ideaId: string, userId: string) {
+export function useComments(projectId: string, ideaId: string) {
   const api = useMemo(() => new ApiService(), []);
 
   const addComment = async (content: string, parentId?: string): Promise<Comment | null> => {

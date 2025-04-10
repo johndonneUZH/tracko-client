@@ -20,11 +20,13 @@ export function useCommentFetcher(projectId: string, ideaId: string) {
       });
 
       setCommentMap(map);
-    } catch (err: any) {
+    }  catch (err: unknown) {
       console.error("Error fetching comments:", err);
-      setError("Failed to load comments.");
-    } finally {
-      setLoading(false);
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Failed to load comments.");
+      }
     }
   };
 
