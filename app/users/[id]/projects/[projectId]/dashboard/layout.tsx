@@ -59,7 +59,7 @@ export default function ProjectLayout({
       const nextId = crypto.randomUUID();
       const newIdeaData = generateNewIdea(projectId as string, nextId, currentUserId);
       const newIdea = await createIdea(newIdeaData);
-      router.push(`/users/${id}/projects/${projectId}/ideas/${newIdea.ideaId}`);
+      router.push(`/users/${id}/projects/${projectId}/dashboard/ideas/${newIdea.ideaId}`);
     } catch (error) {
       console.error("Error creating idea:", error); // log error creating idea
     }
@@ -69,7 +69,7 @@ export default function ProjectLayout({
     if (idea && isIdeaEmpty(idea)) {
       deleteIdea(idea.ideaId);
     }
-    router.push(`/users/${id}/projects/${projectId}`);
+    router.push(`/users/${id}/projects/${projectId}/dashboard`);
   };
   
   const toggleVote = (ideaId: string, userId: string, type: "up" | "down") => {
@@ -100,7 +100,7 @@ export default function ProjectLayout({
       downVotes: newDownVotes,
     });
   };
-
+  
   
   
 
@@ -112,7 +112,7 @@ export default function ProjectLayout({
     
     //addLogEntry(pushLog, 20, "Deleted idea", ideaToDelete.title, projectId as string);
     await deleteIdea(ideaId);
-    router.push(`/users/${id}/projects/${projectId}`);
+    router.push(`/users/${id}/projects/${projectId}/dashboard`);
   };
 
   // Adapt handleSave: use updateIdea and update properties using title and body
@@ -124,8 +124,8 @@ export default function ProjectLayout({
     
       await updateIdea(ideaId, { ideaName: title, ideaDescription: body,  x: oldIdea.x, y: oldIdea.y, } );
     
-      //const action = oldTitle.trim() === "" ? "Created idea" : "Edited idea";
-      router.push(`/users/${id}/projects/${projectId}/ideas/${ideaId}`);
+     // const action = oldTitle.trim() === "" ? "Created idea" : "Edited idea";
+      router.push(`/users/${id}/projects/${projectId}/dashboard/ideas/${ideaId}`);
 
     };
   
@@ -143,7 +143,7 @@ export default function ProjectLayout({
         <ProjectDashboard 
           ideas={ideas}
           selectedIdeaId={selectedIdeaId}
-          onIdeaClick={(ideaId) => router.push(`/users/${id}/projects/${projectId}/ideas/${ideaId}`)}
+          onIdeaClick={(ideaId) => router.push(`/users/${id}/projects/${projectId}/dashboard/ideas/${ideaId}`)}
           updateIdea={updateIdea} //
           onToggleVote={toggleVote}
 />
@@ -158,7 +158,7 @@ export default function ProjectLayout({
         canEdit={true}
         onSave={(title, body) => {
           handleSave(selectedIdea.ideaId, title, body);
-          router.push(`/users/${id}/projects/${projectId}/ideas/${selectedIdea.ideaId}`);
+          router.push(`/users/${id}/projects/${projectId}/dashboard/ideas/${selectedIdea.ideaId}`);
         }}
         onDelete={() => handleDelete(selectedIdea.ideaId)}
         onCancel={() => handleCancel(selectedIdea)}
