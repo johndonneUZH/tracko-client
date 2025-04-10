@@ -7,28 +7,28 @@ export function useCommentFetcher(projectId: string, ideaId: string) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const fetchComments = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const api = new ApiService();
+      const comments: Comment[] = await api.get(`/projects/${projectId}/ideas/${ideaId}/comments`);
+
+      const map: Record<string, Comment> = {};
+      comments.forEach((comment) => {
+        map[comment.commentId] = comment;
+      });
+
+      setCommentMap(map);
+    } catch (err: any) {
+      console.error("Error fetching comments:", err);
+      setError("Failed to load comments.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchComments = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const api = new ApiService();
-        const comments: Comment[] = await api.get(`/projects/${projectId}/ideas/${ideaId}/comments`);
-
-        const map: Record<string, Comment> = {};
-        comments.forEach((comment) => {
-          map[comment.commentId] = comment;
-        });
-
-        setCommentMap(map);
-      } catch (err: any) {
-        console.error("Error fetching comments:", err);
-        setError("Failed to load comments.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     if (projectId && ideaId) fetchComments();
   }, [projectId, ideaId]);
 
@@ -36,5 +36,6 @@ export function useCommentFetcher(projectId: string, ideaId: string) {
     commentMap,
     loading,
     error,
+    refreshComments: fetchComments, 
   };
 }

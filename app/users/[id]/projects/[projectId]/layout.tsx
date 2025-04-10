@@ -12,7 +12,6 @@ import { useComments } from "@/lib/dashboard_utils/useCommentStorage";
 
 // Import helpers for ideas
 import { isIdeaEmpty, generateNewIdea } from "@/lib/dashboard_utils/ideaHelpers";
-import { useStoreLog } from "@/lib/dashboard_utils/useStoreLog";
 
 // Import the new useIdeas hook
 import { useIdeas } from "@/lib/dashboard_utils/useIdeaStorage";
@@ -22,8 +21,8 @@ import NewIdeaButton from "@/components/dashboard_Project/NewIdeaButton";
 // import ChangeLogSidebar from "@/components/dashboard_Project/ChangeLogSidebar";
 import ProjectHeader from "@/components/dashboard_Project/ProjectHeader";
 import IdeaModal from "@/components/dashboard_Project/IdeaModal";
-import { Idea } from "@/types/idea";
-import { SetStateAction } from "react";
+
+import { useCommentFetcher } from "@/lib/dashboard_utils/useCommentFetcher";
 //import WebSocketMonitor from "@/components/WebSocketMonitor";
 
 export default function ProjectLayout({
@@ -36,14 +35,18 @@ export default function ProjectLayout({
   const currentUserId = useCurrentUserId();
   // const { logEntries, pushLog } = useStoreLog(projectId as string);
   
+  
   const { ideas, createIdea, updateIdea, deleteIdea } = useIdeas(projectId as string);
   
   // If useComments still requiere un updater, ajustarlo según la nueva integración.
-  const { addComment, deleteComment } = useComments(() => {}, 15);
-  
+    
   // Selected idea obtained by filtering the ideas array
   const selectedIdea = ideas.find((i) => i.ideaId === (ideaId as string)) || null;
   const selectedIdeaId = selectedIdea?.ideaId || null;
+  const { addComment, deleteComment } = useComments(projectId as string, selectedIdeaId || "", currentUserId);
+
+  const { commentMap, loading: commentLoading, refreshComments } = useCommentFetcher(projectId as string, selectedIdeaId || "");
+
 
   // ----------------------
   // HANDLER FUNCTIONS
@@ -93,15 +96,11 @@ export default function ProjectLayout({
     }
   
     updateIdea(ideaId, {
-      ideaName: idea.ideaName,
-      ideaDescription: idea.ideaDescription,
-      x: idea.x,
-      y: idea.y,
       upVotes: newUpVotes,
       downVotes: newDownVotes,
-      comments: idea.comments, 
     });
   };
+  
   
   
 
@@ -155,17 +154,26 @@ export default function ProjectLayout({
 
       {selectedIdea && (
         <IdeaModal
-          idea={selectedIdea}
-          canEdit={true}
-          onSave={(title, body) => {
-            handleSave(selectedIdea.ideaId, title, body);
-            router.push(`/users/${id}/projects/${projectId}/ideas/${selectedIdea.ideaId}`);
-          }}
-          onDelete={() => handleDelete(selectedIdea.ideaId)}
-          onCancel={() => handleCancel(selectedIdea)}
-          currentUserId={currentUserId}
-          onAddComment={(content, parentId) => addComment(selectedIdea.ideaId, content, parentId)}
-          onDeleteComment={(commentId) => deleteComment(selectedIdea.ideaId, commentId)}
+        idea={selectedIdea}
+        canEdit={true}
+        onSave={(title, body) => {
+          handleSave(selectedIdea.ideaId, title, body);
+          router.push(`/users/${id}/projects/${projectId}/ideas/${selectedIdea.ideaId}`);
+        }}
+        onDelete={() => handleDelete(selectedIdea.ideaId)}
+        onCancel={() => handleCancel(selectedIdea)}
+        currentUserId={currentUserId}
+        onAddComment={async (content, parentId) => {
+          const newComment = await addComment(content, parentId);
+          if (newComment && !parentId) {
+            const updated = await updateIdea(selectedIdea.ideaId, {
+              comments: [...(selectedIdea.comments || []), newComment.commentId],
+            });
+          }
+          await refreshComments();
+          }} 
+        onDeleteComment={(commentId) => deleteComment(commentId)}
+        commentMap={commentMap}
           // onLogComment={(action, title) =>
           //   //addLogEntry(pushLog, 20, action, title, projectId as string)
           // }

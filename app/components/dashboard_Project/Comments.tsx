@@ -3,8 +3,12 @@
 import React, { useState } from "react";
 import { Comment } from "@/types/comment";
 
+interface CommentWithChildren extends Comment {
+  children: CommentWithChildren[];
+}
+
 interface CommentsProps {
-  comments: Comment[];
+  comments: CommentWithChildren[];
   currentUserId: string;
   onAddComment: (content: string, parentId?: string) => void;
   onDeleteComment: (commentId: string) => void;
@@ -26,14 +30,14 @@ export default function Comments({
     setReplyTargetId(null);
   }
 
-  function renderCommentList(commentList: Comment[]): React.ReactNode[] {
+  function renderCommentList(commentList: CommentWithChildren[]): React.ReactNode[] {
     return commentList.map((comment) => (
       <div key={comment.commentId} style={{ marginLeft: "1rem", marginTop: "1rem" }}>
         <div style={{ border: "1px solid #ccc", padding: "0.5rem" }}>
           <p>
             <strong>User {comment.ownerId}</strong>: {comment.commentText}
           </p>
-
+  
           <div style={{ display: "flex", gap: "0.5rem" }}>
             <button
               onClick={() => {
@@ -51,7 +55,7 @@ export default function Comments({
             >
               Reply
             </button>
-
+  
             {comment.ownerId === currentUserId && (
               <button
                 onClick={() => onDeleteComment(comment.commentId)}
@@ -69,19 +73,16 @@ export default function Comments({
             )}
           </div>
         </div>
-
-        {/* Render replies recursively if they exist */}
-        {comment.replies && comment.replies.length > 0 && (
+  
+        {comment.children && comment.children.length > 0 && (
           <div style={{ marginLeft: "1rem" }}>
-            {renderCommentList(
-              comments.filter((c) => comment.replies.includes(c.commentId))
-            )}
+            {renderCommentList(comment.children)}
           </div>
         )}
       </div>
     ));
   }
-
+  
   return (
     <div style={{ marginTop: "1rem" }}>
       <h3>Comments</h3>

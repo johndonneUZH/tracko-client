@@ -8,7 +8,7 @@ export interface Idea {
   x: number;
   y: number;
   creatorId: string;
-  comments: Comment[];
+  comments: string[];
   upVotes: string[];
   downVotes: string[];
 }
