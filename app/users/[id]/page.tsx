@@ -84,7 +84,6 @@ function makePrettyLastLogin(dateString: string | undefined): string {
   }
 }
 
-
 export default function Page() {
   const [userData, setUserData] = useState<UserData | null>(null);
   const router = useRouter();

@@ -1,8 +1,8 @@
+/* eslint-disable */
 "use client"
 
 import * as React from "react"
 import { ChevronsUpDown, Plus, Search } from "lucide-react"
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,20 +20,42 @@ import {
 import { Input } from "@/components/commons/input"
 import { useRouter } from "next/navigation"
 
-export function TeamSwitcher({
-  teams,
-}: {
+import { useProject } from '@/hooks/useProject'
+
+export function TeamSwitcher({ teams,}: {
   teams: {
+    id: string // Make sure your team objects have an id property
     name: string
     logo: React.ElementType | null // puede ser null ahora
     plan: string
   }[]
 }) {
+  const { projectId, updateProjectId } = useProject()
   const { isMobile } = useSidebar()
-  const [activeTeam, setActiveTeam] = React.useState(teams[0])
-  const [search, setSearch] = React.useState("")
   const router = useRouter()
-  const mockUserId = 1 //To be changed with the backend
+  const userId = sessionStorage.getItem("userId") || ""
+
+  // Initialize activeTeam from sessionStorage or default to first team
+  const [activeTeam, setActiveTeam] = React.useState(() => {
+    const storedProjectId = sessionStorage.getItem("projectId")
+    return storedProjectId 
+      ? teams.find(team => team.id === storedProjectId) || teams[0]
+      : teams[0]
+  })
+
+  const [search, setSearch] = React.useState("")
+
+  React.useEffect(() => {
+    if (!userId) {
+      router.push("/login")
+    }
+  }, [userId, router])
+
+  const handleTeamSelect = (team: typeof teams[0]) => {
+    updateProjectId(team.id)
+    setSearch("")
+  }
+
 
   const filteredTeams = teams.filter(team =>
     team.name.toLowerCase().includes(search.toLowerCase())
@@ -48,7 +70,8 @@ export function TeamSwitcher({
           <SidebarMenuButton
             size="lg"
             className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-            onClick={() => router.push(`/users/${mockUserId}/projects`)}
+
+            onClick={() => router.push(`/users/${userId}/projects`)}
           >
             <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-sidebar-primary-foreground">
               <Plus className="size-4" />
@@ -65,10 +88,14 @@ export function TeamSwitcher({
                 className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
               >
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-sidebar-primary-foreground">
-                  <ActiveLogo className="size-4" />
+
+                  <activeTeam.logo className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">{activeTeam.name}</span>
+                  <span className="truncate font-semibold">
+                    {activeTeam.name}
+                  </span>
+
                   <span className="truncate text-xs">{activeTeam.plan}</span>
                 </div>
                 <ChevronsUpDown className="ml-auto" />
@@ -100,24 +127,19 @@ export function TeamSwitcher({
 
               <div className="max-h-[33vh] overflow-y-auto">
                 {filteredTeams.length > 0 ? (
-                  filteredTeams.map((team) => {
-                    const Logo = team.logo || Plus
-                    return (
-                      <DropdownMenuItem
-                        key={team.name}
-                        onClick={() => {
-                          setActiveTeam(team)
-                          setSearch("")
-                        }}
-                        className="gap-2 p-2"
-                      >
-                        <div className="flex size-6 items-center justify-center rounded-sm border">
-                          <Logo className="size-4 shrink-0" />
-                        </div>
-                        {team.name}
-                      </DropdownMenuItem>
-                    )
-                  })
+                  filteredTeams.map((team) => (
+                    <DropdownMenuItem
+                      key={team.id} // Using id as key is more reliable
+                      onClick={() => handleTeamSelect(team)}
+                      className="gap-2 p-2"
+                    >
+                      <div className="flex size-6 items-center justify-center rounded-sm border">
+                        <team.logo className="size-4 shrink-0" />
+                      </div>
+                      {team.name}
+                    </DropdownMenuItem>
+                  ))
+
                 ) : (
                   <div className="px-3 py-2 text-sm text-muted-foreground">
                     No projects found.
@@ -129,7 +151,8 @@ export function TeamSwitcher({
 
               <DropdownMenuItem
                 className="gap-2 p-2"
-                onClick={() => router.push(`/users/${mockUserId}/projects`)}
+
+                onClick={() => router.push(`/users/${userId}/projects`)}
               >
                 <div className="flex size-6 items-center justify-center rounded-md border bg-background">
                   <Plus className="size-4" />

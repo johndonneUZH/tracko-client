@@ -83,11 +83,20 @@ reason).
 | **fabiotilor** | 10.04  | https://github.com/johndonneUZH/sopra-fs25-group-46-client/pull/34/commits/f10d4b85c039a868fc3d483ff95dda482a69b2c2| Fixed a bug and fixed the delete projects confirmation | User was stuck in a weird state where he could not delete projects anymore |
 |                    | 10.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/7b05d5e7ddca2e3d1db71d348728d00eccbbf18f |       Made it more intuitive for the User how the projects are accessible | It was not clear in the demo |
 |                     | 10.04  | https://github.com/johndonneUZH/sopra-fs25-group-46-client/pull/37/commits/a10705030ff2d13d361a4bac8452c1fa4e4e9a6e | Added the forgot password page | The user should not lose their account just because they're forgetful |
-| **[@githubUser2]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+|  **johndonneUZH**  | 04.04  | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/ebbbb315863d579de12bce8e7f4eab26b4c33873 | Integrated with backend, login and register | Integration |
+|                    | 05.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/4f0772466c3c42741162c42be12b88fc7adddd41 | Working on integreation, fetching user data | Integration |
+|                    | 08.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/b9325eb7fd410aec9882213e19985dd8eb0b0e35 |Integrated projet page, connected with backend for project creation, fetch and deletion | Integration |
+|                    |  08.04 | https://github.com/johndonneUZH/sopra-fs25-group-46-server/commit/0baceb4e173e558d4e62a1d06a274cf13b451722 | Add project deletion and user project retrieval functionality | Integration |
+|                    | 10.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-server/commit/3c001ae17a8b1de98eaaf21a2656cf3c58a9f761 | Add endpoint to retrieve user friends in UserController and implement logic in UserService | Integration |
+|                    | 10.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/042029feabc94a7e6d920eabcdce719eac95c2ac | Refactor sidebar components and integrate API calls for user and project data | Integration |
+|                    |  10.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/db42cb86a900b16ff856b02d86929976af8bf37b | Enhance sidebar functionality: integrate project management hooks, improve data fetching, and refine navigation logic | Integration |
+|                    | 10.04  | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/20f7e832c4b10a2ada23c25e1655d8e5803add24 | Refactor sidebar and projects table components: extract icon mappings, improve project fetching logic, and enhance error handling | Integration |
+|                    | 10.04  | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/925baa5b578625e3c7c466bb920ae6a2e334ce26| Implement friends fetching functionality in FriendsTable component: add API call to retrieve friends and handle loading and error states | Integration |
 | **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@githubUser5]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 
 ---
