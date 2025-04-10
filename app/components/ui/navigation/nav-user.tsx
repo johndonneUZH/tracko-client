@@ -10,11 +10,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-<<<<<<<< HEAD:app/components/ui/navigation/nav-user.tsx
-} from "@/components/ui/navigation/sidebar"
-========
 } from "@/components/sidebar/sidebar"
->>>>>>>> 49cc0026cd237939ab54eae25965739b2c8cd1d7:app/components/sidebar/nav-user.tsx
 
 import { useRouter } from "next/navigation";
 
