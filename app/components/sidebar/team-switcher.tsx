@@ -18,6 +18,7 @@ import {
   useSidebar,
 } from "@/components/sidebar/sidebar"
 import { Input } from "@/components/commons/input"
+import { useRouter } from "next/navigation";
 
 export function TeamSwitcher({
   teams,
@@ -31,16 +32,32 @@ export function TeamSwitcher({
   const { isMobile } = useSidebar()
   const [activeTeam, setActiveTeam] = React.useState(teams[0])
   const [search, setSearch] = React.useState("")
+  const router = useRouter();
+  const mockUserId = 1 //To be changed with the backend
 
   const filteredTeams = teams.filter(team =>
     team.name.toLowerCase().includes(search.toLowerCase())
   )
 
-  if (!activeTeam) return null
-
   return (
     <SidebarMenu>
       <SidebarMenuItem>
+      {teams.length === 0 ? (
+          <SidebarMenuButton
+            size="lg"
+            className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+            onClick={()=>router.push(`/users/${mockUserId}/projects`)}
+          >
+            <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-sidebar-primary-foreground">
+              <Plus className="size-4" />
+            </div>
+            <div className="grid flex-1 text-left text-sm leading-tight">
+              <span className="truncate font-semibold">
+                New Project
+              </span>
+            </div>
+          </SidebarMenuButton>
+        ) : (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
@@ -108,14 +125,17 @@ export function TeamSwitcher({
 
             <DropdownMenuSeparator />
 
-            <DropdownMenuItem className="gap-2 p-2">
+            <DropdownMenuItem 
+              className="gap-2 p-2" 
+              onClick={()=>router.push(`/users/${mockUserId}/projects`)}
+            >
               <div className="flex size-6 items-center justify-center rounded-md border bg-background">
                 <Plus className="size-4" />
               </div>
               <div className="font-medium text-muted-foreground">New Project</div>
             </DropdownMenuItem>
           </DropdownMenuContent>
-        </DropdownMenu>
+        </DropdownMenu>)}
       </SidebarMenuItem>
     </SidebarMenu>
   )
