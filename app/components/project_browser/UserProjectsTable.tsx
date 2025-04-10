@@ -91,8 +91,8 @@ export function UserProjectsTable({ userId, projects = [], onDeleteSelected }: U
         const project = row.original;
         return (
           <Link
-            href={`/projects/${project.projectId}/dashboard`}  
-            className="cursor-pointer text-blue-600 hover:text-blue-800 hover:bg-gray-200 p-1 rounded-md flex items-center space-x-2"
+            href={`/users/${userId}/projects/${project.projectId}`}
+            className="cursor-pointer hover:underline"
           >
             <ChevronRight className="text-sm" />
             <span>{project.projectName}</span>
@@ -100,6 +100,7 @@ export function UserProjectsTable({ userId, projects = [], onDeleteSelected }: U
         );
       },
     },
+    
     {
       accessorKey: "updatedAt",  
       header: "Last Modified",

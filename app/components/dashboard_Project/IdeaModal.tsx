@@ -1,9 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
-import Comments from "./Comments";
+import React, { useState, useMemo } from "react";
 import { Idea } from "@/types/idea";
+import { Comment } from "@/types/comment";
+import Comments from "./Comments";
 
+interface CommentWithChildren extends Comment {
+  children: CommentWithChildren[];
+}
 
 interface IdeaModalProps {
   idea: Idea;
@@ -11,10 +15,11 @@ interface IdeaModalProps {
   onSave: (title: string, body: string) => void;
   onDelete: () => void;
   onCancel: () => void;
-  currentUserId: number;
-  onAddComment: (content: string, parentId?: number) => void;
-  onDeleteComment: (commentId: number) => void;
+  currentUserId: string;
+  onAddComment: (content: string, parentId?: string) => void;
+  onDeleteComment: (commentId: string) => void;
   onLogComment?: (action: string, title: string) => void;
+  commentMap: Record<string, Comment>;
 }
 
 export default function IdeaModal({
@@ -27,29 +32,38 @@ export default function IdeaModal({
   onAddComment,
   onDeleteComment,
   onLogComment,
+  commentMap,
 }: IdeaModalProps) {
-  const [title, setTitle] = useState(idea.title);
-  const [body, setBody] = useState(idea.body);
-  // Detect changes on content
-  const hasChanges = title !== idea.title || body !== idea.body;
+  const [title, setTitle] = useState(idea.ideaName || "");
+  const [body, setBody] = useState(idea.ideaDescription || "");
+  const hasChanges = title !== idea.ideaName || body !== idea.ideaDescription;
+
   const handleDiscardChanges = () => {
-    setTitle(idea.title);
-    setBody(idea.body);
+    setTitle(idea.ideaName);
+    setBody(idea.ideaDescription);
   };
 
-  // Array with 8 pastel colors
   const pastelColors = [
-    "#FFB3BA", // pastel red
-    "#FFDFBA", // pastel orange
-    "#FFFFBA", // pastel yellow
-    "#BAFFC9", // pastel green
-    "#BAE1FF", // pastel blue
-    "#E6E6FA", // lavender
-    "#FADADD", // pastel pink
-    "#D1C4E9", // pastel purple
+    "#FFB3BA", "#FFDFBA", "#FFFFBA", "#BAFFC9",
+    "#BAE1FF", "#E6E6FA", "#FADADD", "#D1C4E9",
   ];
-  // Determine the modal background color based on idea.id
-  const modalBackground = pastelColors[idea.id % pastelColors.length];
+  const modalBackground = pastelColors[parseInt(idea.ideaId, 16) % pastelColors.length];
+
+  // comment treee
+  const buildCommentTree = (rootIds: string[]): CommentWithChildren[] => {
+    return rootIds
+      .map((id) => {
+        const comment = commentMap[id];
+        if (!comment) return null;
+        return {
+          ...comment,
+          children: buildCommentTree(comment.replies || []),
+        };
+      })
+      .filter(Boolean) as CommentWithChildren[];
+  };
+
+  const commentTree = useMemo(() => buildCommentTree(idea.comments || []), [idea.comments, commentMap]);
 
   return (
     <div
@@ -67,14 +81,12 @@ export default function IdeaModal({
         zIndex: 9999,
       }}
       onClick={(e) => {
-        if (e.target === e.currentTarget) {
-          onCancel();
-        }
+        if (e.target === e.currentTarget) onCancel();
       }}
     >
       <div
         style={{
-          background: modalBackground, // Use pastel background color
+          background: modalBackground,
           padding: "2rem",
           borderRadius: "8px",
           width: "400px",
@@ -83,8 +95,6 @@ export default function IdeaModal({
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* <h2>Idea {idea.title}</h2> */}
-
         <label>Title:</label>
         <input
           value={title}
@@ -101,7 +111,6 @@ export default function IdeaModal({
           style={{ width: "100%", height: "120px" }}
         />
 
-        {/* Save / Cancel / Delete buttons */}
         <div style={{ marginTop: "1rem", textAlign: "right" }}>
           {canEdit ? (
             hasChanges ? (
@@ -175,16 +184,15 @@ export default function IdeaModal({
           )}
         </div>
 
-        {/* Comments section */}
-        {idea.title.trim() !== "" && idea.body.trim() !== "" && (
+        {title.trim() !== "" && body.trim() !== "" && (
           <>
             <hr style={{ margin: "1rem 0" }} />
             <Comments
-              comments={idea.comments}
+              comments={commentTree}
               currentUserId={currentUserId}
               onAddComment={(content, parentId) => {
                 onAddComment(content, parentId);
-                onLogComment?.("Added comment", idea.title);
+                onLogComment?.("Added comment", title);
               }}
               onDeleteComment={onDeleteComment}
             />
