@@ -12,7 +12,7 @@ export function useComments(projectId: string, ideaId: string) {
   useEffect(() => {
     if (!ideaId) return;
 
-    const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080";
+    const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL; // || "http://localhost:8080"; for development only
     const socket = new SockJS(`${baseUrl}/ws`);
     const client = new Client({
       webSocketFactory: () => socket,
