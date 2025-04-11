@@ -94,8 +94,8 @@ reason).
 |                    | 10.04  | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/925baa5b578625e3c7c466bb920ae6a2e334ce26| Implement friends fetching functionality in FriendsTable component: add API call to retrieve friends and handle loading and error states | Integration |
 | **JMAVITE** | 10.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/14d6fd1534cc43d2335e472fcb144089d5124667 | INTEGARION BACK AND FRONT END | it makes the app work and saves the data in the data base |
 |                    | 9.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/1a5bc4804ff841fdbae055fbbeb32f010376129e | Integration of the ideas | saves the ideas in a database and can retrieve its values from it |
-| **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **manueltuor** | 9.04   | (https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/8ed95b727697cd954f856b9a4e8baf5343a1620d) | finished sidebar, added new menu and enhanced the team switcher with a search bar | relevant to most user stories |
+|                    | 9.04 | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/eb871c0cede074a5c4d08333524b6eba185e93c0 | setup the template for all pages we need and started designing some + integrated with others designs | relevant to most user stories |
 | **[@githubUser5]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 
