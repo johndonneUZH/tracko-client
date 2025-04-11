@@ -1,5 +1,5 @@
 "use client";
-//Web Sockets are commented for now becasue if not the vercel app cannot be deployed
+// Web Sockets are commented for now because if not the vercel app cannot be deployed
 
 import { useParams, useRouter } from "next/navigation";
 // import { useEffect, useState } from "react";
@@ -11,19 +11,33 @@ import { useComments } from "@/lib/dashboard_utils/useCommentStorage";
 // import { addLogEntry } from "@/lib/dashboard_utils/logHelpers";
 
 // Import helpers for ideas
-import { isIdeaEmpty, generateNewIdea } from "@/lib/dashboard_utils/ideaHelpers";
+import { isIdeaEmpty } from "@/lib/dashboard_utils/ideaHelpers";
 
 // Import the new useIdeas hook
 import { useIdeas } from "@/lib/dashboard_utils/useIdeaStorage";
 
 import ProjectDashboard from "@/components/dashboard_Project/ProjectDashboard";
 import NewIdeaButton from "@/components/dashboard_Project/NewIdeaButton";
-// import ChangeLogSidebar from "@/components/dashboard_Project/ChangeLogSidebar";
-import ProjectHeader from "@/components/dashboard_Project/ProjectHeader";
+// import ChangeLogSidebar from "@/components/dashboard_Project/ChangeLogSidebar"
 import IdeaModal from "@/components/dashboard_Project/IdeaModal";
+import { useEffect, useState, useMemo } from "react";
+import { ApiService } from "@/api/apiService";
+
 
 import { useCommentFetcher } from "@/lib/dashboard_utils/useCommentFetcher";
 //import WebSocketMonitor from "@/components/WebSocketMonitor";
+
+import { SidebarProvider } from "@/components/sidebar/sidebar";
+import { AppSidebar } from "@/components/sidebar/app-sidebar";
+import { SidebarTrigger } from "@/components/sidebar/sidebar";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/commons/breadcrumb";
 
 export default function ProjectLayout({
   children,
@@ -35,18 +49,14 @@ export default function ProjectLayout({
   const currentUserId = useCurrentUserId();
   // const { logEntries, pushLog } = useStoreLog(projectId as string);
   
-  
   const { ideas, createIdea, updateIdea, deleteIdea } = useIdeas(projectId as string);
   
-  // If useComments still requiere un updater, ajustarlo según la nueva integración.
-    
   // Selected idea obtained by filtering the ideas array
   const selectedIdea = ideas.find((i) => i.ideaId === (ideaId as string)) || null;
   const selectedIdeaId = selectedIdea?.ideaId || null;
-  const { deleteComment } = useComments(projectId as string, selectedIdeaId || "");
+  const { addComment, deleteComment } = useComments(projectId as string, selectedIdeaId || "");
 
   const { commentMap, refreshComments } = useCommentFetcher(projectId as string, selectedIdeaId || "");
-
 
   // ----------------------
   // HANDLER FUNCTIONS
@@ -54,14 +64,12 @@ export default function ProjectLayout({
 
   // Use generateNewIdea helper for creating a new idea.
   // Generate a new id (using crypto.randomUUID) and pass projectId and currentUserId.
-  const handleCreate = async () => {
+  const handleCreate = async (title: string, body: string | null) => {
     try {
-      const nextId = crypto.randomUUID();
-      const newIdeaData = generateNewIdea(projectId as string, nextId, currentUserId);
-      const newIdea = await createIdea(newIdeaData);
+      const newIdea = await createIdea(title, body);
       router.push(`/users/${id}/projects/${projectId}/dashboard/ideas/${newIdea.ideaId}`);
     } catch (error) {
-      console.error("Error creating idea:", error); // log error creating idea
+      console.error("Error creating idea:", error);
     }
   };
 
@@ -100,9 +108,6 @@ export default function ProjectLayout({
       downVotes: newDownVotes,
     });
   };
-  
-  
-  
 
   const handleDelete = async (ideaId: string) => {
     const ideaToDelete = ideas.find((i) => i.ideaId === ideaId);
@@ -110,13 +115,13 @@ export default function ProjectLayout({
 
     if (!isIdeaEmpty(ideaToDelete) && !window.confirm("This idea will be permanently deleted, proceed?")) return;
     
-    //addLogEntry(pushLog, 20, "Deleted idea", ideaToDelete.title, projectId as string);
+    // addLogEntry(pushLog, 20, "Deleted idea", ideaToDelete.title, projectId as string);
     await deleteIdea(ideaId);
     router.push(`/users/${id}/projects/${projectId}/dashboard`);
   };
 
   // Adapt handleSave: use updateIdea and update properties using title and body
-    const handleSave = async (ideaId: string, title: string | undefined, body: string | undefined) => {
+      const handleSave = async (ideaId: string, title: string, body: string) => {
       
       const oldIdea = ideas.find((i) => i.ideaId === ideaId);
       //const oldTitle = oldIdea?.ideaName || "";
@@ -128,6 +133,24 @@ export default function ProjectLayout({
       router.push(`/users/${id}/projects/${projectId}/dashboard/ideas/${ideaId}`);
 
     };
+
+    const [projectName, setProjectName] = useState<string>("");
+
+    const apiService = useMemo(() => new ApiService(), []);
+
+    useEffect(() => {
+      async function fetchProjectName() {
+        try {
+          const response = await apiService.get<{ projectName: string }>(`/projects/${projectId}`);
+          setProjectName(response.projectName);
+        } catch (error) {
+          console.error("Error fetching project name:", error);
+          setProjectName("Unknown Project");
+        }
+      }
+
+      fetchProjectName();
+    }, [projectId, apiService]);
   
   
 
@@ -135,58 +158,79 @@ export default function ProjectLayout({
   // RENDER
   // ----------------------
   return (
-    <>
-      <div style={{ height: "100vh", padding: "2rem", background: "#eaf4fc", display: "flex" }}>
-        <ProjectHeader projectId={projectId as string} />
-        {/* <ChangeLogSidebar logEntries={logEntries} /> */}
-        <div style={{ flex: 1, display: "flex", justifyContent: "center", gap: "2rem" }}>
-        <ProjectDashboard 
-          ideas={ideas}
-          selectedIdeaId={selectedIdeaId}
-          onIdeaClick={(ideaId) => router.push(`/users/${id}/projects/${projectId}/dashboard/ideas/${ideaId}`)}
-          updateIdea={updateIdea} //
-          onToggleVote={toggleVote}
-/>
-          {children}
+    <SidebarProvider>
+      <div className="flex h-screen w-full mt-4 mb-4">
+        {/* Sidebar */}
+        <AppSidebar className="w-64 shrink-0" />
+
+        {/* Main Content Wrapper */}
+        <div className="flex flex-col flex-1">
+          {/* Fixed Header with Breadcrumb */}
+          <header className="flex h-16 items-center gap-2 px-4">
+            <SidebarTrigger className="-ml-1 mr-2" />
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem className="hidden md:block">
+                  <BreadcrumbLink href="#">Home</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator className="hidden md:block" />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>Dashboard</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+          </header>
+          <div className="flex flex-col flex-1 p-4">
+              <div className="flex justify-between mb-10">
+                <h1 className="text-xl font-bold">Dashboard Project {projectName}</h1>
+                <NewIdeaButton onClick={handleCreate} />
+              </div>
+            <ProjectDashboard 
+              ideas={ideas}
+              selectedIdeaId={selectedIdeaId}
+              onIdeaClick={(ideaId) => router.push(`/users/${id}/projects/${projectId}/dashboard/ideas/${ideaId}`)}
+              updateIdea={updateIdea} //
+              onToggleVote={toggleVote}
+            />
+              {children}
+
+            {selectedIdea && (
+              <IdeaModal
+              idea={selectedIdea}
+              canEdit={true}
+              onSave={(title, body) => {
+                handleSave(selectedIdea.ideaId, title, body);
+                router.push(`/users/${id}/projects/${projectId}/dashboard/ideas/${selectedIdea.ideaId}`);
+              }}
+              onDelete={() => handleDelete(selectedIdea.ideaId)}
+              onCancel={() => handleCancel(selectedIdea)}
+              currentUserId={currentUserId}
+              onAddComment={async (content, parentId) => {
+                const newComment = await addComment(content, parentId);
+                if (newComment && !parentId) {
+                  await updateIdea(selectedIdea.ideaId, {
+                    comments: [...(selectedIdea.comments || []), newComment.commentId],
+                  });
+                }
+                await refreshComments();
+                }} 
+              onDeleteComment={(commentId) => deleteComment(commentId)}
+              commentMap={commentMap}
+                // onLogComment={(action, title) =>
+                //   //addLogEntry(pushLog, 20, action, title, projectId as string)
+                // }
+              />
+            )}
+
+            {/* <WebSocketMonitor 
+              connected={connected} 
+              messages={messages} 
+              clearMessages={() => setMessages([])} 
+              sendMessage={(content: string) => sendWebSocketMessage("/app/test-message", content || "Test message")} 
+            /> */}
+          </div>
         </div>
-        <NewIdeaButton onClick={handleCreate} />
       </div>
-
-      {selectedIdea && (
-        <IdeaModal
-        idea={selectedIdea}
-        canEdit={true}
-        onSave={(title, body) => {
-          handleSave(selectedIdea.ideaId, title, body);
-          router.push(`/users/${id}/projects/${projectId}/dashboard/ideas/${selectedIdea.ideaId}`);
-        }}
-        onDelete={() => handleDelete(selectedIdea.ideaId)}
-        onCancel={() => handleCancel(selectedIdea)}
-        currentUserId={currentUserId}
-        onAddComment={async () => {
-          //const newComment = await addComment(content, parentId);
-          // if (newComment && !parentId) {
-          //   const updated = await updateIdea(selectedIdea.ideaId, {
-          //     comments: [...(selectedIdea.comments || []), newComment.commentId],
-          //   });
-          // }
-          await refreshComments();
-          }} 
-        onDeleteComment={(commentId) => deleteComment(commentId)}
-        commentMap={commentMap}
-          // onLogComment={(action, title) =>
-          //   //addLogEntry(pushLog, 20, action, title, projectId as string)
-          // }
-        />
-      )}
-
-
-      {/* <WebSocketMonitor 
-        connected={connected} 
-        messages={messages} 
-        clearMessages={() => setMessages([])} 
-        sendMessage={(content: string) => sendWebSocketMessage("/app/test-message", content || "Test message")} 
-      /> */}
-    </>
+    </SidebarProvider>
   );
 }
