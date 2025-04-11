@@ -1,13 +1,13 @@
 "use client";
 
 interface NewIdeaButtonProps {
-  onClick: () => void;
+  onClick: (title: string, body: string | null) => void;
 }
 
 export default function NewIdeaButton({ onClick }: NewIdeaButtonProps) {
   return (
     <button
-      onClick={onClick}
+      onClick={() => onClick("", "")}
       style={{
         position: "fixed",
         left: "1rem",
