@@ -25,7 +25,7 @@ import {
 } from "@/components/project_browser/table";
 import { Button } from "@/components/commons/button";
 import { Input } from "@/components/commons/input";
-import { ChevronDown, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronRight, Trash2 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -85,20 +85,22 @@ export function UserProjectsTable({ userId, projects = [], onDeleteSelected }: U
       enableHiding: false,
     },
     {
-      accessorKey: "name", 
-      header: "Name",
+      accessorKey: "projectName", 
+      header: "Projects",
       cell: ({ row }) => {
         const project = row.original;
         return (
           <Link
-            href={`/projects/${project.projectId}`}
+            href={`/users/${userId}/projects/${project.projectId}/dashboard`}
             className="cursor-pointer hover:underline"
           >
-            {project.projectName} 
+            <ChevronRight className="text-sm" />
+            <span>{project.projectName}</span>
           </Link>
         );
       },
     },
+    
     {
       accessorKey: "updatedAt",  
       header: "Last Modified",
@@ -148,9 +150,9 @@ export function UserProjectsTable({ userId, projects = [], onDeleteSelected }: U
       <div className="flex items-center py-4">
         <Input
           placeholder="Filter projects..."
-          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+          value={(table.getColumn("projectName")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("name")?.setFilterValue(event.target.value)
+            table.getColumn("projectName")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
@@ -180,7 +182,8 @@ export function UserProjectsTable({ userId, projects = [], onDeleteSelected }: U
         </DropdownMenu>
       </div>
 
-      <div className="rounded-md border overflow-x-auto">
+      <div className="rounded-md border overflow-x-auto w-[1000px] max-w-full">
+
         <Table className="min-w-full">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

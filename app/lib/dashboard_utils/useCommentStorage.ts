@@ -1,90 +1,50 @@
+import { ApiService } from "@/api/apiService";
 import { Comment } from "@/types/comment";
-import { Idea } from "@/types/idea";
-export function useComments(
-  setIdeas: React.Dispatch<React.SetStateAction<Idea[]>>,
-  currentUserId: number
-) {
-  const addComment = (ideaId: number, content: string, parentId?: number) => {
-    const newComment: Comment = {
-      id: Date.now(),
-      authorId: currentUserId,
-      content,
-      replies: [],
-    };
-    
+import { useMemo } from "react";
 
-    setIdeas((prev) =>
-      prev.map((idea) => {
-        if (idea.id !== ideaId) return idea;
+export function useComments(projectId: string, ideaId: string) {
+  const api = useMemo(() => new ApiService(), []);
 
-        if (!parentId) {
-          return {
-            ...idea,
-            comments: [...idea.comments, newComment],
-          };
-        } else {
-          return {
-            ...idea,
-            comments: addReplyRecursive(idea.comments, parentId, newComment),
-          };
-        }
-      })
-    );
+  const addComment = async (content: string, parentId?: string): Promise<Comment | null> => {
+    try {
+      const path = parentId
+        ? `/projects/${projectId}/ideas/${ideaId}/comments/${parentId}`
+        : `/projects/${projectId}/ideas/${ideaId}/comments`;
+
+      const newComment = await api.post<Comment>(path, { commentText: content });
+      return newComment;
+    } catch (err) {
+      console.error("Failed to add comment:", err);
+      return null;
+    }
   };
 
-  const addReplyRecursive = (
-    commentList: Comment[],
-    parentId: number,
-    newComment: Comment
-  ): Comment[] => {
-    return commentList.map((c) => {
-      if (c.id === parentId) {
-        return { ...c, replies: [...c.replies, newComment] };
-      } else {
-        return {
-          ...c,
-          replies: addReplyRecursive(c.replies, parentId, newComment),
-        };
-      }
-    });
+  const deleteComment = async (commentId: string): Promise<boolean> => {
+    try {
+      await api.delete(`/projects/${projectId}/ideas/${ideaId}/comments/${commentId}`);
+      return true;
+    } catch (err) {
+      console.error("Failed to delete comment:", err);
+      return false;
+    }
   };
 
-  const deleteComment = (ideaId: number, commentId: number) => {
-    setIdeas((prev) =>
-      prev.map((idea) => {
-        if (idea.id !== ideaId) return idea;
-        return {
-          ...idea,
-          comments: deleteCommentRecursive(
-            idea.comments,
-            commentId,
-            currentUserId
-          ),
-        };
-      })
-    );
-  };
-
-  const deleteCommentRecursive = (
-    commentList: Comment[],
-    commentId: number,
-    userId: number
-  ): Comment[] => {
-    return commentList
-      .map((c) => {
-        if (c.id === commentId && c.authorId === userId) {
-          return null;
-        }
-        return {
-          ...c,
-          replies: deleteCommentRecursive(c.replies, commentId, userId),
-        };
-      })
-      .filter(Boolean) as Comment[];
-  };
+  // const editComment = async (commentId: string, newContent: string): Promise<Comment | null> => {
+  //   try {
+  //     const updatedComment = await api.put<Comment>(
+  //       `/projects/${projectId}/ideas/${ideaId}/comments/${commentId}`,
+  //       { commentText: newContent }
+  //     );
+  //     return updatedComment;
+  //   } catch (err) {
+  //     console.error("Failed to edit comment:", err);
+  //     return null;
+  //   }
+  // };
 
   return {
     addComment,
     deleteComment,
+    // editComment,
   };
 }

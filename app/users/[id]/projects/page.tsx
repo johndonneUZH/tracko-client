@@ -35,12 +35,6 @@ export default function UserProjectsPage() {
   }, [id]);
 
   const handleDeleteSelected = async (selectedIds: string[]) => {
-    const isConfirmed = window.confirm(
-      `Are you sure you want to delete ${selectedIds.length} project(s)?`
-    );
-    
-    if (!isConfirmed) return;
-  
     const success = await deleteProjects(selectedIds);
     
     if (!success) {
@@ -82,7 +76,7 @@ export default function UserProjectsPage() {
                 <CardDescription>Add and manage user projects</CardDescription>
               </CardHeader>
               <CardContent>
-                <AddProjectForm onAddProject={(projectName) => addProject(projectName, "")} />
+                <AddProjectForm onAddProject={(projectName, projectDescription) => addProject(projectName, projectDescription)} />
               </CardContent>
             </Card>
 

@@ -7,10 +7,10 @@ import Votes from "./Votes";
 interface IdeaBoxProps {
   idea: Idea;
   isSelected: boolean;
-  onDragEnd: (e: React.DragEvent<HTMLDivElement>, ideaId: number) => void;
-  onClick: (ideaId: number) => void;
-  currentUserId: number;
-  onToggleVote: (ideaId: number, userId: number, type: "up" | "down") => void;
+  onDragEnd: (e: React.DragEvent<HTMLDivElement>, ideaId: string) => void;
+  onClick: (ideaId: string) => void;
+  currentUserId: string;
+  onToggleVote: (ideaId: string, userId: string, type: "up" | "down") => void;
 }
 
 export default function IdeaBox({
@@ -33,7 +33,7 @@ export default function IdeaBox({
     "#D1C4E9", // pastel purple
   ];
   // Rotate colors based on idea id modulo the array length
-  const backgroundColor = pastelColors[idea.id % pastelColors.length];
+  const backgroundColor = pastelColors[parseInt(idea.ideaId, 16) % pastelColors.length];
 
   // Inner shadow for improved design
   const innerShadow = "inset 0 4px 6px rgba(0, 0, 0, 0.1)";
@@ -44,11 +44,11 @@ export default function IdeaBox({
 
   return (
     <div
-      key={idea.id}
+      key={idea.ideaId}
       className="idea-box hover:scale-105 transition-transform duration-200 rounded-lg"
       draggable
-      onDragEnd={(e) => onDragEnd(e, idea.id)}
-      onClick={() => onClick(idea.id)}
+      onDragEnd={(e) => onDragEnd(e, idea.ideaId)}
+      onClick={() => onClick(idea.ideaId)}
       style={{
         position: "absolute",
         left: idea.x,
@@ -63,11 +63,12 @@ export default function IdeaBox({
         padding: "1rem",
       }}
     >
-      <strong>{idea.title || "Untitled Idea"}</strong>
-      {/* Votes positioned at the bottom-right */}
+      <strong>{idea.ideaName || "Untitled Idea"}</strong>
+      {/* Votes positioned at the bottom-right*/}
       <div style={{ position: "absolute", bottom: "1rem", right: "1rem" }}>
-        <Votes idea={idea} currentUserId={currentUserId} onToggleVote={onToggleVote} />
-      </div>
+        <Votes idea={idea} currentUserId={currentUserId} onToggleVote={onToggleVote} 
+        /> 
+      </div> 
     </div>
   );
 }
