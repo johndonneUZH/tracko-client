@@ -102,16 +102,14 @@ export default function ProjectDashboard({
   return (
     <div
       style={{
-        width: "66%",
         background: "#fff",
         border: "2px dashed #ccc",
-        position: "relative",
         overflow: "auto",
       }}
     >
       <div
         style={{
-          width: "1220px",
+          width: "100%",
           height: "800px",
           position: "relative",
         }}
