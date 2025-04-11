@@ -54,7 +54,7 @@ export default function ProjectLayout({
   // Selected idea obtained by filtering the ideas array
   const selectedIdea = ideas.find((i) => i.ideaId === (ideaId as string)) || null;
   const selectedIdeaId = selectedIdea?.ideaId || null;
-  const { deleteComment } = useComments(projectId as string, selectedIdeaId || "");
+  const { addComment, deleteComment } = useComments(projectId as string, selectedIdeaId || "");
 
   const { commentMap, refreshComments } = useCommentFetcher(projectId as string, selectedIdeaId || "");
 
@@ -205,13 +205,13 @@ export default function ProjectLayout({
               onDelete={() => handleDelete(selectedIdea.ideaId)}
               onCancel={() => handleCancel(selectedIdea)}
               currentUserId={currentUserId}
-              onAddComment={async () => {
-                //const newComment = await addComment(content, parentId);
-                // if (newComment && !parentId) {
-                //   const updated = await updateIdea(selectedIdea.ideaId, {
-                //     comments: [...(selectedIdea.comments || []), newComment.commentId],
-                //   });
-                // }
+              onAddComment={async (content, parentId) => {
+                const newComment = await addComment(content, parentId);
+                if (newComment && !parentId) {
+                  await updateIdea(selectedIdea.ideaId, {
+                    comments: [...(selectedIdea.comments || []), newComment.commentId],
+                  });
+                }
                 await refreshComments();
                 }} 
               onDeleteComment={(commentId) => deleteComment(commentId)}
@@ -221,7 +221,6 @@ export default function ProjectLayout({
                 // }
               />
             )}
-
 
             {/* <WebSocketMonitor 
               connected={connected} 
