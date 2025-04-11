@@ -103,7 +103,6 @@ export default function ProjectDashboard({
     <div
       style={{
         background: "#fff",
-        border: "2px dashed #ccc",
         overflow: "auto",
       }}
     >
