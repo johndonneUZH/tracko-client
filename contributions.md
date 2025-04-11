@@ -96,9 +96,8 @@ reason).
 |                    | 9.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/1a5bc4804ff841fdbae055fbbeb32f010376129e | Integration of the ideas | saves the ideas in a database and can retrieve its values from it |
 | **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-| **[@githubUser5]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-
+| **Ronald Domi** | 10.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-server/commit/54121dbe9f08f8de072987c69dff8e736eb52689 | Adding AI integration | AI suggestions and brainstorming is a very core part of the service |
+| **Ronald Domi** | 10.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-server/commit/54121dbe9f08f8de072987c69dff8e736eb52689 | Adding AI tests | Testing the AI added parts with unit tests |
 ---
 
 
