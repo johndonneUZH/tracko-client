@@ -10,7 +10,7 @@ import {
     AvatarImage,
 } from "@/components/commons/avatar"
 
-export function FriendsTable() {
+export function MembersTable() {
     const apiService = new ApiService();
     const router = useRouter();
     const [friends, setFriends] = useState<User[]>([]);
@@ -67,25 +67,38 @@ export function FriendsTable() {
     if (friends.length === 0) {
         return (
           <div className="bg-gray-50 border border-gray-200 text-gray-600 p-4 rounded">
-            Go touch some grass, you have no friends
+            Go touch some grass, you have no members
           </div>
         );
     }
     
     return (
-        <table className="w-full">
+        <table className="w-full table-fixed">
+            <thead>
+                <tr className="bg-gray-50">
+                    <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Icon</th>
+                    <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                    <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                    <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Members</th>
+                </tr>
+            </thead>
             <tbody>
                 {friends.map((friend) => (
-                    <tr key={friend.id} className="even:bg-transparent bg-gray-100">
-                        <td className="px-2 py-1 text-left w-1">
-                          <Avatar className="h-8 w-8 rounded-lg">
-                            <AvatarImage src={friend.avatarUrl || `https://avatar.vercel.sh/${friend.username}`} />
-                          </Avatar>
+                    <tr key={friend.id} className="border-b">
+                        <td className="px-2 py-1 text-left w-full">
+                            <Avatar className="h-8 w-8 rounded-lg">
+                                <AvatarImage src={friend.avatarUrl || `https://avatar.vercel.sh/${friend.username}`} />
+                            </Avatar>
                         </td>
                         <td className="px-2 py-1 text-left w-full">
                             {friend.name || friend.username}
                         </td>
-                        <td className="px-2 py-1 text-right w-1">
+                        <td className="px-2 py-1 text-left w-full">
+                            <span className={`h-3 w-3 rounded-full inline-block ${
+                                friend.status === "ONLINE" ? "bg-green-500" : "bg-red-500"
+                            }`}></span>
+                        </td>
+                        <td className="px-2 py-1 text-left w-full">
                             <span className={`h-3 w-3 rounded-full inline-block ${
                                 friend.status === "ONLINE" ? "bg-green-500" : "bg-red-500"
                             }`}></span>
