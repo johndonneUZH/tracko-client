@@ -32,7 +32,12 @@ export function useIdeas(projectId: string) {
     fetchIdeas();
   }, [projectId, apiService]);
 
-  async function createIdea(inputIdea: Partial<Idea>) {
+  async function createIdea(title: string, body: string | null) {
+    const inputIdea = {
+      ideaName: title,
+      ideaDescription: body ? body : ""
+    };
+
     try {
       const newIdea = await apiService.post<Idea>(`/projects/${projectId}/ideas`, inputIdea);
       newIdea.upVotes = newIdea.upVotes || [];
