@@ -1,60 +1,46 @@
 /* eslint-disable */
 
 import React, { useEffect, useState } from "react";
-import { ApiService } from "@/api/apiService"
-import { useRouter } from "next/navigation";
 import { User } from "@/types/user";
+import { useRouter } from "next/navigation";
+import { ApiService } from "@/api/apiService";
 
 import {
     Avatar,
     AvatarImage,
 } from "@/components/commons/avatar"
 
-export function MembersTable() {
-    const apiService = new ApiService();
-    const router = useRouter();
-    const [friends, setFriends] = useState<User[]>([]);
-    const [loading, setLoading] = useState(true);
+interface Props {
+    ownerId : String | undefined
+}
+
+export function MembersTable( { ownerId } : Props) {
     const [error, setError] = useState<string | null>(null);
-    const [userId, setUserId] = useState<string | null>(null);
+    const [members, setMembers] = useState<User[]>([]);
+    const router = useRouter();
+    const apiService = new ApiService();
 
-    useEffect(() => {   
-    const storedUserId = sessionStorage.getItem("userId");
-  
-    if (!storedUserId) {
-      router.push("/login");
-      return;
-    }
-  
-    setUserId(storedUserId);
-  
-    const fetchProjects = async () => {
-      try {
-        setLoading(true);
-        const data = await apiService.getFriends<User[]>(storedUserId);
-        setFriends(data);
-      } catch (err) {
-        setError("Failed to load projects");
-        console.error("Error fetching projects:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-  
-    fetchProjects();
-    }, [router]);
-
-    if (loading) {
-        return (
-            <div className="flex flex-col items-start justify-center h-screen pt-10 px-4">
-            <div className="flex space-x-2">
-                <div className="h-4 w-4 bg-blue-700 rounded-full animate-bounce"></div>
-                <div className="h-4 w-4 bg-blue-800 rounded-full animate-bounce delay-200"></div>
-                <div className="h-4 w-4 bg-blue-900 rounded-full animate-bounce delay-400"></div>
-            </div>
-            </div>
-        );
-    }
+    useEffect(() => {
+        const fetchMembersData = async () => {
+          const projectId = sessionStorage.getItem("projectId");
+          const token = sessionStorage.getItem("token");
+      
+          if (!projectId || !token) {
+            router.push("/login");
+            return;
+          }
+      
+          try {
+            const data = await apiService.get<User[]>(`/projects/${projectId}/members`)
+            setMembers(data);
+            console.log(data)
+          } catch (error) {
+            console.error("Error fetching user data:", error);
+          }
+        };
+      
+        fetchMembersData();
+    }, []);
 
     if (error) {
         return (
@@ -64,7 +50,7 @@ export function MembersTable() {
         );
       } 
     
-    if (friends.length === 0) {
+    if (members.length === 0) {
         return (
           <div className="bg-gray-50 border border-gray-200 text-gray-600 p-4 rounded">
             Go touch some grass, you have no members
@@ -79,28 +65,29 @@ export function MembersTable() {
                     <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Icon</th>
                     <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                     <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                    <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Members</th>
+                    <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                 </tr>
             </thead>
             <tbody>
-                {friends.map((friend) => (
-                    <tr key={friend.id} className="border-b">
+                {members.map((member) => (
+                    <tr key={member.id} className="border-b">
                         <td className="px-2 py-1 text-left w-full">
                             <Avatar className="h-8 w-8 rounded-lg">
-                                <AvatarImage src={friend.avatarUrl || `https://avatar.vercel.sh/${friend.username}`} />
+                                <AvatarImage src={member.avatarUrl || `https://avatar.vercel.sh/${member.username}`} />
                             </Avatar>
                         </td>
                         <td className="px-2 py-1 text-left w-full">
-                            {friend.name || friend.username}
+                            {member.name || member.username}
+                        </td>
+                        <td className="px-2 py-1 text-left w-full">
+                            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                ${ownerId === member.id ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}`}>
+                                {ownerId === member.id ? 'Admin' : 'Contributor'}
+                            </span>
                         </td>
                         <td className="px-2 py-1 text-left w-full">
                             <span className={`h-3 w-3 rounded-full inline-block ${
-                                friend.status === "ONLINE" ? "bg-green-500" : "bg-red-500"
-                            }`}></span>
-                        </td>
-                        <td className="px-2 py-1 text-left w-full">
-                            <span className={`h-3 w-3 rounded-full inline-block ${
-                                friend.status === "ONLINE" ? "bg-green-500" : "bg-red-500"
+                                member.status === "ONLINE" ? "bg-green-500" : "bg-red-500"
                             }`}></span>
                         </td>
                     </tr>

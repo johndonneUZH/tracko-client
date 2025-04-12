@@ -10,6 +10,7 @@ import { Button } from "@/components/commons/button"
 import { useRouter } from "next/navigation";
 import { ApiService } from "@/api/apiService";
 import { MembersTable } from "@/components/settings_page/members_table";
+import { EditDialog } from "@/components/settings_page/edit_dialog";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -20,7 +21,8 @@ import {
 } from "@/components/commons/breadcrumb";
 
 import {
-  Pencil,
+  UserPlus,
+  UserMinus
 } from "lucide-react"
 
 import { DynamicIcon } from 'lucide-react/dynamic';
@@ -40,8 +42,13 @@ export default function SettingsPage() {
   const [projectData, setProjectData] = useState<ProjectData | null>(null);
   const router = useRouter();
   const iconName = (projectData?.projectLogoUrl.toLowerCase() || "university") as any
-
+  const [isOwner, setIsOwner] = useState(false);
+  const [triggerReload, setTriggerReload] = useState(false);
   const apiService = new ApiService();
+
+  const reload = () => {
+    setTriggerReload(triggerReload => !triggerReload);
+  };
 
   useEffect(() => {
     const fetchProjectData = async () => {
@@ -56,34 +63,14 @@ export default function SettingsPage() {
       try {
         const data = await apiService.get<ProjectData>(`/projects/${projectId}`)
         setProjectData(data);
+        setIsOwner(data?.ownerId === sessionStorage.getItem("userId"));
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
     };
   
     fetchProjectData();
-  }, []);
-
-  //useEffect(() => {
-  //  const fetchMemberData = async () => {
-  //    const ownerId = projectData?.ownerId
-  //    const memberIds = projectData?.projectMembers
-  //
-  //    if (!ownerId) {
-  //      router.push("/login");
-  //      return;
-  //    }
-  
-  //    try {
-  //      const ownerData = await apiService.get<MemberData>(`/users/${ownerId}`)
-  //      setProjectData(ownerData);
-  //    } catch (error) {
-  //      console.error("Error fetching member data:", error);
-  //    }
-  //  };
-  
-  //  fetchMemberData();
-  //}, []);
+  }, [triggerReload]);
 
   return (
     <SidebarProvider>
@@ -124,15 +111,15 @@ export default function SettingsPage() {
                 </div>
               </div>
               <div className="space-x-4 items-center">
-                <Button className="min-w-25 w-auto py-3" onClick= {() => {}}>
-                  <Pencil/> Edit
-                </Button>
+                { isOwner && (
+                <EditDialog 
+                  projectData={projectData}
+                  reload={reload}
+                />
+                )}
               </div>
             </div>
             <div>
-              <p className="leading-7">
-                Owner Id: {projectData?.ownerId}
-              </p>
               <p className="leading-7">
                 Created: {projectData?.createdAt ? new Date(projectData.createdAt).toLocaleDateString("en-US", {
                   year: "numeric",
@@ -149,10 +136,20 @@ export default function SettingsPage() {
               </p>
             </div>
             <div>
-              <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
+              <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight mb-2">
                 Members
               </h3>
-              <MembersTable />
+              <MembersTable ownerId = {projectData?.ownerId} />
+              { isOwner && (
+              <div className="flex-row space-x-4 mt-8">
+                <Button className="min-w-25" onClick= {() => {}}>
+                  <UserPlus />Invite
+                </Button>
+                <Button className="min-w-25" variant="destructive" onClick= {() => {}}>
+                  <UserMinus /> Kick
+                </Button>
+              </div>
+              )}
             </div>
           </div>
         </div>
