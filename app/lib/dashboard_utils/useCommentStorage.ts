@@ -1,9 +1,42 @@
 import { ApiService } from "@/api/apiService";
 import { Comment } from "@/types/comment";
-import { useMemo } from "react";
+import { useMemo, useEffect, useRef } from "react";
+import { Client } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
 
 export function useComments(projectId: string, ideaId: string) {
   const api = useMemo(() => new ApiService(), []);
+  const stompRef = useRef<Client | null>(null);
+
+  // WebSocket
+  useEffect(() => {
+    if (!ideaId) return;
+
+    const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL; // || "http://localhost:8080"; for development only
+    const socket = new SockJS(`${baseUrl}/ws`);
+    const client = new Client({
+      webSocketFactory: () => socket,
+      onConnect: () => {
+        client.subscribe(`/topic/comments/${ideaId}`, (message) => {
+          const data = JSON.parse(message.body);
+          if ("deletedId" in data) {
+            console.log("Comentario eliminado:", data.deletedId);
+          } else {
+            console.log("Comentario nuevo recibido:", data);
+          }
+        });
+      },
+      debug: (str) => console.log(str),
+      reconnectDelay: 5000,
+    });
+
+    client.activate();
+    stompRef.current = client;
+
+    return () => {
+      client.deactivate();
+    };
+  }, [ideaId]);
 
   const addComment = async (content: string, parentId?: string): Promise<Comment | null> => {
     try {
@@ -22,29 +55,15 @@ export function useComments(projectId: string, ideaId: string) {
   const deleteComment = async (commentId: string): Promise<boolean> => {
     try {
       await api.delete(`/projects/${projectId}/ideas/${ideaId}/comments/${commentId}`);
-      return true;
+      return true; 
     } catch (err) {
       console.error("Failed to delete comment:", err);
       return false;
     }
   };
 
-  // const editComment = async (commentId: string, newContent: string): Promise<Comment | null> => {
-  //   try {
-  //     const updatedComment = await api.put<Comment>(
-  //       `/projects/${projectId}/ideas/${ideaId}/comments/${commentId}`,
-  //       { commentText: newContent }
-  //     );
-  //     return updatedComment;
-  //   } catch (err) {
-  //     console.error("Failed to edit comment:", err);
-  //     return null;
-  //   }
-  // };
-
   return {
     addComment,
     deleteComment,
-    // editComment,
   };
 }
