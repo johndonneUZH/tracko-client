@@ -1,7 +1,8 @@
 /* eslint-disable */
 "use client"
 
-import * as React from "react"
+import React, { useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { ChevronsUpDown, Plus, Search } from "lucide-react"
 import {
   DropdownMenu,
@@ -18,7 +19,6 @@ import {
   useSidebar,
 } from "@/components/sidebar/sidebar"
 import { Input } from "@/components/commons/input"
-import { useRouter } from "next/navigation"
 import { useProject } from '@/hooks/useProject'
 
 export function TeamSwitcher({ teams,}: {
@@ -32,16 +32,20 @@ export function TeamSwitcher({ teams,}: {
   const { projectId, updateProjectId } = useProject()
   const { isMobile } = useSidebar()
   const router = useRouter()
+  const pathname = usePathname();
   const userId = sessionStorage.getItem("userId") || ""
 
   // Initialize activeTeam from sessionStorage or default to first team
-  const [activeTeam, setActiveTeam] = React.useState(() => {
+  const [activeTeam, setActiveTeam] = useState<typeof teams[0] | undefined>(undefined)
+
+  useEffect(() => {
     const storedProjectId = sessionStorage.getItem("projectId")
-    return storedProjectId 
+    const matchedTeam = storedProjectId
       ? teams.find(team => team.id === storedProjectId) || teams[0]
       : teams[0]
-  })
 
+    setActiveTeam(matchedTeam)
+  }, [teams])
   const [search, setSearch] = React.useState("")
 
   React.useEffect(() => {
@@ -52,6 +56,9 @@ export function TeamSwitcher({ teams,}: {
 
   const handleTeamSelect = (team: typeof teams[0]) => {
     updateProjectId(team.id)
+    if (pathname.includes("/settings") && userId) {
+      router.push(`/users/${userId}/projects/${team.id}/settings`);
+    }
     setSearch("")
   }
 
@@ -62,7 +69,7 @@ export function TeamSwitcher({ teams,}: {
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        {teams.length === 0 ? (
+        {!activeTeam ? (
           <SidebarMenuButton
             size="lg"
             className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"

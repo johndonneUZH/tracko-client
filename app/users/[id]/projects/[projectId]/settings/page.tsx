@@ -11,6 +11,8 @@ import { useRouter } from "next/navigation";
 import { ApiService } from "@/api/apiService";
 import { MembersTable } from "@/components/settings_page/members_table";
 import { EditDialog } from "@/components/settings_page/edit_dialog";
+import { useProject } from '@/hooks/useProject'
+
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -45,9 +47,15 @@ export default function SettingsPage() {
   const [isOwner, setIsOwner] = useState(false);
   const [triggerReload, setTriggerReload] = useState(false);
   const apiService = new ApiService();
+  const [triggerSidebarReload, setTriggerSidebarReload] = useState(false);
+  const { projectId: currentProjectId } = useProject()
 
   const reload = () => {
     setTriggerReload(triggerReload => !triggerReload);
+  };
+
+  const sidebarReload = () => {
+    setTriggerSidebarReload(triggerSidebarReload => !triggerSidebarReload);
   };
 
   useEffect(() => {
@@ -70,13 +78,13 @@ export default function SettingsPage() {
     };
   
     fetchProjectData();
-  }, [triggerReload]);
+  }, [triggerReload, currentProjectId]);
 
   return (
     <SidebarProvider>
       <div className="flex h-screen w-full">
         {/* Sidebar */}
-        <AppSidebar className="w-64 shrink-0" />
+        <AppSidebar className="w-64 shrink-0" triggerReload={triggerSidebarReload}/>
 
         {/* Main Content Wrapper */}
         <div className="flex flex-col flex-1">
@@ -115,6 +123,7 @@ export default function SettingsPage() {
                 <EditDialog 
                   projectData={projectData}
                   reload={reload}
+                  sidebarReload={sidebarReload}
                 />
                 )}
               </div>

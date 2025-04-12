@@ -2,6 +2,7 @@
 import { Button } from "@/components/commons/button"
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner"
 import {
   Dialog,
   DialogContent,
@@ -35,9 +36,10 @@ interface ProjectData {
 interface Props {
     projectData: ProjectData | null
     reload: () => void
+    sidebarReload: () => void
 }
 
-export function EditDialog( {projectData, reload} : Props) {
+export function EditDialog( {projectData, reload, sidebarReload} : Props) {
 
     const router = useRouter();
     const [projectName, setProjectName] = useState(projectData?.projectName);
@@ -67,10 +69,11 @@ export function EditDialog( {projectData, reload} : Props) {
         }
         const response = await apiService.put<ProjectData>(`/projects/${projectId}`, updatedProject)
         reload()
+        sidebarReload()
+        toast.success("Project changed successfully!")
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
-
     };
 
   return (
