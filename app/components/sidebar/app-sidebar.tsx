@@ -3,10 +3,7 @@
 
 import * as React from "react";
 import {
-  University,
   Settings2,
-  Apple,
-  Brain,
   LayoutDashboard,
   FileClock,
   Users,
@@ -36,7 +33,11 @@ import { getComponentFromString } from "@/components/sidebar/iconMappings";
 
 const apiService = new ApiService();
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+type AppSidebarProps = Omit<React.ComponentProps<typeof Sidebar>, "triggerReload"> & {
+  triggerReload?: any;
+};
+
+export function AppSidebar({ triggerReload = null, ...props }: AppSidebarProps) {
   const [data, setData] = useState<any>(null);
   const [userId, setUserId] = useState<string | null>("");
   const { projectId: currentProjectId } = useProject()
@@ -140,7 +141,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     // Add a small debounce to prevent rapid fires
     const timer = setTimeout(fetchData, 100);
     return () => clearTimeout(timer);
-  }, [userId, currentProjectId, getNavItems]);
+  }, [userId, currentProjectId, getNavItems, triggerReload]);
 
   if (!data) {
     return (

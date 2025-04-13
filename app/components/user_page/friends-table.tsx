@@ -78,9 +78,9 @@ export function FriendsTable() {
                 {friends.map((friend) => (
                     <tr key={friend.id} className="even:bg-transparent bg-gray-100">
                         <td className="px-2 py-1 text-left w-1">
-                            <Avatar className="h-8 w-8 rounded-lg">
-                                <AvatarImage src={friend.avatarUrl || `https://avatar.vercel.sh/${friend.username}`} />
-                            </Avatar>
+                          <Avatar className="h-8 w-8 rounded-lg">
+                            <AvatarImage src={friend.avatarUrl || `https://avatar.vercel.sh/${friend.username}`} />
+                          </Avatar>
                         </td>
                         <td className="px-2 py-1 text-left w-full">
                             {friend.name || friend.username}
