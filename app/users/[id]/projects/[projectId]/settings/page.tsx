@@ -12,6 +12,7 @@ import { ApiService } from "@/api/apiService";
 import { MembersTable } from "@/components/settings_page/members_table";
 import { EditDialog } from "@/components/settings_page/edit_dialog";
 import { useProject } from '@/hooks/useProject'
+import { NewProject } from "@/components/commons/NewProject";
 
 import {
   Breadcrumb,
@@ -83,12 +84,8 @@ export default function SettingsPage() {
   return (
     <SidebarProvider>
       <div className="flex h-screen w-full">
-        {/* Sidebar */}
         <AppSidebar className="w-64 shrink-0" triggerReload={triggerSidebarReload}/>
-
-        {/* Main Content Wrapper */}
         <div className="flex flex-col flex-1">
-          {/* Fixed Header with Breadcrumb */}
           <header className="flex h-16 items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1 mr-2" />
             <Breadcrumb>
@@ -103,6 +100,7 @@ export default function SettingsPage() {
               </BreadcrumbList>
             </Breadcrumb>
           </header>
+          { !currentProjectId ? <NewProject/> :
           <div className="m-4 space-y-4">
             <div className="flex justify-between">
               <div className="flex space-x-4 items-center">
@@ -161,6 +159,7 @@ export default function SettingsPage() {
               )}
             </div>
           </div>
+          }
         </div>
       </div>
     </SidebarProvider>

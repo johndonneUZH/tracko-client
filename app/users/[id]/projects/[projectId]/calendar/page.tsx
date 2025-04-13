@@ -12,17 +12,18 @@ import {
   BreadcrumbSeparator,
 } from "@/components/commons/breadcrumb";
 
+import { useProject } from '@/hooks/useProject'
+import { NewProject } from "@/components/commons/NewProject";
+
 export default function CalendarPage() {
+
+  const { projectId: currentProjectId } = useProject()
 
   return (
     <SidebarProvider>
       <div className="flex h-screen">
-        {/* Sidebar */}
         <AppSidebar className="w-64 shrink-0" />
-
-        {/* Main Content Wrapper */}
         <div className="flex flex-col flex-1">
-          {/* Fixed Header with Breadcrumb */}
           <header className="flex h-16 items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1 mr-2" />
             <Breadcrumb>
@@ -37,11 +38,11 @@ export default function CalendarPage() {
               </BreadcrumbList>
             </Breadcrumb>
           </header>
-
-          {/* Main Content */}
+          { !currentProjectId ? <NewProject/> :
           <div className="flex flex-col flex-1 p-4">
             <h1 className="text-xl font-bold">Calendar</h1>
           </div>
+          }
         </div>
       </div>
     </SidebarProvider>
