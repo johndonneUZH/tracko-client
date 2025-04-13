@@ -12,7 +12,7 @@ export function useComments(projectId: string, ideaId: string) {
   useEffect(() => {
     if (!ideaId) return;
 
-    const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL; // || "http://localhost:8080"; for development only
+    const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080"; //for development only
     const socket = new SockJS(`${baseUrl}/ws`);
     const client = new Client({
       webSocketFactory: () => socket,
@@ -20,9 +20,9 @@ export function useComments(projectId: string, ideaId: string) {
         client.subscribe(`/topic/comments/${ideaId}`, (message) => {
           const data = JSON.parse(message.body);
           if ("deletedId" in data) {
-            console.log("Comentario eliminado:", data.deletedId);
+            console.log("deleted comment:", data.deletedId);
           } else {
-            console.log("Comentario nuevo recibido:", data);
+            console.log("comment obtained:", data);
           }
         });
       },

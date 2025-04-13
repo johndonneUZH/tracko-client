@@ -1,7 +1,6 @@
 /* eslint-disable */
 import { getApiDomain } from "@/utils/domain";
 import { ApplicationError } from "@/types/error";
-import { Project } from "@/types/project";
 
 export class ApiService {
   private baseURL: string;
