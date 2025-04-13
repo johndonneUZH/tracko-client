@@ -58,6 +58,12 @@ export function TeamSwitcher({ teams,}: {
     updateProjectId(team.id)
     if (pathname.includes("/settings") && userId) {
       router.push(`/users/${userId}/projects/${team.id}/settings`);
+    } else if (pathname.includes("/changelog") && userId) {
+      router.push(`/users/${userId}/projects/${team.id}/changelog`);
+    } else if (pathname.includes("/calendar") && userId) {
+      router.push(`/users/${userId}/projects/${team.id}/calendar`);
+    } else if (pathname.includes("/dashboard") && userId) {
+      router.push(`/users/${userId}/projects/${team.id}/dashboard`);
     }
     setSearch("")
   }
