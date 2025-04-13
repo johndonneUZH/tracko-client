@@ -82,6 +82,7 @@ export function useIdeas(projectId: string) {
 
     try {
       const newIdea = await apiService.post<Idea>(`/projects/${projectId}/ideas`, inputIdea);
+      apiService.postChanges("ADDED_IDEA", projectId); // For analytics purpose
       return newIdea; 
     } catch (err: unknown) {
       console.error("Error creating idea:", err);
@@ -96,6 +97,7 @@ export function useIdeas(projectId: string) {
   async function updateIdea(ideaId: string, updatedData: Partial<Idea>) {
     try {
       const updatedIdea = await apiService.put<Idea>(`/projects/${projectId}/ideas/${ideaId}`, updatedData);
+      apiService.postChanges("MODIFIED_IDEA", projectId); // For analytics purpose
       return updatedIdea;
     } catch (err: unknown) {
       console.error("Error updating idea:", err);
@@ -110,6 +112,7 @@ export function useIdeas(projectId: string) {
   async function deleteIdea(ideaId: string) {
     try {
       await apiService.delete(`/projects/${projectId}/ideas/${ideaId}`);
+      apiService.postChanges("CLOSED_IDEA", projectId); // For analytics purpose
       return true; 
     } catch (err: unknown) {
       console.error("Error deleting idea:", err);

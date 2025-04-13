@@ -45,6 +45,7 @@ export function useComments(projectId: string, ideaId: string) {
         : `/projects/${projectId}/ideas/${ideaId}/comments`;
 
       const newComment = await api.post<Comment>(path, { commentText: content });
+      api.postChanges("ADDED_COMMENT", projectId); // For analytics purpose
       return newComment;
     } catch (err) {
       console.error("Failed to add comment:", err);
@@ -55,6 +56,7 @@ export function useComments(projectId: string, ideaId: string) {
   const deleteComment = async (commentId: string): Promise<boolean> => {
     try {
       await api.delete(`/projects/${projectId}/ideas/${ideaId}/comments/${commentId}`);
+      api.postChanges("DELETED_COMMENT", projectId); // For analytics purpose
       return true; 
     } catch (err) {
       console.error("Failed to delete comment:", err);

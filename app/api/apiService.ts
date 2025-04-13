@@ -156,6 +156,19 @@ export class ApiService {
   
     return response;
   }
+
+  public async postChanges<T>( changeType: string, projectId: string): Promise<T> {
+    const url = `${this.baseURL}${`/projects/`}${projectId}/changes`;
+    const res = await fetch(url, {
+      method: "POST",
+      headers: this.buildHeaders(),
+      body: JSON.stringify({ "changeType": changeType }),
+    });
+    return this.processResponse<T>(
+      res,
+      "An error occurred while posting the changes.\n",
+    );
+  }
   
   /**
    * PUT request.
@@ -193,4 +206,18 @@ export class ApiService {
       "An error occurred while deleting the data.\n",
     );
   }
+
+  public async deleteProjectChanges(projectId: string): Promise<void> {
+    const url = `${this.baseURL}${`/projects/`}${projectId}/changes`;
+    const res = await fetch(url, {
+      method: "DELETE",
+      headers: this.buildHeaders(),
+    });
+    return this.processResponse<void>(
+      res,
+      "An error occurred while deleting the project changes.\n",
+    );
+  }
+
+
 }
