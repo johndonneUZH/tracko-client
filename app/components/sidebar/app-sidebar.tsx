@@ -8,8 +8,8 @@ import {
   FileClock,
   Users,
   Calendar,
-  Archive,
   Bell,
+  PlusCircle
 } from "lucide-react";
 
 import { NavMain } from "@/components/sidebar/nav-main";
@@ -79,9 +79,9 @@ export function AppSidebar({ triggerReload = null, ...props }: AppSidebarProps) 
       ],
       navSecondary: [
         {
-          title: "Project Browser",
+          title: "Create Project",
           url: `/users/${userId}/projects`,
-          icon: Archive,
+          icon: PlusCircle,
           isActive: true,
         },
         {
