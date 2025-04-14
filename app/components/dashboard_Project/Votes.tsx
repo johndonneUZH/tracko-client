@@ -5,21 +5,24 @@ import { Idea } from "@/types/idea";
 
 interface VotesProps {
   idea: Idea;
-  currentUserId: number;
-  onToggleVote: (ideaId: number, userId: number, type: "up" | "down") => void;
+  currentUserId: string;
+  onToggleVote: (ideaId: string, userId: string, type: "up" | "down") => void;
 }
 
 export default function Votes({ idea, currentUserId, onToggleVote }: VotesProps) {
-  const hasUpvoted = idea.upvotesL.includes(currentUserId);
-  const hasDownvoted = idea.downvotesL.includes(currentUserId);
+  // Use default values if upvotesL or downvotesL are undefined
+  const upvotes = idea.upVotes || [];
+  const downvotes = idea.downVotes || [];
+
+  const hasUpvoted = upvotes.includes(currentUserId);
+  const hasDownvoted = downvotes.includes(currentUserId);
 
   const handleVote = (type: "up" | "down") => {
-    onToggleVote(idea.id, currentUserId, type);
+    onToggleVote(idea.ideaId, currentUserId, type);
   };
 
-  // CalculaTE VOTES
-  const netVotes = idea.upvotesL.length - idea.downvotesL.length;
- 
+  // Calculate net votes using default arrays
+  const netVotes = upvotes.length - downvotes.length;
   const netDisplay = netVotes > 0 ? `+${netVotes}` : netVotes.toString();
 
   return (

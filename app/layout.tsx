@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ConfigProvider, theme } from "antd";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
+import { Toaster } from "@/components/commons/sonner"
 import "@/styles/globals.css";
 
 
@@ -64,6 +65,15 @@ export default function RootLayout({
         <AntdRegistry>
           {children}
         </AntdRegistry>
+        <Toaster toastOptions={{
+            unstyled: true,
+            classNames: {
+            error: "flex gap-2 items-center rounded-md shadow-md border px-4 py-3 group toast bg-red-100 border-red-300 text-red-800",
+            success: "flex gap-2 items-center rounded-md shadow-md border px-4 py-3 group toast bg-green-100 border-green-300 text-green-800",
+            warning: "flex gap-2 items-center rounded-md shadow-md border px-4 py-3 group toast bg-yellow-100 border-yellow-300 text-yellow-800",
+            info: "flex gap-2 items-center rounded-md shadow-md border px-4 py-3 group toast bg-blue-100 border-blue-300 text-blue-800",
+          },
+        }}/>
 
         </ConfigProvider>
       </body>

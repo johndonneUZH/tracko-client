@@ -34,7 +34,7 @@ export function useUserProjects(userId: string) {
     }
     
     fetchProjects();
-  }, [userId, apiService]); 
+  }, [userId, apiService]); // Add projects.length to dependencies
 
 
   // Add project via API
@@ -48,7 +48,7 @@ export function useUserProjects(userId: string) {
         projectName: trimmedName,
         projectDescription: trimmedDescription 
       }) as Project ;
-      
+      apiService.postChanges("ADDED_PROJECT", userId); // For analytics purpose
       setProjects([...projects, response]);
     } catch (err) {
       console.error("Failed to add project:", err);
@@ -65,6 +65,8 @@ export function useUserProjects(userId: string) {
       
       // Only update state if all deletions succeeded
       setProjects(prev => prev.filter(proj => !projectIds.includes(proj.projectId)));
+
+      
       
       return true; // Indicate success
     } catch (err) {

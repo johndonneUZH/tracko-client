@@ -12,4 +12,5 @@ export type Project = {
   ownerId: string;
   createdAt: Date;
   updatedAt: Date;
+  projectLogoUrl: string;
 };

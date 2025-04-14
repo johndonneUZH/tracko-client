@@ -1,86 +1,70 @@
+import { ApiService } from "@/api/apiService";
+import { getApiDomain } from "@/utils/domain";
+
+
 import { Comment } from "@/types/comment";
-import { Idea } from "@/types/idea";
-export function useComments(
-  setIdeas: React.Dispatch<React.SetStateAction<Idea[]>>,
-  currentUserId: number
-) {
-  const addComment = (ideaId: number, content: string, parentId?: number) => {
-    const newComment: Comment = {
-      id: Date.now(),
-      authorId: currentUserId,
-      content,
-      replies: [],
-    };
-    
+import { useMemo, useEffect, useRef } from "react";
+import { Client } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
 
-    setIdeas((prev) =>
-      prev.map((idea) => {
-        if (idea.id !== ideaId) return idea;
+export function useComments(projectId: string, ideaId: string) {
+  const api = useMemo(() => new ApiService(), []);
+  const stompRef = useRef<Client | null>(null);
 
-        if (!parentId) {
-          return {
-            ...idea,
-            comments: [...idea.comments, newComment],
-          };
-        } else {
-          return {
-            ...idea,
-            comments: addReplyRecursive(idea.comments, parentId, newComment),
-          };
-        }
-      })
-    );
-  };
+  // WebSocket
+  useEffect(() => {
+    if (!ideaId) return;
 
-  const addReplyRecursive = (
-    commentList: Comment[],
-    parentId: number,
-    newComment: Comment
-  ): Comment[] => {
-    return commentList.map((c) => {
-      if (c.id === parentId) {
-        return { ...c, replies: [...c.replies, newComment] };
-      } else {
-        return {
-          ...c,
-          replies: addReplyRecursive(c.replies, parentId, newComment),
-        };
-      }
+   
+  const socket = new SockJS(`${getApiDomain()}/ws`);
+    const client = new Client({
+      webSocketFactory: () => socket,
+      onConnect: () => {
+        client.subscribe(`/topic/comments/${ideaId}`, (message) => {
+          const data = JSON.parse(message.body);
+          if ("deletedId" in data) {
+            console.log("deleted comment:", data.deletedId);
+          } else {
+            console.log("comment obtained:", data);
+          }
+        });
+      },
+      debug: (str) => console.log(str),
+      reconnectDelay: 5000,
     });
+
+    client.activate();
+    stompRef.current = client;
+
+    return () => {
+      client.deactivate();
+    };
+  }, [ideaId]);
+
+  const addComment = async (content: string, parentId?: string): Promise<Comment | null> => {
+    try {
+      const path = parentId
+        ? `/projects/${projectId}/ideas/${ideaId}/comments/${parentId}`
+        : `/projects/${projectId}/ideas/${ideaId}/comments`;
+
+      const newComment = await api.post<Comment>(path, { commentText: content });
+      api.postChanges("ADDED_COMMENT", projectId); // For analytics purpose
+      return newComment;
+    } catch (err) {
+      console.error("Failed to add comment:", err);
+      return null;
+    }
   };
 
-  const deleteComment = (ideaId: number, commentId: number) => {
-    setIdeas((prev) =>
-      prev.map((idea) => {
-        if (idea.id !== ideaId) return idea;
-        return {
-          ...idea,
-          comments: deleteCommentRecursive(
-            idea.comments,
-            commentId,
-            currentUserId
-          ),
-        };
-      })
-    );
-  };
-
-  const deleteCommentRecursive = (
-    commentList: Comment[],
-    commentId: number,
-    userId: number
-  ): Comment[] => {
-    return commentList
-      .map((c) => {
-        if (c.id === commentId && c.authorId === userId) {
-          return null;
-        }
-        return {
-          ...c,
-          replies: deleteCommentRecursive(c.replies, commentId, userId),
-        };
-      })
-      .filter(Boolean) as Comment[];
+  const deleteComment = async (commentId: string): Promise<boolean> => {
+    try {
+      await api.delete(`/projects/${projectId}/ideas/${ideaId}/comments/${commentId}`);
+      api.postChanges("DELETED_COMMENT", projectId); // For analytics purpose
+      return true; 
+    } catch (err) {
+      console.error("Failed to delete comment:", err);
+      return false;
+    }
   };
 
   return {

@@ -84,7 +84,6 @@ function makePrettyLastLogin(dateString: string | undefined): string {
   }
 }
 
-
 export default function Page() {
   const [userData, setUserData] = useState<UserData | null>(null);
   const router = useRouter();
@@ -110,8 +109,14 @@ export default function Page() {
   
     fetchUserData();
   }, []);
-  
 
+  const handleLogout = async () => {
+    sessionStorage.removeItem("userId");
+    sessionStorage.removeItem("projectId");
+    sessionStorage.removeItem("token");
+    router.push("/")
+  }
+  
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -154,7 +159,7 @@ export default function Page() {
               <Button className="min-w-25 w-auto py-3" onClick= {()=>router.push(`/users/${sessionStorage.getItem("userId")}/edit`)}>
                 <Pencil/> Edit
               </Button>
-              <Button className="min-w-25 w-auto py-3" onClick= {()=>router.push("/login")}>
+              <Button className="min-w-25 w-auto py-3" onClick= {handleLogout}>
                 <LogOut/> Log Out
               </Button>
             </div>
