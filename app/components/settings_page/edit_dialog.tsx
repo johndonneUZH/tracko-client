@@ -92,11 +92,11 @@ export function EditDialog( {projectData, reload, sidebarReload} : Props) {
         </DialogHeader>
         <div className="grid gap-4 py-4">
             <div className="relative w-fit">
-            <DynamicIcon
-                className="h-16 w-16 rounded-lg bg-primary p-2 text-white"
-                name={(projectLogo?.toLowerCase() || "university") as any}
-            />
-            <LogoDialog setLogo={setProjectLogo}/>
+              <DynamicIcon
+                  className="h-16 w-16 rounded-lg bg-primary p-2 text-white"
+                  name={(projectLogo?.toLowerCase() || "university") as any}
+              />
+              <LogoDialog setLogo={setProjectLogo}/>
             </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="name" className="text-right">
