@@ -25,7 +25,8 @@ import {
 
 import {
   UserPlus,
-  UserMinus
+  UserMinus,
+  Trash2
 } from "lucide-react"
 
 import { DynamicIcon } from 'lucide-react/dynamic';
@@ -118,11 +119,16 @@ export default function SettingsPage() {
               </div>
               <div className="space-x-4 items-center">
                 { isOwner && (
-                <EditDialog 
-                  projectData={projectData}
-                  reload={reload}
-                  sidebarReload={sidebarReload}
-                />
+                <div className="space-x-4">
+                  <Button className="min-w-25 w-auto py-3" variant="destructive">
+                    <Trash2/> Delete Project
+                  </Button>
+                  <EditDialog 
+                    projectData={projectData}
+                    reload={reload}
+                    sidebarReload={sidebarReload}
+                  />
+                </div>
                 )}
               </div>
             </div>
