@@ -27,6 +27,8 @@ import {
 } from "@/components/commons/breadcrumb";
 
 import {
+  UserPlus,
+  UserMinus,
   Trash2
 } from "lucide-react"
 
@@ -168,7 +170,9 @@ export default function SettingsPage() {
               <div className="space-x-4 items-center">
                 { isOwner && (
                 <div className="space-x-4">
-                  <DeleteDialog />
+                  <Button className="min-w-25 w-auto py-3" variant="destructive">
+                    <Trash2/> Delete Project
+                  </Button>
                   <EditDialog 
                     projectData={projectData}
                     reload={reload}
