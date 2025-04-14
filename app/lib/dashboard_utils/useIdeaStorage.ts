@@ -3,6 +3,7 @@ import { Idea } from "@/types/idea";
 import { ApiService } from "@/api/apiService";
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
+import { getApiDomain } from "@/utils/domain";
 
 export function useIdeas(projectId: string) {
   const [ideas, setIdeas] = useState<Idea[]>([]);
@@ -41,8 +42,8 @@ export function useIdeas(projectId: string) {
   useEffect(() => {
     if (!projectId) return;
 
-    const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080"; //for development only
-    const socket = new SockJS(`${baseUrl}/ws`);
+    
+  const socket = new SockJS(`${getApiDomain()}/ws`);
     const client = new Client({
       webSocketFactory: () => socket,
       onConnect: () => {
@@ -82,6 +83,7 @@ export function useIdeas(projectId: string) {
 
     try {
       const newIdea = await apiService.post<Idea>(`/projects/${projectId}/ideas`, inputIdea);
+      apiService.postChanges("ADDED_IDEA", projectId); // For analytics purpose
       return newIdea; 
     } catch (err: unknown) {
       console.error("Error creating idea:", err);
@@ -96,6 +98,7 @@ export function useIdeas(projectId: string) {
   async function updateIdea(ideaId: string, updatedData: Partial<Idea>) {
     try {
       const updatedIdea = await apiService.put<Idea>(`/projects/${projectId}/ideas/${ideaId}`, updatedData);
+      apiService.postChanges("MODIFIED_IDEA", projectId); // For analytics purpose
       return updatedIdea;
     } catch (err: unknown) {
       console.error("Error updating idea:", err);
@@ -110,6 +113,7 @@ export function useIdeas(projectId: string) {
   async function deleteIdea(ideaId: string) {
     try {
       await apiService.delete(`/projects/${projectId}/ideas/${ideaId}`);
+      apiService.postChanges("CLOSED_IDEA", projectId); // For analytics purpose
       return true; 
     } catch (err: unknown) {
       console.error("Error deleting idea:", err);

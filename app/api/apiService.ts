@@ -120,6 +120,27 @@ export class ApiService {
     );
   }
 
+  public async getDailyContributions<T = any>(
+    projectId: string,
+    days?: number
+  ): Promise<T> {
+    const url = new URL(`${this.baseURL}/projects/${projectId}/changes/daily-contributions`);
+    
+    if (days) {
+      url.searchParams.append('days', days.toString());
+    }
+
+    const res = await fetch(url.toString(), {
+      method: "GET",
+      headers: this.buildHeaders(),
+    });
+    
+    return this.processResponse<T>(
+      res,
+      "An error occurred while fetching contributions data.",
+    );
+  }
+
   /**
    * POST request.
    * @param endpoint - The API endpoint (e.g. "/users").
@@ -154,6 +175,19 @@ export class ApiService {
     }
   
     return response;
+  }
+
+  public async postChanges<T>( changeType: string, projectId: string): Promise<T> {
+    const url = `${this.baseURL}${`/projects/`}${projectId}/changes`;
+    const res = await fetch(url, {
+      method: "POST",
+      headers: this.buildHeaders(),
+      body: JSON.stringify({ "changeType": changeType }),
+    });
+    return this.processResponse<T>(
+      res,
+      "An error occurred while posting the changes.\n",
+    );
   }
   
   /**
@@ -192,4 +226,18 @@ export class ApiService {
       "An error occurred while deleting the data.\n",
     );
   }
+
+  public async deleteProjectChanges(projectId: string): Promise<void> {
+    const url = `${this.baseURL}${`/projects/`}${projectId}/changes`;
+    const res = await fetch(url, {
+      method: "DELETE",
+      headers: this.buildHeaders(),
+    });
+    return this.processResponse<void>(
+      res,
+      "An error occurred while deleting the project changes.\n",
+    );
+  }
+
+
 }

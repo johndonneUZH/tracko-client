@@ -3,6 +3,7 @@ import { Comment } from "@/types/comment";
 import { ApiService } from "@/api/apiService";
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
+import { getApiDomain } from "@/utils/domain";
 
 export function useCommentFetcher(projectId: string, ideaId: string) {
   const [commentMap, setCommentMap] = useState<Record<string, Comment>>({});
@@ -43,8 +44,8 @@ export function useCommentFetcher(projectId: string, ideaId: string) {
   useEffect(() => {
     if (!ideaId) return;
 
-    const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL  || "http://localhost:8080"; // for development only
-    const socket = new SockJS(`${baseUrl}/ws`);
+  
+    const socket = new SockJS(`${getApiDomain()}/ws`);
     const client = new Client({
       webSocketFactory: () => socket,
       onConnect: () => {
