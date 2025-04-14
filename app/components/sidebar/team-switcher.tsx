@@ -4,6 +4,7 @@
 import React, { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { ChevronsUpDown, Plus, Search } from "lucide-react"
+import { ProjectsDialog } from "@components/settings_page/project_dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,7 +22,7 @@ import {
 import { Input } from "@/components/commons/input"
 import { useProject } from '@/hooks/useProject'
 
-export function TeamSwitcher({ teams,}: {
+export function TeamSwitcher({ teams }: {
   teams: {
     id: string // Make sure your team objects have an id property
     name: string
@@ -34,6 +35,7 @@ export function TeamSwitcher({ teams,}: {
   const router = useRouter()
   const pathname = usePathname();
   const userId = sessionStorage.getItem("userId") || ""
+  const [isOpen, setIsOpen] = useState(false);
 
   // Initialize activeTeam from sessionStorage or default to first team
   const [activeTeam, setActiveTeam] = useState<typeof teams[0] | undefined>(undefined)
@@ -73,21 +75,11 @@ export function TeamSwitcher({ teams,}: {
   )
 
   return (
+    <>
     <SidebarMenu>
       <SidebarMenuItem>
         {!activeTeam ? (
-          <SidebarMenuButton
-            size="lg"
-            className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-            onClick={() => router.push(`/users/${userId}/projects`)}
-          >
-            <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-sidebar-primary-foreground">
-              <Plus className="size-4" />
-            </div>
-            <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-semibold">New Project</span>
-            </div>
-          </SidebarMenuButton>
+          <ProjectsDialog />
         ) : (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -152,20 +144,12 @@ export function TeamSwitcher({ teams,}: {
               </div>
 
               <DropdownMenuSeparator />
-
-              <DropdownMenuItem
-                className="gap-2 p-2"
-                onClick={() => router.push(`/users/${userId}/projects`)}
-              >
-                <div className="flex size-6 items-center justify-center rounded-md border bg-background">
-                  <Plus className="size-4" />
-                </div>
-                <div className="font-medium text-muted-foreground">New Project</div>
-              </DropdownMenuItem>
+              <ProjectsDialog />
             </DropdownMenuContent>
           </DropdownMenu>
         )}
       </SidebarMenuItem>
     </SidebarMenu>
+    </>
   )
 }
