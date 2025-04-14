@@ -1,4 +1,7 @@
 import { ApiService } from "@/api/apiService";
+import { getApiDomain } from "@/utils/domain";
+
+
 import { Comment } from "@/types/comment";
 import { useMemo, useEffect, useRef } from "react";
 import { Client } from "@stomp/stompjs";
@@ -12,17 +15,17 @@ export function useComments(projectId: string, ideaId: string) {
   useEffect(() => {
     if (!ideaId) return;
 
-    const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL; // || "http://localhost:8080"; for development only
-    const socket = new SockJS(`${baseUrl}/ws`);
+   
+  const socket = new SockJS(`${getApiDomain()}/ws`);
     const client = new Client({
       webSocketFactory: () => socket,
       onConnect: () => {
         client.subscribe(`/topic/comments/${ideaId}`, (message) => {
           const data = JSON.parse(message.body);
           if ("deletedId" in data) {
-            console.log("Comentario eliminado:", data.deletedId);
+            console.log("deleted comment:", data.deletedId);
           } else {
-            console.log("Comentario nuevo recibido:", data);
+            console.log("comment obtained:", data);
           }
         });
       },
@@ -45,6 +48,7 @@ export function useComments(projectId: string, ideaId: string) {
         : `/projects/${projectId}/ideas/${ideaId}/comments`;
 
       const newComment = await api.post<Comment>(path, { commentText: content });
+      api.postChanges("ADDED_COMMENT", projectId); // For analytics purpose
       return newComment;
     } catch (err) {
       console.error("Failed to add comment:", err);
@@ -55,6 +59,7 @@ export function useComments(projectId: string, ideaId: string) {
   const deleteComment = async (commentId: string): Promise<boolean> => {
     try {
       await api.delete(`/projects/${projectId}/ideas/${ideaId}/comments/${commentId}`);
+      api.postChanges("DELETED_COMMENT", projectId); // For analytics purpose
       return true; 
     } catch (err) {
       console.error("Failed to delete comment:", err);
