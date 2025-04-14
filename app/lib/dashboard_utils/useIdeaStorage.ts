@@ -3,6 +3,7 @@ import { Idea } from "@/types/idea";
 import { ApiService } from "@/api/apiService";
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
+import { getApiDomain } from "@/utils/domain";
 
 export function useIdeas(projectId: string) {
   const [ideas, setIdeas] = useState<Idea[]>([]);
@@ -41,8 +42,8 @@ export function useIdeas(projectId: string) {
   useEffect(() => {
     if (!projectId) return;
 
-    const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL; // || "http://localhost:8080"; for development only
-    const socket = new SockJS(`${baseUrl}/ws`);
+    
+  const socket = new SockJS(`${getApiDomain()}/ws`);
     const client = new Client({
       webSocketFactory: () => socket,
       onConnect: () => {
