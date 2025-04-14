@@ -52,7 +52,7 @@ export function LoginForm({
       sessionStorage.setItem("token", token);
       
       //TODO: Implement api check isBlocked: false
-      router.push(`/users/${userId}/projects`);
+      router.push(`/users/${userId}`);
       //else router.push("/settings"); or something like that
     } catch (error) {
       setError("Login failed. Please check your credentials.");
