@@ -143,11 +143,11 @@ export function ProjectsDialog() {
                 ))}
               </tbody>
             </table>
+          </div>
+          <DialogFooter className="gap-4">
             <div className="flex max-w-40">
               <FriendsDialog friends={friends} onAddFriends={setSelectedFriends}/>
             </div>
-          </div>
-          <DialogFooter>
             <DialogClose asChild>
                 <Button>
                     <PlusCircle/>Create Project
