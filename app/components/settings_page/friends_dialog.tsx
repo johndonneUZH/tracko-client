@@ -60,7 +60,7 @@ export function FriendsDialog({ friends, onAddFriends}: Props) {
       <div className="max-h-100">
         <Dialog>
           <DialogTrigger asChild>
-            <Button className="min-w-25 w-auto py-3">
+            <Button className="min-w-25 w-auto py-3" variant="outline">
               <UserPlus />
               Add Friends
             </Button>
