@@ -2,6 +2,7 @@
 
 "use client";
 
+import { useParams } from "next/navigation";
 import { Button } from "@/components/commons/button";
 import { LogoDialog } from "@/components/settings_page/logo_dialog";
 import { Input } from "@/components/commons/input"
@@ -9,6 +10,7 @@ import { Label } from "@/components/commons/label"
 import { FriendsDialog } from "@/components/settings_page/friends_dialog";
 import { User } from "@/types/user";
 import { useRouter } from "next/navigation";
+import { useUserProjects } from "@/lib/browser_utils/useProjectStorage";
 import {
     Dialog,
     DialogContent,
@@ -34,6 +36,8 @@ import { useEffect, useState } from "react";
 import { ApiService } from "@/api/apiService"
 
 export function ProjectsDialog() {
+  const { id } = useParams() as { id: string };
+  const { addProject } = useUserProjects(id);
   const [projectLogo, setProjectLogo] = useState("egg");
   const [projectName, setProjectName] = useState("");
   const [projectDescription, setProjectDescription] = useState("");
@@ -63,17 +67,21 @@ export function ProjectsDialog() {
     fetchFriends();
     }, [router]);
 
+    const handleCreate = () => {
+      addProject(projectDescription, projectName)
+    }
+
   return (
     <Dialog>
         <DialogTrigger asChild>
             <div 
-                className="flex flex-row gap-2 p-2 text-sidebar-accent-foreground hover:bg-gray-100 rounded-sm text-center" 
+                className="flex flex-row gap-2 p-2 text-sidebar-accent-foreground hover:bg-gray-100 rounded-sm text-center items-center" 
                 role="button" 
             >
                 <div className="flex size-6 items-center justify-center text-center rounded-md border bg-background">
                     <Plus className="size-4 text-muted-foreground" />
                 </div>
-                <div className="font-medium text-muted-foreground text-sm">
+                <div className="text-sm">
                     New Project
                 </div>
             </div>
@@ -149,7 +157,7 @@ export function ProjectsDialog() {
               <FriendsDialog friends={friends} onAddFriends={setSelectedFriends}/>
             </div>
             <DialogClose asChild>
-                <Button>
+                <Button onClick={handleCreate}>
                     <PlusCircle/>Create Project
                 </Button>
             </DialogClose>
