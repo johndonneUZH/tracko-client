@@ -96,6 +96,20 @@ export class ApiService {
     );
   }
 
+  public async getUsers<T>(): Promise<T> {
+    const url = `${this.baseURL}/users`;
+    const res = await fetch(url, {
+      method: "GET",
+      headers: this.buildHeaders(),
+    });
+  
+    return this.processResponse<T>(
+      res,
+      "An error occurred while fetching all users.\n"
+    );
+  }
+  
+
   public async getFriends<T>(userId: string): Promise<T> {
     const url = `${this.baseURL}${'/users/'}${userId}/friends`;
     const res = await fetch(url, {
