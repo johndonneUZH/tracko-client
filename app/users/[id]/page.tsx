@@ -215,17 +215,6 @@ export default function Page() {
           </div>
           <div>
             <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
-              Friends
-            </h3>
-            <Separator />
-            <div className="space-y-2 my-4">
-              <div className="my-6 w-full overflow-y-auto">
-                <FriendsTable/>
-              </div>
-            </div>
-          </div>
-          <div>
-            <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
               Activity
             </h3>
             <Separator />
