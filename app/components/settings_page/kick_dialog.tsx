@@ -15,23 +15,26 @@ import {
   DialogTrigger,
   DialogClose,
 } from "@/components/project_browser/dialog";
-import { UserPlus, X } from "lucide-react";
+
+import { UserMinus, X } from "lucide-react";
+
 import {
   Avatar,
   AvatarImage,
 } from "@/components/commons/avatar";
 
 interface Props {
-  friends: User[];
-  onAddFriends: (selected: User[]) => void;
+  members: User[];
+  onAddMembers: (selected: User[]) => void;
+  ownerId: string | undefined;
 }
 
-export function FriendsDialog({ friends, onAddFriends }: Props) {
+export function KickDialog({ members, onAddMembers, ownerId }: Props) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedFriendIds, setSelectedFriendIds] = useState<Set<string>>(new Set());
+  const [selectedMemberIds, setSelectedMemberIds] = useState<Set<string>>(new Set());
 
-  const toggleFriend = (id: string) => {
-    setSelectedFriendIds((prev) => {
+  const toggleMember = (id: string) => {
+    setSelectedMemberIds((prev) => {
       const updated = new Set(prev);
       if (updated.has(id)) {
         updated.delete(id);
@@ -42,60 +45,60 @@ export function FriendsDialog({ friends, onAddFriends }: Props) {
     });
   };
 
-  const handleAddFriends = () => {
-    const selectedFriends = friends.filter((friend) => selectedFriendIds.has(friend.id));
-    onAddFriends(selectedFriends);
+  const handleRemoveMembers = () => {
+    const selectedMembers = members.filter((member) => selectedMemberIds.has(member.id));
+    onAddMembers(selectedMembers);
   };
 
-  const filteredFriends = friends.filter((friend) => {
-    const name = friend.name || friend.username;
+  const filteredMembers = members.filter((member) => {
+    const name = member.name || member.username;
     return name.toLowerCase().includes(searchTerm.toLowerCase());
   });
 
-  const selectedFriends = friends.filter((friend) => selectedFriendIds.has(friend.id));
+  const selectedMembers = members.filter((member) => selectedMemberIds.has(member.id));
 
   return (
     <div>
       <Dialog>
         <DialogTrigger asChild>
-          <Button className="min-w-25 w-auto py-3" variant="outline">
-            <UserPlus />
-            Add Friends
+          <Button className="min-w-25 w-auto py-3" variant="destructive">
+            <UserMinus />
+            Kick Members
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Add Friends</DialogTitle>
-            <DialogDescription>Select friends to add to your project.</DialogDescription>
+            <DialogTitle>Kick Members</DialogTitle>
+            <DialogDescription>Select members to remove from your project.</DialogDescription>
           </DialogHeader>
 
-          <div className="">
+          <div className="mb-4">
             <Input
               type="text"
-              placeholder="Search friends..."
+              placeholder="Search members..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full"
             />
           </div>
-          {selectedFriends.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {selectedFriends.map((friend) => (
+          {selectedMembers.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-4">
+              {selectedMembers.map((member) => (
                 <div
-                  key={friend.id}
+                  key={member.id}
                   className="flex items-center space-x-2 px-3 py-1 rounded-full bg-gray-100 text-sm"
                 >
                   <Avatar className="h-5 w-5">
                     <AvatarImage
                       src={
-                        friend.avatarUrl ||
-                        `https://avatar.vercel.sh/${friend.username}`
+                        member.avatarUrl ||
+                        `https://avatar.vercel.sh/${member.username}`
                       }
                     />
                   </Avatar>
-                  <span>{friend.name || friend.username}</span>
+                  <span>{member.name || member.username}</span>
                   <button
-                    onClick={() => toggleFriend(friend.id)}
+                    onClick={() => toggleMember(member.id)}
                     className="hover:text-red-500"
                   >
                     <X size={14} />
@@ -113,33 +116,35 @@ export function FriendsDialog({ friends, onAddFriends }: Props) {
             />
             <table className="w-full relative z-0">
               <tbody>
-                {filteredFriends.map((friend) => (
-                  <tr key={friend.id}>
-                    <td className="px-2 py-1 text-left w-1">
-                      <Avatar className="h-8 w-8 rounded-lg">
-                        <AvatarImage
-                          src={
-                            friend.avatarUrl ||
-                            `https://avatar.vercel.sh/${friend.username}`
-                          }
+                {filteredMembers
+                  .filter((member) => member.id !== ownerId)
+                  .map((member) => (
+                    <tr key={member.id}>
+                      <td className="px-2 py-1 text-left w-1">
+                        <Avatar className="h-8 w-8 rounded-lg">
+                          <AvatarImage
+                            src={
+                              member.avatarUrl ||
+                              `https://avatar.vercel.sh/${member.username}`
+                            }
+                          />
+                        </Avatar>
+                      </td>
+                      <td className="px-2 py-1 text-left w-full">
+                        {member.name || member.username}
+                      </td>
+                      <td className="px-2 py-1 text-right w-1">
+                        <Checkbox
+                          checked={selectedMemberIds.has(member.id)}
+                          onCheckedChange={() => toggleMember(member.id)}
                         />
-                      </Avatar>
-                    </td>
-                    <td className="px-2 py-1 text-left w-full">
-                      {friend.name || friend.username}
-                    </td>
-                    <td className="px-2 py-1 text-right w-1">
-                      <Checkbox
-                        checked={selectedFriendIds.has(friend.id)}
-                        onCheckedChange={() => toggleFriend(friend.id)}
-                      />
-                    </td>
-                  </tr>
-                ))}
-                {filteredFriends.length === 0 && (
+                      </td>
+                    </tr>
+                  ))}
+                {filteredMembers.filter((m) => m.id !== ownerId).length === 0 && (
                   <tr>
                     <td colSpan={3} className="text-center text-sm py-2 text-gray-500">
-                      No friends found.
+                      No members found.
                     </td>
                   </tr>
                 )}
@@ -155,8 +160,8 @@ export function FriendsDialog({ friends, onAddFriends }: Props) {
 
           <DialogFooter>
             <DialogClose asChild>
-              <Button type="submit" onClick={handleAddFriends}>
-                Select
+              <Button type="submit" onClick={handleRemoveMembers} variant="destructive">
+                Remove
               </Button>
             </DialogClose>
           </DialogFooter>
