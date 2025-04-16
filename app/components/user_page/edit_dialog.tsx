@@ -1,18 +1,13 @@
 "use client"
- 
-import { useState } from "react"
-import { format } from "date-fns"
-import { CalendarIcon, Pencil } from "lucide-react"
 
-import { cn } from "@/lib/utils"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+import { format } from "date-fns"
+import { Pencil } from "lucide-react"
+
 import { Input } from "@/components/commons/input"
 import { Button } from "@/components/commons/button"
-import { Calendar } from "@/components/ui/calendar"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
 import {
   Dialog,
   DialogContent,
@@ -23,25 +18,42 @@ import {
   DialogTrigger,
   DialogClose,
 } from "@/components/project_browser/dialog"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+
+const FormSchema = z.object({
+  name: z.string().min(1),
+  username: z.string().min(1),
+  birthday: z.date({
+    required_error: "A birthday is required.",
+  }),
+})
 
 export function EditProfileDialog() {
-  const [name, setName] = useState("Jane Doe")
-  const [username, setUsername] = useState("janedoe")
-  const [birthday, setBirthday] = useState<Date | undefined>(new Date(2000, 1, 1))
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      name: "Jane Doe",
+      username: "janedoe",
+      birthday: new Date(2000, 1, 1),
+    },
+  })
 
-  const handleSave = () => {
-    console.log({
-      name,
-      username,
-      birthday,
-    })
+  const handleSave = (data: z.infer<typeof FormSchema>) => {
+    console.log(data)
   }
 
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button>
-          <Pencil className="h-4 w-4 mr-2" />
+          <Pencil className="h-4 w-4" />
           Edit
         </Button>
       </DialogTrigger>
@@ -51,63 +63,71 @@ export function EditProfileDialog() {
           <DialogDescription>Update your personal information.</DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-4 py-4">
-          <div>
-            <label className="text-sm font-medium">Name</label>
-            <Input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Name"
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(handleSave)}
+            className="grid gap-4 py-4"
+          >
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Name" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
 
-          <div>
-            <label className="text-sm font-medium">Username</label>
-            <Input
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Username"
+            <FormField
+              control={form.control}
+              name="username"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Username</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Username" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
 
-          <div>
-            <label className="text-sm font-medium">Birthday</label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !birthday && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {birthday ? format(birthday, "PPP") : "Pick a date"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={birthday}
-                onSelect={(date) => {
-                  if (date instanceof Date) {
-                    setBirthday(date)
-                  }
-                }}
-                initialFocus
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
-        </div>
+            <FormField
+              control={form.control}
+              name="birthday"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Birthday</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="date"
+                      value={field.value ? format(field.value, "yyyy-MM-dd") : ""}
+                      onChange={(e) => {
+                        const selectedDate = e.target.value
+                          ? new Date(e.target.value)
+                          : undefined
+                        if (selectedDate instanceof Date && !isNaN(selectedDate.getTime())) {
+                          field.onChange(selectedDate)
+                        }
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button type="button" onClick={handleSave}>
-              Save
-            </Button>
-          </DialogClose>
-        </DialogFooter>
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button type="submit">Save</Button>
+              </DialogClose>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   )

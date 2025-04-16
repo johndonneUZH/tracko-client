@@ -79,7 +79,7 @@ export function TeamSwitcher({ teams }: {
     <SidebarMenu>
       <SidebarMenuItem>
         {!activeTeam ? (
-          <ProjectsDialog />
+          <ProjectsDialog variant="front"/>
         ) : (
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
