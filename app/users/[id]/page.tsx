@@ -114,10 +114,16 @@ export default function Page() {
   }, []);
 
   const handleLogout = async () => {
-    sessionStorage.removeItem("userId");
-    sessionStorage.removeItem("projectId");
-    sessionStorage.removeItem("token");
-    router.push("/")
+      try {
+        apiService.logOut(); 
+      } catch (err) {
+        console.error("Error setting user offline:", err);
+      } finally {
+        sessionStorage.removeItem("token");
+        sessionStorage.removeItem("currentUserId");
+        sessionStorage.removeItem("projectId");
+        router.push("/");
+      }
   }
   
   return (

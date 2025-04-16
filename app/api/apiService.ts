@@ -203,6 +203,20 @@ export class ApiService {
       "An error occurred while posting the changes.\n",
     );
   }
+
+  public async logOut(): Promise<void> {
+    const url = `${this.baseURL}/auth/logout`;
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        ...this.buildHeaders(),
+      },
+    });
+    return this.processResponse<void>(
+      res,
+      "An error occurred while logging out.\n",
+    );
+  }
   
   /**
    * PUT request.

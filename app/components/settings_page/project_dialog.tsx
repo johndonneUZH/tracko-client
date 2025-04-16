@@ -69,7 +69,7 @@ export function ProjectsDialog( {variant} : Props) {
   }, [router]);
 
   const handleCreate = () => {
-    addProject(projectDescription, projectName);
+    addProject(projectName, projectDescription);
   };
 
   return (
