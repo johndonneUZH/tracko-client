@@ -9,6 +9,7 @@ import { Separator } from "@/components/commons/separator"
 import { Button } from "@/components/commons/button"
 import { useRouter } from "next/navigation";
 import { ApiService } from "@/api/apiService";
+import { EditProfileDialog } from "@/components/user_page/edit_dialog";
 
 import {
   SidebarInset,
@@ -158,9 +159,7 @@ export default function Page() {
               </div>
             </div>
             <div className="space-x-4 items-center">
-              <Button className="min-w-25 w-auto py-3" onClick= {()=>router.push(`/users/${sessionStorage.getItem("userId")}/edit`)}>
-                <Pencil/> Edit
-              </Button>
+              <EditProfileDialog />
               <Button className="min-w-25 w-auto py-3" onClick= {handleLogout}>
                 <LogOut/> Log Out
               </Button>

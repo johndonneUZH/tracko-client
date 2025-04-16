@@ -4,6 +4,8 @@ import React, { useEffect, useState } from "react";
 import { User } from "@/types/user";
 import { useRouter } from "next/navigation";
 import { ApiService } from "@/api/apiService";
+import { Button } from "@/components/commons/button";
+import { UserMinus } from "lucide-react";
 
 import {
     Avatar,

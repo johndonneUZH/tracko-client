@@ -79,12 +79,6 @@ export function AppSidebar({ triggerReload = null, ...props }: AppSidebarProps) 
       ],
       navSecondary: [
         {
-          title: "Create Project",
-          url: `/users/${userId}/projects`,
-          icon: PlusCircle,
-          isActive: true,
-        },
-        {
           title: "Notifications",
           url: `/users/${userId}/notifications`,
           icon: Bell,

@@ -39,6 +39,14 @@ export function ContributionsChart() {
   const [chartData, setChartData] = useState<Contribution[]>([]);
   const [timeRange, setTimeRange] = useState("90d");
   const [projectNames, setProjectNames] = useState<string[]>([]);
+
+  function getBlueShade(index: number, total: number): string {
+    const minL = 30;
+    const maxL = 80;
+    const step = (maxL - minL) / Math.max(total - 1, 1);
+    const lightness = maxL - step * index;
+    return `hsl(187, 92.4%, ${lightness}%)`;
+  }
   
   useEffect(() => {
     async function fetchData() {
@@ -102,7 +110,7 @@ export function ContributionsChart() {
     name,
     {
       label: name,
-      color: `hsl(var(--chart-${i + 1}))`, // use dynamic chart color vars
+      color: getBlueShade(i, projectNames.length),
     }
   ]));
 
@@ -132,12 +140,15 @@ export function ContributionsChart() {
         <ChartContainer config={chartConfig} className="aspect-auto h-[250px] w-full">
           <AreaChart data={filteredData}>
             <defs>
-              {projectNames.map((name, i) => (
-                <linearGradient key={name} id={`fill-${i}`} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor={`hsl(var(--chart-${i + 1}))`} stopOpacity={0.8} />
-                  <stop offset="95%" stopColor={`hsl(var(--chart-${i + 1}))`} stopOpacity={0.1} />
-                </linearGradient>
-              ))}
+            {projectNames.map((name, i) => {
+              const color = getBlueShade(i, projectNames.length);
+              return (
+              <linearGradient key={name} id={`fill-${i}`} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor={color} stopOpacity={0.8} />
+                <stop offset="95%" stopColor={color} stopOpacity={0.1} />
+              </linearGradient>
+              );
+            })}
             </defs>
             <CartesianGrid vertical={false} />
             <XAxis
@@ -169,9 +180,9 @@ export function ContributionsChart() {
               <Area
                 key={name}
                 dataKey={name}
-                type="natural"
+                type="monotone"
                 fill={`url(#fill-${i})`}
-                stroke={`hsl(var(--chart-${i + 1}))`}
+                stroke={getBlueShade(i, projectNames.length)}
               />
             ))}
             <ChartLegend content={<ChartLegendContent />} />

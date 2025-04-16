@@ -13,6 +13,9 @@ import { MembersTable } from "@/components/settings_page/members_table";
 import { EditDialog } from "@/components/settings_page/edit_dialog";
 import { useProject } from '@/hooks/useProject'
 import { NewProject } from "@/components/commons/NewProject";
+import { FriendsDialog } from "@/components/settings_page/friends_dialog";
+import { KickDialog } from "@/components/settings_page/kick_dialog";
+import { User } from "@/types/user";
 
 import {
   Breadcrumb,
@@ -24,12 +27,11 @@ import {
 } from "@/components/commons/breadcrumb";
 
 import {
-  UserPlus,
-  UserMinus,
   Trash2
 } from "lucide-react"
 
 import { DynamicIcon } from 'lucide-react/dynamic';
+import { DeleteDialog } from "@/components/settings_page/delete_dialog";
 
 interface ProjectData {
   projectName: string;
@@ -51,6 +53,10 @@ export default function SettingsPage() {
   const apiService = new ApiService();
   const [triggerSidebarReload, setTriggerSidebarReload] = useState(false);
   const { projectId: currentProjectId } = useProject()
+  const [friends, setFriends] = useState<User[]>([]);
+  const [selectedFriends, setSelectedFriends] = useState<User[]>([]);
+  const [selectedMembers, setSelectedMembers] = useState<User[]>([]);
+  const [members, setMembers] = useState<User[]>([]);
 
   const reload = () => {
     setTriggerReload(triggerReload => !triggerReload);
@@ -81,6 +87,48 @@ export default function SettingsPage() {
   
     fetchProjectData();
   }, [triggerReload, currentProjectId]);
+
+  useEffect(() => {   
+    const storedUserId = sessionStorage.getItem("userId");
+  
+    if (!storedUserId) {
+      router.push("/login");
+      return;
+    }
+  
+    const fetchFriends = async () => {
+      try {
+        const data = await apiService.getFriends<User[]>(storedUserId);
+        setFriends(data);
+      } catch (err) {
+        console.error("Error fetching projects:", err);
+      }
+    };
+  
+    fetchFriends();
+    }, [router]);
+
+    useEffect(() => {
+      const fetchMembersData = async () => {
+        const projectId = sessionStorage.getItem("projectId");
+        const token = sessionStorage.getItem("token");
+    
+        if (!projectId || !token) {
+          router.push("/login");
+          return;
+        }
+    
+        try {
+          const data = await apiService.get<User[]>(`/projects/${projectId}/members`)
+          setMembers(data);
+          console.log(data)
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      };
+    
+      fetchMembersData();
+  }, []);
 
   return (
     <SidebarProvider>
@@ -120,9 +168,7 @@ export default function SettingsPage() {
               <div className="space-x-4 items-center">
                 { isOwner && (
                 <div className="space-x-4">
-                  <Button className="min-w-25 w-auto py-3" variant="destructive">
-                    <Trash2/> Delete Project
-                  </Button>
+                  <DeleteDialog />
                   <EditDialog 
                     projectData={projectData}
                     reload={reload}
@@ -154,13 +200,9 @@ export default function SettingsPage() {
               </h3>
               <MembersTable ownerId = {projectData?.ownerId} />
               { isOwner && (
-              <div className="flex-row space-x-4 mt-8">
-                <Button className="min-w-25" onClick= {() => {}}>
-                  <UserPlus />Invite
-                </Button>
-                <Button className="min-w-25" variant="destructive" onClick= {() => {}}>
-                  <UserMinus /> Kick
-                </Button>
+              <div className="flex flex-row space-x-4 mt-8">
+                <FriendsDialog friends={friends.filter(friend => !members.some(member => member.id === friend.id))} onAddFriends={setSelectedFriends} />
+                <KickDialog members={members} onAddMembers={setSelectedMembers} ownerId={projectData?.ownerId} />
               </div>
               )}
             </div>
