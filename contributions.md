@@ -100,6 +100,22 @@ reason).
 |                 | 10.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-server/commit/54121dbe9f08f8de072987c69dff8e736eb52689 | Adding AI tests | Testing the AI added parts with unit tests |
 
 ---
+---
+
+## Contributions Week 9 - 11.04 to 18.04
+
+| **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
+| ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
+| **fabiotilor** | 15.04  | https://github.com/johndonneUZH/sopra-fs25-group-46-client/pull/60/commits/62c621a2ac072c34f33dfb8a77717f8da2340ad8 | Added UI to add friends | Friends are added to projects |
+|                    | 17.04 | [[Link to Commit 2]]https://github.com/johndonneUZH/sopra-fs25-group-46-client/pull/65/commits/b2105b419534d0ebc1e63a93207e5b115170a2cd | Finished setup of otp | User does not lose account when being forgetful |
+| **[@githubUser2]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+
+---
 
 
 ## Template
