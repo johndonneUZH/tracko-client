@@ -106,29 +106,29 @@ export default function SettingsPage() {
     };
   
     fetchFriends();
-    }, [router]);
+    }, [triggerReload, router]);
 
-    useEffect(() => {
-      const fetchMembersData = async () => {
-        const projectId = sessionStorage.getItem("projectId");
-        const token = sessionStorage.getItem("token");
-    
-        if (!projectId || !token) {
-          router.push("/login");
-          return;
-        }
-    
-        try {
-          const data = await apiService.get<User[]>(`/projects/${projectId}/members`)
-          setMembers(data);
-          console.log(data)
-        } catch (error) {
-          console.error("Error fetching user data:", error);
-        }
-      };
-    
-      fetchMembersData();
-  }, []);
+  useEffect(() => {
+    const fetchMembersData = async () => {
+      const projectId = sessionStorage.getItem("projectId");
+      const token = sessionStorage.getItem("token");
+
+      if (!projectId || !token) {
+        router.push("/login");
+        return;
+      }
+
+      try {
+        const data = await apiService.get<User[]>(`/projects/${projectId}/members`)
+        setMembers(data);
+        console.log("Members data:", data);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchMembersData();
+  }, [triggerReload]); 
 
   return (
     <SidebarProvider>
@@ -198,10 +198,10 @@ export default function SettingsPage() {
               <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight mb-2">
                 Members
               </h3>
-              <MembersTable ownerId = {projectData?.ownerId} />
+              <MembersTable ownerId = {projectData?.ownerId} members={members}/>
               { isOwner && (
               <div className="flex flex-row space-x-4 mt-8">
-                <FriendsDialog friends={friends.filter(friend => !members.some(member => member.id === friend.id))} onAddFriends={setSelectedFriends} />
+                <FriendsDialog friends={friends.filter(friend => !members.some(member => member.id === friend.id))} onAddFriends={reload} />
                 <KickDialog members={members} onAddMembers={setSelectedMembers} ownerId={projectData?.ownerId} />
               </div>
               )}

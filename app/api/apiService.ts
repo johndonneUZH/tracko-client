@@ -237,6 +237,20 @@ export class ApiService {
     );
   }
 
+
+  public async addFriendsToProject(projectId: string, members: string[]): Promise<void> {
+    const url = `${this.baseURL}/projects/${projectId}`;
+    const res = await fetch(url, {
+      method: "PUT",
+      headers: this.buildHeaders(),
+      body: JSON.stringify({ "membersToAdd": members })
+    });
+    return this.processResponse<void>(
+      res,
+      "An error occurred while adding friends to the project.\n",
+    );
+  }
+
   /**
    * DELETE request.
    * @param endpoint - The API endpoint (e.g. "/users/123").

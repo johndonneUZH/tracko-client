@@ -5,6 +5,7 @@ import { useState, useEffect, useMemo } from "react";
 import { Project } from "../../types/project";
 import { ApiService } from "@/api/apiService";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";   
 
 export function useUserProjects(userId: string) {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -72,12 +73,30 @@ export function useUserProjects(userId: string) {
     }
   }
 
+  async function addFriends(friends: string[]): Promise<void> {
+    const projectId = sessionStorage.getItem("projectId") || "";
+    if (!projectId) {
+      toast.error("No project selected.");
+      return;
+    }
+    if (friends.length === 0) {
+      toast.error("No friends selected.");
+      return;
+    }
+    try {
+      await apiService.addFriendsToProject(projectId, friends);
+    } catch (err) {
+      console.error("Failed to add friends:", err);
+    }
+  }
+
   return {
     projects,
     loading,
     error,
     addProject,
     deleteProject,
+    addFriends,
   };
 
 }
