@@ -109,7 +109,6 @@ export class ApiService {
     );
   }
   
-
   public async getFriends<T>(userId: string): Promise<T> {
     const url = `${this.baseURL}${'/users/'}${userId}/friends`;
     const res = await fetch(url, {
