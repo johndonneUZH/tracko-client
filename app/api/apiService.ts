@@ -237,6 +237,19 @@ export class ApiService {
     );
   }
 
+  public async updateUser<T>(userId: string, data: unknown): Promise<T> {
+    const url = `${this.baseURL}${'/users/'}${userId}`;
+    const res = await fetch(url, {
+      method: "PUT",
+      headers: this.buildHeaders(),
+      body: JSON.stringify(data),
+    });
+    return this.processResponse<T>(
+      res,
+      "An error occurred while updating the user data.\n",
+    );
+  }
+
   public async addFriendsToProject(projectId: string, members: string[]): Promise<void> {
     const url = `${this.baseURL}/projects/${projectId}`;
     const res = await fetch(url, {
