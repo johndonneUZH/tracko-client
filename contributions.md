@@ -107,9 +107,9 @@ reason).
 | **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
 | ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
 | **fabiotilor** | 15.04  | https://github.com/johndonneUZH/sopra-fs25-group-46-client/pull/60/commits/62c621a2ac072c34f33dfb8a77717f8da2340ad8 | Added UI to add friends | Friends are added to projects |
-|                    | 17.04 | [[Link to Commit 2]]https://github.com/johndonneUZH/sopra-fs25-group-46-client/pull/65/commits/b2105b419534d0ebc1e63a93207e5b115170a2cd | Finished setup of otp | User does not lose account when being forgetful |
-| **[@githubUser2]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | 17.04 | https://github.com/johndonneUZH/sopra-fs25-group-46-client/pull/65/commits/b2105b419534d0ebc1e63a93207e5b115170a2cd | Finished setup of otp | User does not lose account when being forgetful |
+| **JMAVITE** | 14.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/d162cda4bf7e0b5a11de23a5dc042c71bb7e7857 | try to fix a bug with sessionstorage | Gives a more userfriendly experience with less bugs |
+|                    | 11.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/f3c9e29263ba6634ce153f4992cd17c3b3b52a4e | use of websockets | Gives to the user an interactive interface for project organization |
 | **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
