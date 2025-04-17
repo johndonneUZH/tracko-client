@@ -31,7 +31,7 @@ export function FriendsTable() {
   const [allUsers, setAllUsers] = useState<User[]>([]);
   const [newFriendUsername, setNewFriendUsername] = useState("");
   const [currentUsername, setCurrentUsername] = useState("");
-
+  
   useEffect(() => {
     const storedUserId = sessionStorage.getItem("userId");
 
@@ -49,7 +49,6 @@ export function FriendsTable() {
         ]);
         setFriends(friendsData);
         setAllUsers(usersData);
-
         const currentUser = usersData.find((u) => u.id === storedUserId);
         if (currentUser) setCurrentUsername(currentUser.username);
       } catch (err) {
@@ -106,19 +105,19 @@ export function FriendsTable() {
 
   if (filteredFriends.length === 0) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-4 max-w-2xl mx-auto">
         <Input
           placeholder="Search friends..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="max-w-sm"
+          className="w-full"
         />
         <div className="bg-gray-50 border border-gray-200 text-gray-600 p-4 rounded">
           Go touch some grass, you have no friends
         </div>
       </div>
     );
-  }
+  } 
 
   return (
     <div className="space-y-4 max-w-2xl mx-auto">

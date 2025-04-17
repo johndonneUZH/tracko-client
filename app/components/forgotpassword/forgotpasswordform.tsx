@@ -27,12 +27,12 @@ export function ForgotPasswordForm({
   const apiService = new ApiService();
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-/*
-  const sendOTPEmail = (otp: string, time: string, email: string ) => { //limited to 200 email per month (free)
+
+  const sendOTPEmail = (otp: string, time: string, email: string ) => {
+   
     const templateParams = {
-      to_email: email,
-      otp: otp, 
+      email: email,
+      passcode: otp, 
       time: time,
     };
   
@@ -44,45 +44,52 @@ export function ForgotPasswordForm({
         console.error('Failed...', err);
       });
   };
-*/
+
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();  
     setError(null);
-    setSuccessMessage(null);
   
-
     if (!email) {
       setError("Please enter your email address.");
       return;
     }
-  
-    /*try {
-      // Make an API request to check if the email exists in the database
-      const response = await apiService.get(`/auth/check-email/${email}`); //TODO: Implement in backend, this shall return email
-      
-      // If the email exists, proceed with sending a reset password email
-      if (response.data.exists) {
-        setSuccessMessage("An email has been sent with password reset instructions.");*/
+    // Placeholder for API request to check if the email exists
+    /*
+    try {
+      const response = await apiService.get(`/auth/check-email/${email}`); //or get all users and just for loop and check if entered email exists
+      if (response.data.exists) { 
         const now = new Date();
-        const expiryTime = new Date(now.getTime() + 15 * 60000); // add 15 minutes (15 * 60 * 1000 ms)
+        const expiryTime = new Date(now.getTime() + 15 * 60000); // add 15 minutes
         const time = expiryTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const otp = generateUUID().trim().substring(0, 6); // 6-digit OTP
 
-        const otp = generateUUID().trim().substring(0, 6); // Generate a 6-digit OTP
-
-
-       /* sendOTPEmail(email, otp, time); 
-
-       apiService.put("/otp") //TODO: set isBlocked to true
+        sendOTPEmail(email, otp, time); 
         
-        router.push("/login"); 
+       sessionStorage.setItem("email", email);  //personalised message
+       router.push("/otp");
       } else {
         setError("This email address is not associated with any account.");
       }
     } catch (error) {
       setError("An error occurred while checking the email. Please try again later.");
-    }*/
+    }
+    */
+    
+    // Testing without API call delete after connecting to backend
+    const now = new Date();
+    const expiryTime = new Date(now.getTime() + 15 * 60000); // add 15 minutes
+    const time = expiryTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const otp = generateUUID().trim().substring(0, 6); // 6-digit OTP
+
+    console.log("Generated OTP:", otp);
+
+    //sendOTPEmail(otp, time, email);
+    sessionStorage.setItem("email", email);
+    router.push("/otp");
+
+
   };
-  
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="relative rounded-lg">
@@ -97,9 +104,6 @@ export function ForgotPasswordForm({
             <div className="flex flex-col gap-6">
               {error && (
                 <div className="text-red-500 text-sm text-center">{error}</div>
-              )}
-              {successMessage && (
-                <div className="text-green-500 text-sm text-center">{successMessage}</div>
               )}
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>

@@ -16,35 +16,24 @@ import {
   BreadcrumbSeparator,
 } from "@/components/commons/breadcrumb";
 import { FriendsTable } from "@/components/user_page/friends-table";
-
-interface UserData {
-  friends: string[];
-}
+import PendingRequestsTable from "@/components/user_page/pending-table";
+import SentRequestsTable from "@/components/user_page/sent-table"; 
 
 export default function FriendsPage() {
-  const [userData, setUserData] = useState<UserData | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
   const apiService = new ApiService();
   const router = useRouter();
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      const userId = sessionStorage.getItem("userId");
-      const token = sessionStorage.getItem("token");
+    const storedUserId = sessionStorage.getItem("userId");
+    const token = sessionStorage.getItem("token");
 
-      if (!userId || !token) {
-        router.push("/login");
-        return;
-      }
+    if (!storedUserId || !token) {
+      router.push("/login");
+      return;
+    }
 
-      try {
-        const data = await apiService.get<UserData>(`/users/${userId}`);
-        setUserData(data);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
-    };
-
-    fetchUserData();
+    setUserId(storedUserId);
   }, [router]);
 
   return (
@@ -72,15 +61,33 @@ export default function FriendsPage() {
           </header>
 
           {/* Main Content */}
-          <div className="px-4">
-            <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
-              Friends
-            </h3>
-            <div className="space-y-2 my-4">
-              <div className="mt-6 w-full overflow-y-auto pt-4">
+          <div className="px-4 pb-6 space-y-10 overflow-y-auto">
+            <div>
+              <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
+                Friends
+              </h3>
+              <div className="mt-4">
                 <FriendsTable />
               </div>
             </div>
+
+            <div>
+              <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
+                Pending Requests
+              </h3>
+              <div className="mt-4">
+                <PendingRequestsTable />
+              </div>
+            </div>
+
+            <div>
+              <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
+                Sent Requests
+              </h3>
+              <div className="mt-4">
+                <SentRequestsTable />
+              </div>
+            </div> 
           </div>
         </div>
       </div>
