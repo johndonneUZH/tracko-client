@@ -41,16 +41,16 @@ export function useUserProjects(userId: string) {
 
 
   // Add project via API
-  async function addProject(name: string, description: string) {
+  async function addProject(name: string, description: string, projectLogo: string, members: string[]) {
+
     const trimmedName = name.trim();
     const trimmedDescription = description.trim();
     if (trimmedName.trim() === "") return;
   
     try {
-      const response = await apiService.post<Project>(`/projects`, {
-        projectName: trimmedName,
-        projectDescription: trimmedDescription 
-      }) as Project ;
+      const response = await apiService.createProject<Project>( 
+        trimmedName, trimmedDescription, projectLogo, members
+      );
       setProjects([...projects, response]);
       sessionStorage.setItem("projectId", response.projectId); // Store the new project ID in session storage
       console.log("Pushing to:", `/users/${userId}/projects/${response.projectId}/settings`);

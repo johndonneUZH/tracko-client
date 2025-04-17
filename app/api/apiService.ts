@@ -191,6 +191,24 @@ export class ApiService {
     return response;
   }
 
+  public async createProject<T>(projectName: string, projectDescription: string, projectLogoUrl: string, projectMembers: string[]): Promise<T> {
+    const url = `${this.baseURL}/projects`;
+    const res = await fetch(url, {
+      method: "POST",
+      headers: this.buildHeaders(),
+      body: JSON.stringify({
+        projectName,
+        projectDescription,
+        projectLogoUrl,
+        projectMembers,
+      }),
+    });
+    return this.processResponse<T>(
+      res,
+      "An error occurred while creating the project.\n",
+    );
+  }
+
   public async postChanges<T>( changeType: string, projectId: string): Promise<T> {
     const url = `${this.baseURL}${`/projects/`}${projectId}/changes`;
     const res = await fetch(url, {
