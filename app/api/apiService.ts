@@ -276,6 +276,18 @@ export class ApiService {
     );
   }
 
+  public async leaveProject(projectId: string): Promise<void> {
+    const url = `${this.baseURL}/projects/${projectId}/members`;
+    const res = await fetch(url, {
+      method: "PUT",
+      headers: this.buildHeaders(),
+    });
+    return this.processResponse<void>(
+      res,
+      "An error occurred while leaving the project.\n",
+    );
+  }
+
   /**
    * DELETE request.
    * @param endpoint - The API endpoint (e.g. "/users/123").

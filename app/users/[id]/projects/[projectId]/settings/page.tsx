@@ -32,6 +32,7 @@ import {
 
 import { DynamicIcon } from 'lucide-react/dynamic';
 import { DeleteDialog } from "@/components/settings_page/delete_dialog";
+import { LeaveDialog } from "@/components/settings_page/leave_dialog";
 
 interface ProjectData {
   projectName: string;
@@ -44,7 +45,6 @@ interface ProjectData {
 }
 
 export default function SettingsPage() {
-
   const [projectData, setProjectData] = useState<ProjectData | null>(null);
   const router = useRouter();
   const iconName = (projectData?.projectLogoUrl.toLowerCase() || "university") as any
@@ -106,7 +106,7 @@ export default function SettingsPage() {
     };
   
     fetchFriends();
-    }, [triggerReload, router]);
+  }, [triggerReload, router]);
 
   useEffect(() => {
     const fetchMembersData = async () => {
@@ -149,65 +149,69 @@ export default function SettingsPage() {
               </BreadcrumbList>
             </Breadcrumb>
           </header>
-          { !currentProjectId ? <NewProject/> :
-          <div className="m-4 space-y-4">
-            <div className="flex justify-between">
-              <div className="flex space-x-4 items-center">
-                <div className="flex aspect-square items-center justify-center rounded-lg text-sidebar-primary-foreground">
-                  <DynamicIcon className="h-16 w-16 rounded-lg bg-primary p-2" name={iconName}/>
+          {!currentProjectId ? <NewProject/> : (
+            <div className="m-4 space-y-4">
+              <div className="flex justify-between">
+                <div className="flex space-x-4 items-center">
+                  <div className="flex aspect-square items-center justify-center rounded-lg text-sidebar-primary-foreground">
+                    <DynamicIcon className="h-16 w-16 rounded-lg bg-primary p-2" name={iconName}/>
+                  </div>
+                  <div>
+                    <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
+                      {projectData?.projectName || "Loading..."}
+                    </h3>
+                    <p className="leading-7">
+                      {projectData?.projectDescription}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
-                    {projectData?.projectName || "Loading..."}
-                  </h3>
-                  <p className="leading-7">
-                    {projectData?.projectDescription}
-                  </p>
+                <div className="space-x-4 items-center">
+                  {isOwner ? (
+                    <div className="space-x-4">
+                      <DeleteDialog />
+                      <EditDialog 
+                        projectData={projectData}
+                        reload={reload}
+                        sidebarReload={sidebarReload}
+                      />
+                    </div>
+                  ) : (
+                    <div className="space-x-4">
+                      <LeaveDialog />
+                    </div>
+                  )}  
                 </div>
               </div>
-              <div className="space-x-4 items-center">
-                { isOwner && (
-                <div className="space-x-4">
-                  <DeleteDialog />
-                  <EditDialog 
-                    projectData={projectData}
-                    reload={reload}
-                    sidebarReload={sidebarReload}
-                  />
-                </div>
+              <div>
+                <p className="leading-7">
+                  Created: {projectData?.createdAt ? new Date(projectData.createdAt).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  }) : "Unknown"}
+                </p>
+                <p className="leading-7">
+                  Last updated: {projectData?.updatedAt ? new Date(projectData.updatedAt).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  }) : "Unknown"}
+                </p>
+              </div>
+              <div>
+                <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight mb-2">
+                  Members
+                </h3>
+                <MembersTable ownerId={projectData?.ownerId} members={members}/>
+                {isOwner && (
+                  <div className="flex flex-row space-x-4 mt-8">
+                    <FriendsDialog friends={friends.filter(friend => !members.some(member => member.id === friend.id))} onAddFriends={reload} />
+                    <KickDialog members={members} onAddMembers={reload} ownerId={projectData?.ownerId} />
+                  </div>
                 )}
               </div>
             </div>
-            <div>
-              <p className="leading-7">
-                Created: {projectData?.createdAt ? new Date(projectData.createdAt).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                }) : "Unknown"}
-              </p>
-              <p className="leading-7">
-                Last updated: {projectData?.updatedAt ? new Date(projectData.updatedAt).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                }) : "Unknown"}
-              </p>
-            </div>
-            <div>
-              <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight mb-2">
-                Members
-              </h3>
-              <MembersTable ownerId = {projectData?.ownerId} members={members}/>
-              { isOwner && (
-              <div className="flex flex-row space-x-4 mt-8">
-                <FriendsDialog friends={friends.filter(friend => !members.some(member => member.id === friend.id))} onAddFriends={reload} />
-                <KickDialog members={members} onAddMembers={reload} ownerId={projectData?.ownerId} />
-              </div>
-              )}
-            </div>
-          </div>
-          }
+          )}
         </div>
       </div>
     </SidebarProvider>

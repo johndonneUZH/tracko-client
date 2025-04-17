@@ -107,6 +107,19 @@ export function useUserProjects(userId: string) {
     }
   }
 
+  async function leaveProject(projectId: string) {
+    try {
+      await apiService.leaveProject(projectId);
+      sessionStorage.removeItem("projectId"); 
+      setProjects((prevProjects) => prevProjects.filter(project => project.projectId !== projectId));
+      router.push(`/users/${userId}`); 
+      return true;
+    } catch (err) {
+      console.error("Failed to leave project:", err);
+    }
+    return false;
+  }
+
   return {
     projects,
     loading,
@@ -115,6 +128,7 @@ export function useUserProjects(userId: string) {
     deleteProject,
     addFriends,
     removeFriends,
+    leaveProject,
   };
 
 }
