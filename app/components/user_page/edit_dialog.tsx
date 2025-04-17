@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -26,28 +28,96 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
+import { useEffect, useState } from "react"
+import { ApiService } from "@/api/apiService"
+import { User } from "@/types/user"
+import { toast } from "sonner"
 
 const FormSchema = z.object({
   name: z.string().min(1),
   username: z.string().min(1),
-  birthday: z.date({
-    required_error: "A birthday is required.",
-  }),
+  birthday: z.date().optional(),
 })
 
-export function EditProfileDialog() {
+export function EditProfileDialog({ onProfileUpdated }: { onProfileUpdated: () => void }) {
+  const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState<User | null>(null)
+  const apiService = new ApiService()
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      name: "Jane Doe",
-      username: "janedoe",
-      birthday: new Date(2000, 1, 1),
+      name: "",
+      username: "",
+      birthday: undefined,
     },
   })
 
-  const handleSave = (data: z.infer<typeof FormSchema>) => {
-    console.log(data)
+  useEffect(() => {
+    const fetchUser = async () => {
+      const userId = sessionStorage.getItem("userId")
+      if (!userId) {
+        console.error("User ID not found in session storage.")
+        return
+      }
+
+      const fetchedUser = await apiService.getUser(userId) as User
+      setUser(fetchedUser)
+
+      form.reset({
+        name: fetchedUser.name || "",
+        username: fetchedUser.username || "",
+        birthday: fetchedUser.birthday ? new Date(fetchedUser.birthday) : undefined,
+      })
+
+      setLoading(false)
+    }
+
+    fetchUser()
+  }, [form])
+
+  const handleSave = async (data: z.infer<typeof FormSchema>) => {
+    if (!user) return
+
+    const cleanedData: Record<string, any> = {}
+
+    if (data.name?.trim() && data.name !== user.name) cleanedData.name = data.name
+    if (data.username?.trim() && data.username !== user.username) cleanedData.username = data.username
+
+    const birthdayChanged =
+      data.birthday instanceof Date &&
+      !isNaN(data.birthday.getTime()) &&
+      (!user.birthday || new Date(user.birthday).toISOString() !== data.birthday.toISOString())
+
+    if (birthdayChanged) {
+      cleanedData.birthday = data.birthday
+    }
+
+    if (Object.keys(cleanedData).length === 0) {
+      console.log("No changes detected.")
+      return
+    }
+    
+    const userId = sessionStorage.getItem("userId")
+    if (!userId) {
+      console.error("User ID is null or undefined.")
+      return
+    }
+
+    try {
+      await apiService.updateUser(userId, cleanedData)
+      await onProfileUpdated();
+      toast.success("Profile updated successfully.")
+    }
+    catch (error) {
+      console.error("Error updating user:", error)
+      const errorMessage = error instanceof Error ? error.message : "An error occurred while updating the profile."
+      toast.error(errorMessage)
+      return
+    }
   }
+
+  if (loading) return <div>Loading...</div>
 
   return (
     <Dialog>
@@ -105,7 +175,10 @@ export function EditProfileDialog() {
                   <FormControl>
                     <Input
                       type="date"
-                      value={field.value ? format(field.value, "yyyy-MM-dd") : ""}
+                      value= {field.value instanceof Date && !isNaN(field.value.getTime())
+                        ? format(field.value, "yyyy-MM-dd")
+                        : ""
+                      }
                       onChange={(e) => {
                         const selectedDate = e.target.value
                           ? new Date(e.target.value)

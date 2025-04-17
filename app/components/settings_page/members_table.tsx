@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { User } from "@/types/user";
 import { useRouter } from "next/navigation";
 import { ApiService } from "@/api/apiService";
@@ -13,37 +13,15 @@ import {
 } from "@/components/commons/avatar"
 
 interface Props {
-    ownerId : String | undefined
+    ownerId: string | undefined;
+    members: User[];
 }
 
-export function MembersTable( { ownerId } : Props) {
+export function MembersTable( { ownerId, members } : Props) {
     const [error, setError] = useState<string | null>(null);
-    const [members, setMembers] = useState<User[]>([]);
     const router = useRouter();
     const apiService = new ApiService();
-
-    useEffect(() => {
-        const fetchMembersData = async () => {
-          const projectId = sessionStorage.getItem("projectId");
-          const token = sessionStorage.getItem("token");
-      
-          if (!projectId || !token) {
-            router.push("/login");
-            return;
-          }
-      
-          try {
-            const data = await apiService.get<User[]>(`/projects/${projectId}/members`)
-            setMembers(data);
-            console.log(data)
-          } catch (error) {
-            console.error("Error fetching user data:", error);
-          }
-        };
-      
-        fetchMembersData();
-    }, []);
-
+    
     if (error) {
         return (
           <div className="bg-red-50 border border-red-200 text-red-600 p-4 rounded">
