@@ -2,9 +2,11 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { ApiService } from '@/api/apiService';
 
 export default function ClientWrapper({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const apiService = new ApiService();
 
   useEffect(() => {
     const token = sessionStorage.getItem("token");
@@ -21,18 +23,13 @@ export default function ClientWrapper({ children }: { children: React.ReactNode 
 
     const logout = async () => {
       try {
-        // await fetch(`/api/users/${userId}/status`, {
-        //   method: "PUT",
-        //   headers: {
-        //     "Content-Type": "application/json",
-        //   },
-        //   body: JSON.stringify({ status: "OFFLINE" }),
-        // });
+        apiService.logOut(); 
       } catch (err) {
         console.error("Error setting user offline:", err);
       } finally {
         sessionStorage.removeItem("token");
         sessionStorage.removeItem("currentUserId");
+        sessionStorage.removeItem("projectId");
         router.push("/login");
       }
     };

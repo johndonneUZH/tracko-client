@@ -3,14 +3,14 @@
 "use client";
 
 import React, { useState } from "react";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/project_browser/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/project_browser/dialog";
 import { Button } from "@/components/commons/button";
 import { Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { ApiService } from "@/api/apiService";
 import { useUserProjects } from "@/lib/browser_utils/useProjectStorage";
 
-export function DeleteDialog() {
+export function LeaveDialog() {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -19,24 +19,23 @@ export function DeleteDialog() {
   if (!userId) {
     router.push("/login");
   }
-  const { deleteProject } = useUserProjects(userId);
-  const projectId = sessionStorage.getItem("projectId") || "";
+  const { leaveProject } = useUserProjects(userId);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="destructive">
           <Trash2/>
-          Delete Project
+          Leave Project
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Delete this project?</DialogTitle>
+          <DialogTitle>Leave this project?</DialogTitle>
         </DialogHeader>
-        <p className="text-sm text-gray-600">
-          This action cannot be undone. This will permanently delete the project and remove all associated data.
-        </p>
+        <DialogDescription>
+            Are you sure you want to leave this project? You won't have access to it anymore.
+        </DialogDescription>
         <DialogFooter>
           <Button variant="ghost" onClick={() => setOpen(false)} disabled={loading}>
             Cancel
@@ -44,14 +43,19 @@ export function DeleteDialog() {
           <Button variant="destructive" disabled={loading} 
             onClick={async () => {
               setLoading(true);
-              const success = await deleteProject(projectId);
+              const projectId = sessionStorage.getItem("projectId") || "";
+                if (!projectId) {
+                    console.error("Project ID not found in session storage.");
+                    return;
+                }
+              const success = await leaveProject(projectId);
               setLoading(false);
               if (success) {
                 setOpen(false);
                 router.push(`/users/${userId}`); 
               }
           }}>
-            Delete Project
+            Leave Project
           </Button>
         </DialogFooter>
       </DialogContent>

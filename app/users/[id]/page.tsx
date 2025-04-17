@@ -92,32 +92,39 @@ export default function Page() {
   const router = useRouter();
   const apiService = new ApiService();
 
+  const fetchUserData = async () => {
+    const userId = sessionStorage.getItem("userId");
+    const token = sessionStorage.getItem("token");
+  
+    if (!userId || !token) {
+      router.push("/login");
+      return;
+    }
+  
+    try {
+      const data = await apiService.get<UserData>(`/users/${userId}`);
+      setUserData(data);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
+  
   useEffect(() => {
-    const fetchUserData = async () => {
-      const userId = sessionStorage.getItem("userId");
-      const token = sessionStorage.getItem("token");
-  
-      if (!userId || !token) {
-        router.push("/login");
-        return;
-      }
-  
-      try {
-        const data = await apiService.get<UserData>(`/users/${userId}`);
-        setUserData(data);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
-    };
-  
     fetchUserData();
   }, []);
+  
 
   const handleLogout = async () => {
-    sessionStorage.removeItem("userId");
-    sessionStorage.removeItem("projectId");
-    sessionStorage.removeItem("token");
-    router.push("/")
+      try {
+        apiService.logOut(); 
+      } catch (err) {
+        console.error("Error setting user offline:", err);
+      } finally {
+        sessionStorage.removeItem("token");
+        sessionStorage.removeItem("currentUserId");
+        sessionStorage.removeItem("projectId");
+        router.push("/");
+      }
   }
   
   return (
@@ -159,7 +166,7 @@ export default function Page() {
               </div>
             </div>
             <div className="space-x-4 items-center">
-              <EditProfileDialog />
+              <EditProfileDialog onProfileUpdated={fetchUserData} />
               <Button className="min-w-25 w-auto py-3" onClick= {handleLogout}>
                 <LogOut/> Log Out
               </Button>
@@ -181,7 +188,11 @@ export default function Page() {
                 <div className="flex gap-2 items-center">
                   <Gift />
                   <p className="leading-7">
-                    Birthday: {userData.birthday}
+                    Birthday: {new Date(userData.birthday).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
                   </p>
                 </div>
               )}

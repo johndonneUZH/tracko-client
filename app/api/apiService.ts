@@ -190,6 +190,24 @@ export class ApiService {
     return response;
   }
 
+  public async createProject<T>(projectName: string, projectDescription: string, projectLogoUrl: string, projectMembers: string[]): Promise<T> {
+    const url = `${this.baseURL}/projects`;
+    const res = await fetch(url, {
+      method: "POST",
+      headers: this.buildHeaders(),
+      body: JSON.stringify({
+        projectName,
+        projectDescription,
+        projectLogoUrl,
+        projectMembers,
+      }),
+    });
+    return this.processResponse<T>(
+      res,
+      "An error occurred while creating the project.\n",
+    );
+  }
+
   public async postChanges<T>( changeType: string, projectId: string): Promise<T> {
     const url = `${this.baseURL}${`/projects/`}${projectId}/changes`;
     const res = await fetch(url, {
@@ -200,6 +218,20 @@ export class ApiService {
     return this.processResponse<T>(
       res,
       "An error occurred while posting the changes.\n",
+    );
+  }
+
+  public async logOut(): Promise<void> {
+    const url = `${this.baseURL}/auth/logout`;
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        ...this.buildHeaders(),
+      },
+    });
+    return this.processResponse<void>(
+      res,
+      "An error occurred while logging out.\n",
     );
   }
   
@@ -219,6 +251,57 @@ export class ApiService {
     return this.processResponse<T>(
       res,
       "An error occurred while updating the data.\n",
+    );
+  }
+
+  public async updateUser<T>(userId: string, data: unknown): Promise<T> {
+    const url = `${this.baseURL}${'/users/'}${userId}`;
+    const res = await fetch(url, {
+      method: "PUT",
+      headers: this.buildHeaders(),
+      body: JSON.stringify(data),
+    });
+    return this.processResponse<T>(
+      res,
+      "An error occurred while updating the user data.\n",
+    );
+  }
+
+  public async addFriendsToProject(projectId: string, members: string[]): Promise<void> {
+    const url = `${this.baseURL}/projects/${projectId}`;
+    const res = await fetch(url, {
+      method: "PUT",
+      headers: this.buildHeaders(),
+      body: JSON.stringify({ "membersToAdd": members })
+    });
+    return this.processResponse<void>(
+      res,
+      "An error occurred while adding friends to the project.\n",
+    );
+  }
+
+  public async removeFriendsFromProject(projectId: string, members: string[]): Promise<void> {
+    const url = `${this.baseURL}/projects/${projectId}`;
+    const res = await fetch(url, {
+      method: "PUT",
+      headers: this.buildHeaders(),
+      body: JSON.stringify({ "membersToRemove": members })
+    });
+    return this.processResponse<void>(
+      res,
+      "An error occurred while kicking friends from the project.\n",
+    );
+  }
+
+  public async leaveProject(projectId: string): Promise<void> {
+    const url = `${this.baseURL}/projects/${projectId}/members`;
+    const res = await fetch(url, {
+      method: "PUT",
+      headers: this.buildHeaders(),
+    });
+    return this.processResponse<void>(
+      res,
+      "An error occurred while leaving the project.\n",
     );
   }
 
