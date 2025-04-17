@@ -22,16 +22,20 @@ import {
   Avatar,
   AvatarImage,
 } from "@/components/commons/avatar";
+import { useUserProjects } from "@/lib/browser_utils/useProjectStorage";
+import { toast } from "sonner";
 
 interface Props {
   members: User[];
-  onAddMembers: (selected: User[]) => void;
+  onAddMembers: () => void;
   ownerId: string | undefined;
 }
 
 export function KickDialog({ members, onAddMembers, ownerId }: Props) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedMemberIds, setSelectedMemberIds] = useState<Set<string>>(new Set());
+  const userId = sessionStorage.getItem("userId") || "";
+  const { removeFriends } = useUserProjects(userId);
 
   const toggleMember = (id: string) => {
     setSelectedMemberIds((prev) => {
@@ -45,10 +49,18 @@ export function KickDialog({ members, onAddMembers, ownerId }: Props) {
     });
   };
 
-  const handleRemoveMembers = () => {
-    const selectedMembers = members.filter((member) => selectedMemberIds.has(member.id));
-    onAddMembers(selectedMembers);
-  };
+  const handleRemoveMembers = async () => {
+    const idsToRemove = Array.from(selectedMemberIds);
+    try {
+      console.log("Removing members with IDs:", idsToRemove);
+      await removeFriends(idsToRemove);
+      await onAddMembers();
+      toast.success("Members successfully removed from the project.");
+    } catch (error) {
+      toast.error("Failed to add friends to the project.");
+      console.error(error);
+    }
+  };    
 
   const filteredMembers = members.filter((member) => {
     const name = member.name || member.username;

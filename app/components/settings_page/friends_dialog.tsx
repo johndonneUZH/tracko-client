@@ -5,6 +5,9 @@ import { User } from "@/types/user";
 import { Button } from "@/components/commons/button";
 import { Checkbox } from "@/components/project_browser/checkbox";
 import { Input } from "@components/commons/input";
+import { useUserProjects } from "@/lib/browser_utils/useProjectStorage";
+import { toast } from "sonner";
+import { MembersTable } from "@/components/settings_page/members_table";
 import {
   Dialog,
   DialogContent,
@@ -23,12 +26,14 @@ import {
 
 interface Props {
   friends: User[];
-  onAddFriends: (selected: User[]) => void;
+  onAddFriends: () => void;
 }
 
 export function FriendsDialog({ friends, onAddFriends }: Props) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFriendIds, setSelectedFriendIds] = useState<Set<string>>(new Set());
+  const userId = sessionStorage.getItem("userId") || "";
+  const { addFriends } = useUserProjects(userId);
 
   const toggleFriend = (id: string) => {
     setSelectedFriendIds((prev) => {
@@ -42,9 +47,16 @@ export function FriendsDialog({ friends, onAddFriends }: Props) {
     });
   };
 
-  const handleAddFriends = () => {
-    const selectedFriends = friends.filter((friend) => selectedFriendIds.has(friend.id));
-    onAddFriends(selectedFriends);
+  const handleAddFriends = async () => {
+    const idsToAdd = Array.from(selectedFriendIds);
+    try {
+      await addFriends(idsToAdd);
+      await onAddFriends();
+      toast.success("Friends successfully added to the project.");
+    } catch (error) {
+      toast.error("Failed to add friends to the project.");
+      console.error(error);
+    }
   };
 
   const filteredFriends = friends.filter((friend) => {
@@ -155,7 +167,7 @@ export function FriendsDialog({ friends, onAddFriends }: Props) {
 
           <DialogFooter>
             <DialogClose asChild>
-              <Button type="submit" onClick={handleAddFriends}>
+            <Button type="button" onClick={handleAddFriends}>
                 Select
               </Button>
             </DialogClose>

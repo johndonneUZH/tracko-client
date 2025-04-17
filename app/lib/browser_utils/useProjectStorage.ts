@@ -4,6 +4,8 @@
 import { useState, useEffect, useMemo } from "react";
 import { Project } from "../../types/project";
 import { ApiService } from "@/api/apiService";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";   
 
 export function useUserProjects(userId: string) {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -12,6 +14,7 @@ export function useUserProjects(userId: string) {
   
   // Memoize the apiService to prevent recreation on every render
   const apiService = useMemo(() => new ApiService(), []);
+  const router = useRouter(); 
 
   useEffect(() => {
     if (!userId) return; 
@@ -38,36 +41,31 @@ export function useUserProjects(userId: string) {
 
 
   // Add project via API
-  async function addProject(name: string, description: string) {
+  async function addProject(name: string, description: string, projectLogo: string, members: string[]) {
+
     const trimmedName = name.trim();
     const trimmedDescription = description.trim();
     if (trimmedName.trim() === "") return;
   
     try {
-      const response = await apiService.post<Project>(`/projects`, {
-        projectName: trimmedName,
-        projectDescription: trimmedDescription 
-      }) as Project ;
-      apiService.postChanges("ADDED_PROJECT", userId); // For analytics purpose
+      const response = await apiService.createProject<Project>( 
+        trimmedName, trimmedDescription, projectLogo, members
+      );
       setProjects([...projects, response]);
+      sessionStorage.setItem("projectId", response.projectId); // Store the new project ID in session storage
+      console.log("Pushing to:", `/users/${userId}/projects/${response.projectId}/settings`);
+      router.push(`/users/${userId}/projects/${response.projectId}/settings`);
     } catch (err) {
       console.error("Failed to add project:", err);
     }
   }
 
   // Optional: Delete projects via API
-  async function deleteProjects(projectIds: string[]) {
+  async function deleteProject(projectId: string) {
     try {
       // Delete projects in sequence (better error handling than Promise.all)
-      for (const id of projectIds) {
-        await apiService.delete(`/projects/${id}`);
-      }
-      
-      // Only update state if all deletions succeeded
-      setProjects(prev => prev.filter(proj => !projectIds.includes(proj.projectId)));
-
-      
-      
+      await apiService.delete(`/projects/${projectId}`);
+      setProjects((prevProjects) => prevProjects.filter(project => project.projectId !== projectId));
       return true; // Indicate success
     } catch (err) {
       console.error('Deletion failed:', err);
@@ -75,12 +73,62 @@ export function useUserProjects(userId: string) {
     }
   }
 
+  async function addFriends(friends: string[]): Promise<void> {
+    const projectId = sessionStorage.getItem("projectId") || "";
+    if (!projectId) {
+      toast.error("No project selected.");
+      return;
+    }
+    if (friends.length === 0) {
+      toast.error("No friends selected.");
+      return;
+    }
+    try {
+      await apiService.addFriendsToProject(projectId, friends);
+    } catch (err) {
+      console.error("Failed to add friends:", err);
+    }
+  }
+
+  async function removeFriends(friends: string[]): Promise<void> {
+    const projectId = sessionStorage.getItem("projectId") || "";
+    if (!projectId) {
+      toast.error("No project selected.");
+      return;
+    }
+    if (friends.length === 0) {
+      toast.error("No friends selected.");
+      return;
+    }
+    try {
+      await apiService.removeFriendsFromProject(projectId, friends);
+    } catch (err) {
+      console.error("Failed to kick friends:", err);
+    }
+  }
+
+  async function leaveProject(projectId: string) {
+    try {
+      await apiService.leaveProject(projectId);
+      sessionStorage.removeItem("projectId"); 
+      setProjects((prevProjects) => prevProjects.filter(project => project.projectId !== projectId));
+      router.push(`/users/${userId}`); 
+      return true;
+    } catch (err) {
+      console.error("Failed to leave project:", err);
+    }
+    return false;
+  }
+
   return {
     projects,
     loading,
     error,
     addProject,
-    deleteProjects,
+    deleteProject,
+    addFriends,
+    removeFriends,
+    leaveProject,
   };
 
 }

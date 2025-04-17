@@ -149,15 +149,21 @@ export function AppSidebar({ triggerReload = null, ...props }: AppSidebarProps) 
     );
   }
 
+  const projectId = sessionStorage.getItem("projectId") || currentProjectId;
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
+      
       <SidebarContent>
+      { projectId && (
         <NavMain items={data.navMain} />
-        <NavSecondary items={data.navSecondary} />
+      )}
+        <NavSecondary items={data.navSecondary} />      
       </SidebarContent>
+      
       <SidebarFooter>
         <NavUser user={data.user} />
       </SidebarFooter>
