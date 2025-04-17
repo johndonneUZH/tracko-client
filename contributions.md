@@ -108,11 +108,18 @@ reason).
 | ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
 | **fabiotilor** | 15.04  | https://github.com/johndonneUZH/sopra-fs25-group-46-client/pull/60/commits/62c621a2ac072c34f33dfb8a77717f8da2340ad8 | Added UI to add friends | Friends are added to projects |
 |                    | 17.04 | [[Link to Commit 2]]https://github.com/johndonneUZH/sopra-fs25-group-46-client/pull/65/commits/b2105b419534d0ebc1e63a93207e5b115170a2cd | Finished setup of otp | User does not lose account when being forgetful |
-| **[@githubUser2]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **johndonneUZH** |  13.04  | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/f6366c50383829cfb04e34fc5f4167587f6475b9 | Add analytics tracking for project, idea, and comment changes | Analytics |
+|                    | 13.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/263e2a21d20ff60e181bd389ff6c1acb954170af | Add daily contributions fetching and charting functionality | Analytics |
+|                    |  17.04  | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/e20d5794e8b72b38f18e6aaf22cb628ace9f3c9a | Add leave project functionality with confirmation dialog | Integration |
+|                    | 17.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/fd66670baa7509288b922b62244ca49e8b72532e | Add functionality to add friends to a project and update related components | Integration |
+|                    | 17.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/968a14b8248e8d19aa3ca25c2856dcdd794636cf | Add functionality to remove friends from a project and update related components | Integration |
+|                    | 17.04   | Add user profile update functionality and improve user data fetching | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/f1f9609a2b60ea3bacf5206742aaf5e91ce3940d | Integration |
+|                    | 17.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/b1225f4a5720260d868ac1b4c99713c73b680007 | Add project creation functionality with friend selection and dialog| Integration |
 | **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@githubUser5]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 
 ---
