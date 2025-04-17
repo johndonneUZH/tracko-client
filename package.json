@@ -39,6 +39,7 @@
     "cobe": "^0.6.3",
     "date-fns": "^4.1.0",
     "emailjs-com": "^3.2.0",
+    "input-otp": "^1.4.2",
     "lucide-react": "^0.483.0",
     "motion": "^12.6.2",
     "next": "^15.2.0",
