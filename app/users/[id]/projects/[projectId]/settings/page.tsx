@@ -202,7 +202,7 @@ export default function SettingsPage() {
               { isOwner && (
               <div className="flex flex-row space-x-4 mt-8">
                 <FriendsDialog friends={friends.filter(friend => !members.some(member => member.id === friend.id))} onAddFriends={reload} />
-                <KickDialog members={members} onAddMembers={setSelectedMembers} ownerId={projectData?.ownerId} />
+                <KickDialog members={members} onAddMembers={reload} ownerId={projectData?.ownerId} />
               </div>
               )}
             </div>

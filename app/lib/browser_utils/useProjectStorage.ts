@@ -90,6 +90,23 @@ export function useUserProjects(userId: string) {
     }
   }
 
+  async function removeFriends(friends: string[]): Promise<void> {
+    const projectId = sessionStorage.getItem("projectId") || "";
+    if (!projectId) {
+      toast.error("No project selected.");
+      return;
+    }
+    if (friends.length === 0) {
+      toast.error("No friends selected.");
+      return;
+    }
+    try {
+      await apiService.removeFriendsFromProject(projectId, friends);
+    } catch (err) {
+      console.error("Failed to kick friends:", err);
+    }
+  }
+
   return {
     projects,
     loading,
@@ -97,6 +114,7 @@ export function useUserProjects(userId: string) {
     addProject,
     deleteProject,
     addFriends,
+    removeFriends,
   };
 
 }

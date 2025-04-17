@@ -237,7 +237,6 @@ export class ApiService {
     );
   }
 
-
   public async addFriendsToProject(projectId: string, members: string[]): Promise<void> {
     const url = `${this.baseURL}/projects/${projectId}`;
     const res = await fetch(url, {
@@ -248,6 +247,19 @@ export class ApiService {
     return this.processResponse<void>(
       res,
       "An error occurred while adding friends to the project.\n",
+    );
+  }
+
+  public async removeFriendsFromProject(projectId: string, members: string[]): Promise<void> {
+    const url = `${this.baseURL}/projects/${projectId}`;
+    const res = await fetch(url, {
+      method: "PUT",
+      headers: this.buildHeaders(),
+      body: JSON.stringify({ "membersToRemove": members })
+    });
+    return this.processResponse<void>(
+      res,
+      "An error occurred while kicking friends from the project.\n",
     );
   }
 
