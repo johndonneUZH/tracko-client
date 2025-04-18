@@ -1,6 +1,8 @@
 "use client";
 // Web Sockets are commented for now because if not the vercel app cannot be deployed
-import { RealtimeCursors } from '@/components/cursor/realtime-cursors'
+import { RealtimeCursors } from '@/components/magicui/realtime-cursors'
+import { RealtimeChat } from '@/components/magicui/realtime-chat'
+
 import { useParams, useRouter } from "next/navigation";
 // import { useEffect, useState } from "react";
 // import { Client } from "@stomp/stompjs";
@@ -51,10 +53,23 @@ export default function ProjectLayout({
   const router = useRouter();
   const currentUserId = useCurrentUserId();
   const { projectId: currentProjectId } = useProject()
+  const [roomName, setRoomName] = useState<string>("Dashboard");
   // const { logEntries, pushLog } = useStoreLog(projectId as string);
   
   const { ideas, createIdea, updateIdea, deleteIdea } = useIdeas(projectId as string);
   const [user, setUser] = useState<User | null>(null);
+  const [hasMounted, setHasMounted] = useState(false);
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const stored = sessionStorage.getItem("projectId");
+      if (stored) setRoomName(stored);
+    }
+  }, []);
 
   useEffect(() => {
     async function fetchUser() {
@@ -249,9 +264,26 @@ export default function ProjectLayout({
         </div>
       </div>
     </SidebarProvider>
-    <div className="w-full min-h-screen">
-    <RealtimeCursors roomName="Dashboard" username={user?.username != null ? user.username : "Hidden user"} />
-    </div>
-  </>
-  );
+    
+    {hasMounted && (
+      <div className="fixed right-0 top-30 bottom-0 w-[20rem] bg-white border-l border-gray-200 shadow-xl z-50 flex flex-col">
+        {/* Header */}
+        <div className="px-4 py-2 border-b text-sm font-medium text-gray-700 bg-gray-50">
+          Live Collaboration
+        </div>
+
+        {/* Cursors */}
+        <div className="flex-1 overflow-y-auto px-2 pt-2">
+          <RealtimeCursors roomName={roomName} username={user?.username ?? "Hidden user"} />
+        </div>
+
+        {/* Chat */}
+          <div className="text-xs text-gray-500 py-1 px-1">Chat</div>
+          <RealtimeChat roomName={roomName} username={user?.username ?? "Unknown user"} />
+      </div>
+    )}
+
+
+    </>
+    );
 }

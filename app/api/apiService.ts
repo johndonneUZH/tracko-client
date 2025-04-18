@@ -154,6 +154,18 @@ export class ApiService {
     );
   }
 
+  public async getMessages<T>(roomName: string): Promise<T> {
+    const url = `${this.baseURL}/projects/${roomName}/messages`;
+    const res = await fetch(url, {
+      method: "GET",
+      headers: this.buildHeaders(),
+    });
+    return this.processResponse<T>(
+      res,
+      "An error occurred while fetching the messages.\n",
+    );
+  }
+
   /**
    * POST request.
    * @param endpoint - The API endpoint (e.g. "/users").
@@ -232,6 +244,19 @@ export class ApiService {
     return this.processResponse<void>(
       res,
       "An error occurred while logging out.\n",
+    );
+  }
+
+  public async sendMessage<T>(message: string, roomName: string): Promise<T> {
+    const url = `${this.baseURL}/projects/${roomName}/messages`;
+    const res = await fetch(url, {
+      method: "POST",
+      headers: this.buildHeaders(),
+      body: JSON.stringify( { "content":message } ),
+    });
+    return this.processResponse<T>(
+      res,
+      "An error occurred while sending the message.\n",
     );
   }
   
