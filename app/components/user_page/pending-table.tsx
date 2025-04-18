@@ -8,66 +8,48 @@ import { Avatar, AvatarImage } from "@/components/commons/avatar";
 import { Input } from "@/components/commons/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-interface UserData {
-    name: string;
-    username: string;
-    email: string;
-    status: string;
-    avatarUrl: string;
-    projectIds: string[];
-    createAt: string;
-    lastLoginAt: string;
-    friendsIds: string[];
-    friendRequestsIds: string[];
-    friendRequestsSentIds: string[];
-    birthday: string;
-    bio: string;
-  }
-
   export default function PendingRequestsTable() {
     const apiService = new ApiService();
     const router = useRouter();
-    const [sentRequests, setSentRequests] = useState<User[]>([]);
+    const [incomingRequests, setIncomingRequests] = useState<User[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
-  
-    useEffect(() => {
+
+    const fetchSentRequests = async () => {
       const storedUserId = sessionStorage.getItem("userId");
-  
       if (!storedUserId) {
         router.push("/login");
         return;
       }
-  
-      const fetchSentRequests = async () => {
-        try {
-          setLoading(true);
-          const currentUser = await apiService.get<UserData>(`/users/${storedUserId}`);
-          const ids = currentUser.friendRequestsIds;
-          const users = await Promise.all(
-            ids.map((id) => apiService.get<User>(`/users/${id}`))
-          );
-          setSentRequests(users);
-        } catch (err) {
-          console.error("Error fetching sent requests:", err);
-          setError("Failed to load sent friend requests");
-        } finally {
-          setLoading(false);
-        }
-      };
-  
+      try {
+        setLoading(true);
+        const currentUser = await apiService.getUser<User>(storedUserId);
+        const ids = currentUser.friendRequestsIds;
+        const users = await Promise.all(
+          ids.map((id) => apiService.getUser<User>(id))
+        );
+        setIncomingRequests(users);
+      } catch (err) {
+        console.error("Error fetching sent requests:", err);
+        setError("Failed to load sent friend requests");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    useEffect(() => {
       fetchSentRequests();
     }, [router]);
   
     const filteredSent = useMemo(() => {
-      return sentRequests.filter((user) =>
+      return incomingRequests.filter((user) =>
         (user.name || user.username)
           .toLowerCase()
           .includes(searchTerm.toLowerCase())
       );
-    }, [sentRequests, searchTerm]);
+    }, [incomingRequests, searchTerm]);
   
     const toggleUserSelection = (id: string) => {
       setSelectedUsers((prev) => {
