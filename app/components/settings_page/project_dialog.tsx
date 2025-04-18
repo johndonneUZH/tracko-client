@@ -12,6 +12,7 @@ import { User } from "@/types/user";
 import { useRouter } from "next/navigation";
 import { useUserProjects } from "@/lib/browser_utils/useProjectStorage";
 import { SidebarMenuButton } from "@/components/sidebar/sidebar";
+import { useAutoAnimate } from '@formkit/auto-animate/react'
 import {
   Dialog,
   DialogContent,
@@ -48,6 +49,7 @@ export function ProjectsDialog({ variant }: Props) {
   const apiService = new ApiService();
   const [selectedFriendIds, setSelectedFriendIds] = useState<Set<string>>(new Set());
   const [isFriendDialogOpen, setIsFriendDialogOpen] = useState(false);
+  const [parent, enableAnimations] = useAutoAnimate()
 
   useEffect(() => {
     const storedUserId = sessionStorage.getItem("userId");
@@ -170,89 +172,146 @@ export function ProjectsDialog({ variant }: Props) {
             />
           </div>
 
-          {selectedFriends.length > 0 && (
-            <div className="flex flex-col space-y-1">
-              <Label>Selected Friends</Label>
-              <div className="relative">
-                <div className="max-h-48 overflow-y-auto border rounded-md p-2">
-                  {selectedFriends.map((friend) => (
-                    <div key={friend.id} className="flex items-center justify-between p-1">
-                      <div className="flex items-center gap-2">
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage
-                            src={friend.avatarUrl || `https://avatar.vercel.sh/${friend.username}`}
-                          />
-                        </Avatar>
-                        <span>{friend.name || friend.username}</span>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => toggleFriend(friend.id)}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
+            {selectedFriends.length > 0 && (
+              <div className="flex flex-col space-y-1">
+                <Label htmlFor="friends">Selected Friends</Label>
+              <div className="flex flex-wrap gap-2" ref={parent}>
+                {selectedFriends.map((friend) => (
+                  <div
+                    key={friend.id}
+                    className="flex items-center space-x-2 px-3 py-1 rounded-full bg-gray-100 text-sm"
+                  >
+                    <Avatar className="h-5 w-5">
+                      <AvatarImage
+                        src={
+                          friend.avatarUrl ||
+                          `https://avatar.vercel.sh/${friend.username}`
+                        }
+                      />
+                    </Avatar>
+                    <span>{friend.name || friend.username}</span>
+                    <button
+                      onClick={() => toggleFriend(friend.id)}
+                      className="hover:text-red-500"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                ))}
               </div>
             </div>
-          )}
+            )}
 
           <DialogFooter className="gap-4 pt-2">
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button type="button" variant="outline">
-                  <UserPlus className="mr-2 h-4 w-4" />
-                  Add Friends
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Add Friends to Project</DialogTitle>
-                  <DialogDescription>
-                    Select friends to invite to your new project
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="space-y-4">
-                  <Input
-                    placeholder="Search friends..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                  <div className="max-h-60 overflow-y-auto">
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button className="min-w-25 w-auto py-3" variant="outline">
+                <UserPlus />
+                Add Friends
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Add Friends</DialogTitle>
+                <DialogDescription>Select friends to add to your project.</DialogDescription>
+              </DialogHeader>
+
+              <div className="">
+                <Input
+                  type="text"
+                  placeholder="Search friends..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full"
+                />
+              </div>
+              {selectedFriends.length > 0 && (
+              <div className="flex flex-wrap gap-2" ref={parent}>
+                {selectedFriends.map((friend) => (
+                  <div
+                    key={friend.id}
+                    className="flex items-center space-x-2 px-3 py-1 rounded-full bg-gray-100 text-sm"
+                  >
+                    <Avatar className="h-5 w-5">
+                      <AvatarImage
+                        src={
+                          friend.avatarUrl ||
+                          `https://avatar.vercel.sh/${friend.username}`
+                        }
+                      />
+                    </Avatar>
+                    <span>{friend.name || friend.username}</span>
+                    <button
+                      onClick={() => toggleFriend(friend.id)}
+                      className="hover:text-red-500"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+              )}
+              <div className="relative max-h-64 overflow-y-auto pr-1">
+                <div
+                  className="sticky top-0 left-0 right-0 h-6 z-10 pointer-events-none"
+                  style={{
+                    background: "linear-gradient(to bottom, white, transparent)",
+                  }}
+                />
+                <table className="w-full relative z-0">
+                  <tbody>
                     {filteredFriends.map((friend) => (
-                      <div key={friend.id} className="flex items-center justify-between p-2">
-                        <div className="flex items-center gap-2">
-                          <Avatar className="h-8 w-8">
+                      <tr 
+                        key={friend.id}
+                        onClick={() => toggleFriend(friend.id)}
+                        className="cursor-pointer"
+                      >
+                        <td className="px-2 py-1 text-left w-1">
+                          <Avatar className="h-8 w-8 rounded-lg">
                             <AvatarImage
-                              src={friend.avatarUrl || `https://avatar.vercel.sh/${friend.username}`}
+                              src={
+                                friend.avatarUrl ||
+                                `https://avatar.vercel.sh/${friend.username}`
+                              }
                             />
                           </Avatar>
-                          <div>
-                            <div>{friend.name || friend.username}</div>
-                          </div>
-                        </div>
-                        <Checkbox
-                          checked={selectedFriendIds.has(friend.id)}
-                          onCheckedChange={() => toggleFriend(friend.id)}
-                        />
-                      </div>
+                        </td>
+                        <td className="px-2 py-1 text-left w-full">
+                          {friend.name || friend.username}
+                        </td>
+                        <td className="px-2 py-1 text-right w-1">
+                          <Checkbox
+                            checked={selectedFriendIds.has(friend.id)}
+                          />
+                        </td>
+                      </tr>
                     ))}
                     {filteredFriends.length === 0 && (
-                      <div className="text-center text-sm text-gray-500 py-4">
-                        No friends found
-                      </div>
+                      <tr>
+                        <td colSpan={3} className="text-center text-sm py-2 text-gray-500">
+                          No friends found.
+                        </td>
+                      </tr>
                     )}
-                  </div>
-                </div>
-                <DialogFooter>
-                  <DialogClose asChild>
-                    <Button type="button">Done</Button>
-                  </DialogClose>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+                  </tbody>
+                </table>
+                <div
+                  className="sticky bottom-0 left-0 right-0 h-6 z-10 pointer-events-none"
+                  style={{
+                    background: "linear-gradient(to top, white, transparent)",
+                  }}
+                />
+              </div>
+
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button type="button" onClick={() => {}}>
+                  Select
+                </Button>
+              </DialogClose>
+            </DialogFooter>
+          </DialogContent>
+          </Dialog>
             <DialogClose asChild>
               <Button type="submit">
                 <PlusCircle className="mr-2 h-4 w-4" />

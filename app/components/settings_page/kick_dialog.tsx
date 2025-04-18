@@ -5,6 +5,7 @@ import { User } from "@/types/user";
 import { Button } from "@/components/commons/button";
 import { Checkbox } from "@/components/project_browser/checkbox";
 import { Input } from "@components/commons/input";
+import { useAutoAnimate } from '@formkit/auto-animate/react'
 import {
   Dialog,
   DialogContent,
@@ -36,6 +37,7 @@ export function KickDialog({ members, onAddMembers, ownerId }: Props) {
   const [selectedMemberIds, setSelectedMemberIds] = useState<Set<string>>(new Set());
   const userId = sessionStorage.getItem("userId") || "";
   const { removeFriends } = useUserProjects(userId);
+  const [parent, enableAnimations] = useAutoAnimate()
 
   const toggleMember = (id: string) => {
     setSelectedMemberIds((prev) => {
@@ -94,7 +96,7 @@ export function KickDialog({ members, onAddMembers, ownerId }: Props) {
             />
           </div>
           {selectedMembers.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-4">
+            <div className="flex flex-wrap gap-2 mb-4" ref={parent}>
               {selectedMembers.map((member) => (
                 <div
                   key={member.id}
@@ -131,7 +133,11 @@ export function KickDialog({ members, onAddMembers, ownerId }: Props) {
                 {filteredMembers
                   .filter((member) => member.id !== ownerId)
                   .map((member) => (
-                    <tr key={member.id}>
+                    <tr 
+                      key={member.id}
+                      onClick={() => toggleMember(member.id)}
+                      className="cursor-pointer"
+                    >
                       <td className="px-2 py-1 text-left w-1">
                         <Avatar className="h-8 w-8 rounded-lg">
                           <AvatarImage
@@ -148,7 +154,6 @@ export function KickDialog({ members, onAddMembers, ownerId }: Props) {
                       <td className="px-2 py-1 text-right w-1">
                         <Checkbox
                           checked={selectedMemberIds.has(member.id)}
-                          onCheckedChange={() => toggleMember(member.id)}
                         />
                       </td>
                     </tr>

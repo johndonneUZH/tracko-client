@@ -8,6 +8,7 @@ import { Input } from "@components/commons/input";
 import { useUserProjects } from "@/lib/browser_utils/useProjectStorage";
 import { toast } from "sonner";
 import { MembersTable } from "@/components/settings_page/members_table";
+import { useAutoAnimate } from '@formkit/auto-animate/react'
 import {
   Dialog,
   DialogContent,
@@ -34,6 +35,7 @@ export function FriendsDialog({ friends, onAddFriends }: Props) {
   const [selectedFriendIds, setSelectedFriendIds] = useState<Set<string>>(new Set());
   const userId = sessionStorage.getItem("userId") || "";
   const { addFriends } = useUserProjects(userId);
+  const [parent, enableAnimations] = useAutoAnimate()
 
   const toggleFriend = (id: string) => {
     setSelectedFriendIds((prev) => {
@@ -91,7 +93,7 @@ export function FriendsDialog({ friends, onAddFriends }: Props) {
             />
           </div>
           {selectedFriends.length > 0 && (
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2" ref={parent}>
               {selectedFriends.map((friend) => (
                 <div
                   key={friend.id}
@@ -126,7 +128,11 @@ export function FriendsDialog({ friends, onAddFriends }: Props) {
             <table className="w-full relative z-0">
               <tbody>
                 {filteredFriends.map((friend) => (
-                  <tr key={friend.id}>
+                  <tr 
+                    key={friend.id}
+                    onClick={() => toggleFriend(friend.id)}
+                    className="cursor-pointer"
+                  >
                     <td className="px-2 py-1 text-left w-1">
                       <Avatar className="h-8 w-8 rounded-lg">
                         <AvatarImage
@@ -143,7 +149,6 @@ export function FriendsDialog({ friends, onAddFriends }: Props) {
                     <td className="px-2 py-1 text-right w-1">
                       <Checkbox
                         checked={selectedFriendIds.has(friend.id)}
-                        onCheckedChange={() => toggleFriend(friend.id)}
                       />
                     </td>
                   </tr>

@@ -117,8 +117,9 @@ reason).
 |                    | 17.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/968a14b8248e8d19aa3ca25c2856dcdd794636cf | Add functionality to remove friends from a project and update related components | Integration |
 |                    | 17.04   | Add user profile update functionality and improve user data fetching | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/f1f9609a2b60ea3bacf5206742aaf5e91ce3940d | Integration |
 |                    | 17.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/b1225f4a5720260d868ac1b4c99713c73b680007 | Add project creation functionality with friend selection and dialog| Integration |
-| **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **manueltuor** | 14.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/128ab9f4a23433885db13efae6667b91a347979f | moved create project into project switcher for better UI | improved user experience |
+|                    | 15.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/6894baea298250099d795ee9485f8885a46b2ae8 | Created settings page UI and corresponding dialogs | enables users to manage their projects |
+|                    | 16.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/63ac1018d3c5edd5ee603d291cf25c7a832b1763 | Created dialog for edit profile | users should be able to edit their profiles |
 | **[@githubUser5]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 
