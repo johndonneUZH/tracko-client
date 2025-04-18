@@ -59,6 +59,46 @@ import { ScrollArea } from "@/components/ui/scroll-area";
       });
     };
 
+    function handleAcceptRequest(friendId: string) {
+      return async () => {
+        try {
+          setLoading(true);
+          const storedUserId = sessionStorage.getItem("userId");
+          if (!storedUserId) {
+            setError("User ID not found in session storage");
+            return;
+          }
+          await apiService.acceptFriendRequest(storedUserId, friendId);
+          await fetchSentRequests();
+        } catch (err) {
+          console.error("Error accepting friend request:", err);
+          setError("Failed to accept friend request");
+        } finally {
+          setLoading(false);
+        }
+      };
+    }
+
+    function handleDeclineRequest(friendId: string) {
+      return async () => {
+        try {
+          setLoading(true);
+          const storedUserId = sessionStorage.getItem("userId");
+          if (!storedUserId) {
+            setError("User ID not found in session storage");
+            return;
+          }
+          await apiService.rejectFriendRequest(storedUserId, friendId);
+          await fetchSentRequests();
+        } catch (err) {
+          console.error("Error declining friend request:", err);
+          setError("Failed to decline friend request");
+        } finally {
+          setLoading(false);
+        }
+      };
+    }
+      
     if (loading) {
       return (
         <div className="flex flex-col items-start justify-center h-screen pt-10 px-4">
@@ -107,13 +147,13 @@ import { ScrollArea } from "@/components/ui/scroll-area";
                   </td>
                   <td className="px-2 py-1 space-x-2">
                     <button
-                    
+                      onClick={handleAcceptRequest(user.id)}
                       className="text-green-600 hover:underline text-sm"
                     >
                       Accept
                     </button>
                     <button
-                     
+                      onClick={handleDeclineRequest(user.id)}
                       className="text-red-600 hover:underline text-sm"
                     >
                       Decline

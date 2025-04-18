@@ -267,6 +267,66 @@ export class ApiService {
     );
   }
 
+  public async sendFriendRequest<T>(userId: string, friendId: string): Promise<T> {
+    const url = `${this.baseURL}/users/${userId}/friends/invite/${friendId}`;
+    const res = await fetch(url, {
+      method: "POST",
+      headers: this.buildHeaders(),
+    });
+    return this.processResponse<T>(
+      res,
+      "An error occurred while sending the friend request.\n",
+    );
+  }
+
+  public async acceptFriendRequest<T>(userId: string, friendId: string): Promise<T> {
+    const url = `${this.baseURL}/users/${userId}/friends/accept/${friendId}`;
+    const res = await fetch(url, {
+      method: "POST",
+      headers: this.buildHeaders(),
+    });
+    return this.processResponse<T>(
+      res,
+      "An error occurred while accepting the friend request.\n",
+    );
+  }
+
+  public async rejectFriendRequest<T>(userId: string, friendId: string): Promise<T> {
+    const url = `${this.baseURL}/users/${userId}/friends/reject/${friendId}`;
+    const res = await fetch(url, {
+      method: "POST",
+      headers: this.buildHeaders(),
+    });
+    return this.processResponse<T>(
+      res,
+      "An error occurred while rejecting the friend request.\n",
+    );
+  }
+
+  public async cancelFriendRequest<T>(userId: string, friendId: string): Promise<T> {
+    const url = `${this.baseURL}/users/${userId}/friends/cancel/${friendId}`;
+    const res = await fetch(url, {
+      method: "POST",
+      headers: this.buildHeaders(),
+    });
+    return this.processResponse<T>(
+      res,
+      "An error occurred while cancelling the friend request.\n",
+    );
+  }
+
+  public async removeFriend<T>(userId: string, friendId: string): Promise<T> {
+    const url = `${this.baseURL}/users/${userId}/friends/remove/${friendId}`;
+    const res = await fetch(url, {
+      method: "POST",
+      headers: this.buildHeaders(),
+    });
+    return this.processResponse<T>(
+      res,
+      "An error occurred while removing the friend.\n",
+    );
+  }
+
   public async addFriendsToProject(projectId: string, members: string[]): Promise<void> {
     const url = `${this.baseURL}/projects/${projectId}`;
     const res = await fetch(url, {

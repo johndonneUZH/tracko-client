@@ -83,6 +83,17 @@ export function FriendsTable() {
     );
   }, [allUsers, newFriendUsername, currentUsername, friends]);
 
+  function handleRequest() {
+    if (newFriendUsername.trim() === "") return;
+    const friend = filteredUsers[0];
+    const storedUserId = sessionStorage.getItem("userId");
+    if (friend && storedUserId) {
+      apiService.sendFriendRequest(storedUserId, friend.id).then(() => {
+        setNewFriendUsername("");
+      });
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex flex-col items-start justify-center h-screen pt-10 px-4">
@@ -208,7 +219,7 @@ export function FriendsTable() {
 
               <div className="flex justify-end gap-2 pt-4">
                 <Button variant="outline">Cancel</Button>
-                <Button>Add</Button>
+                <Button onClick={handleRequest}>Add</Button>
               </div>
             </div>
           </DialogContent>
