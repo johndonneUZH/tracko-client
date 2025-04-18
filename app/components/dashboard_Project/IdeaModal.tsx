@@ -13,6 +13,7 @@ interface IdeaModalProps {
   idea: Idea;
   canEdit: boolean;
   onSave: (title: string, body: string) => void;
+  onRefine: (title: string, body: string) => Promise<[string, string]>;
   onDelete: () => void;
   onCancel: () => void;
   currentUserId: string;
@@ -26,6 +27,7 @@ export default function IdeaModal({
   idea,
   canEdit,
   onSave,
+  onRefine,
   onDelete,
   onCancel,
   currentUserId,
@@ -115,6 +117,28 @@ export default function IdeaModal({
             hasChanges ? (
               <>
                 <button
+                  onClick={async () => {
+                    try {
+                      const [newTitle, newBody] = await onRefine(title, body);
+                      setTitle(newTitle);
+                      setBody(newBody);
+                    } catch (error) {
+                      console.error("Error refining content:", error);
+                      // Optionally add error handling UI here
+                    }
+                  }}
+                  style={{
+                    marginRight: "0.5rem",
+                    background: "#007bff",
+                    color: "#fff",
+                    border: "none",
+                    padding: "0.5rem 1rem",
+                    cursor: "pointer",
+                  }}
+                >
+                  Refine with AI
+                </button>
+                <button
                   onClick={() => onSave(title, body)}
                   style={{
                     marginRight: "0.5rem",
@@ -142,6 +166,28 @@ export default function IdeaModal({
               </>
             ) : (
               <>
+                <button
+                  onClick={async () => {
+                    try {
+                      const [newTitle, newBody] = await onRefine(title, body);
+                      setTitle(newTitle);
+                      setBody(newBody);
+                    } catch (error) {
+                      console.error("Error refining content:", error);
+                      // Optionally add error handling UI here
+                    }
+                  }}
+                  style={{
+                    marginRight: "0.5rem",
+                    background: "#007bff",
+                    color: "#fff",
+                    border: "none",
+                    padding: "0.5rem 1rem",
+                    cursor: "pointer",
+                  }}
+                >
+                  Refine with AI
+                </button>
                 <button
                   onClick={onDelete}
                   style={{

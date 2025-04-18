@@ -123,37 +123,93 @@ export default function ProjectLayout({
     router.push(`/users/${id}/projects/${projectId}/dashboard`);
   };
 
-  // Adapt handleSave: use updateIdea and update properties using title and body
-      const handleSave = async (ideaId: string, title: string, body: string) => {
-      
-      const oldIdea = ideas.find((i) => i.ideaId === ideaId);
-      //const oldTitle = oldIdea?.ideaName || "";
-      if (!oldIdea) return;
-    
-      await updateIdea(ideaId, { ideaName: title, ideaDescription: body,  x: oldIdea.x, y: oldIdea.y, } );
-    
-     // const action = oldTitle.trim() === "" ? "Created idea" : "Edited idea";
-      router.push(`/users/${id}/projects/${projectId}/dashboard/ideas/${ideaId}`);
-
-    };
-
-    const [projectName, setProjectName] = useState<string>("");
-
-    const apiService = useMemo(() => new ApiService(), []);
-
-    useEffect(() => {
-      async function fetchProjectName() {
-        try {
-          const response = await apiService.get<{ projectName: string }>(`/projects/${projectId}`);
-          setProjectName(response.projectName);
-        } catch (error) {
-          console.error("Error fetching project name:", error);
-          setProjectName("Unknown Project");
-        }
+  const handleRefine = async (title: string, body: string): Promise<[string, string]> => {
+    try {
+      interface ApiResponse {
+        id: string;
+        type: string;
+        role: string;
+        content: Array<{
+          type: string;
+          text: string;
+        }>;
+        model: string;
+        usage: {
+          inputTokens: number;
+          outputTokens: number;
+        };
       }
+      const data = await apiService.post<ApiResponse>('/api/ai/refine', { ideaContent: body });
 
-      fetchProjectName();
-    }, [projectId, apiService]);
+      console.log('response: ', data)
+
+      
+      // if (!response.ok) {
+      //   throw new Error('Failed to refine idea');
+      // }
+            
+      // Extract the title and body from the response
+      // The title is the first line of text (excluding the # symbol)
+      // The body is the rest of the text content
+      if (data.content && data.content.length > 0 && data.content[0].type === 'text') {
+        const textContent = data.content[0].text;
+        const lines = textContent.split('\n').filter((line: string) => line.trim() !== '');
+        
+        // Extract title (remove the # prefix if present)
+        let refinedTitle = lines[0].replace(/^#+\s*/, '');
+        
+        // Extract body (everything after the title and the subtitle/blank line if present)
+        let startIndex = 1;
+        // Skip the subtitle or description line if it exists
+        if (lines.length > 1 && !lines[1].startsWith('•')) {
+          startIndex = 2;
+        }
+        
+        const refinedBody = lines.slice(startIndex).join('\n');
+        
+        return [refinedTitle, refinedBody];
+      }
+      
+      // Return original values if we couldn't parse the response
+      return [title, body];
+    } catch (error) {
+      console.error('Error refining idea:', error);
+      // Return original values if there's an error
+      return [title, body];
+    }
+  }
+
+  // Adapt handleSave: use updateIdea and update properties using title and body
+  const handleSave = async (ideaId: string, title: string, body: string) => {
+    
+    const oldIdea = ideas.find((i) => i.ideaId === ideaId);
+    //const oldTitle = oldIdea?.ideaName || "";
+    if (!oldIdea) return;
+  
+    await updateIdea(ideaId, { ideaName: title, ideaDescription: body,  x: oldIdea.x, y: oldIdea.y, } );
+  
+    // const action = oldTitle.trim() === "" ? "Created idea" : "Edited idea";
+    router.push(`/users/${id}/projects/${projectId}/dashboard/ideas/${ideaId}`);
+
+  };
+
+  const [projectName, setProjectName] = useState<string>("");
+
+  const apiService = useMemo(() => new ApiService(), []);
+
+  useEffect(() => {
+    async function fetchProjectName() {
+      try {
+        const response = await apiService.get<{ projectName: string }>(`/projects/${projectId}`);
+        setProjectName(response.projectName);
+      } catch (error) {
+        console.error("Error fetching project name:", error);
+        setProjectName("Unknown Project");
+      }
+    }
+
+    fetchProjectName();
+  }, [projectId, apiService]);
   
   
 
@@ -198,6 +254,7 @@ export default function ProjectLayout({
               <IdeaModal
               idea={selectedIdea}
               canEdit={true}
+              onRefine={handleRefine}
               onSave={(title, body) => {
                 handleSave(selectedIdea.ideaId, title, body);
                 router.push(`/users/${id}/projects/${projectId}/dashboard/ideas/${selectedIdea.ideaId}`);
