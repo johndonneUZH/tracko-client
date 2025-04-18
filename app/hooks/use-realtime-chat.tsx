@@ -2,7 +2,6 @@
 
 import { ApiService } from '@/api/apiService'
 import { createClient } from '@/lib/supabase/client'
-import { User } from '@/types/user'
 import { useCallback, useEffect, useState } from 'react'
 
 interface UseRealtimeChatProps {

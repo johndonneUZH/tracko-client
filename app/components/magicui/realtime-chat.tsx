@@ -1,6 +1,5 @@
 'use client'
 
-import { cn } from '@/lib/utils'
 import { ChatMessageItem } from '@/components/magicui/chat-message'
 import { useChatScroll } from '@/hooks/use-chat-scroll'
 import {
