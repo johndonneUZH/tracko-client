@@ -1,6 +1,6 @@
 "use client";
 // Web Sockets are commented for now because if not the vercel app cannot be deployed
-
+import { RealtimeCursors } from '@/components/cursor/realtime-cursors'
 import { useParams, useRouter } from "next/navigation";
 // import { useEffect, useState } from "react";
 // import { Client } from "@stomp/stompjs";
@@ -40,6 +40,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/commons/breadcrumb";
+import { User } from '@/types/user';
 
 export default function ProjectLayout({
   children,
@@ -53,7 +54,20 @@ export default function ProjectLayout({
   // const { logEntries, pushLog } = useStoreLog(projectId as string);
   
   const { ideas, createIdea, updateIdea, deleteIdea } = useIdeas(projectId as string);
-  
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    async function fetchUser() {
+      try {
+        const fetchedUser = await apiService.getUser<User>(id as string);
+        setUser(fetchedUser);
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
+    }
+    fetchUser();
+  }, [user]);
+
   // Selected idea obtained by filtering the ideas array
   const selectedIdea = ideas.find((i) => i.ideaId === (ideaId as string)) || null;
   const selectedIdeaId = selectedIdea?.ideaId || null;
@@ -161,6 +175,7 @@ export default function ProjectLayout({
   // RENDER
   // ----------------------
   return (
+    <>
     <SidebarProvider>
       <div className="flex h-screen w-full mt-4 mb-4">
         <AppSidebar className="w-64 shrink-0" />
@@ -192,7 +207,7 @@ export default function ProjectLayout({
               updateIdea={updateIdea} //
               onToggleVote={toggleVote}
             />
-              {children}
+              {children}            
 
             {selectedIdea && (
               <IdeaModal
@@ -222,6 +237,7 @@ export default function ProjectLayout({
               />
             )}
 
+            
             {/* <WebSocketMonitor 
               connected={connected} 
               messages={messages} 
@@ -233,5 +249,9 @@ export default function ProjectLayout({
         </div>
       </div>
     </SidebarProvider>
+    <div className="w-full min-h-screen">
+    <RealtimeCursors roomName="Dashboard" username={user?.username != null ? user.username : "Hidden user"} />
+    </div>
+  </>
   );
 }

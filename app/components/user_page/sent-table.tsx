@@ -35,7 +35,7 @@ export default function SentRequestsTable() {
         setLoading(true);
 
         const [currentUser, allUsers] = await Promise.all([
-          apiService.get<UserData>(`/users/${storedUserId}`),
+          apiService.getUser<User>(storedUserId),
           apiService.getUsers<User[]>(),
         ]);
 
@@ -62,6 +62,30 @@ export default function SentRequestsTable() {
         .includes(searchTerm.toLowerCase())
     );
   }, [sentRequests, searchTerm]);
+
+  function handleCancelRequest(friendId: string) {
+    return async () => {
+      try {
+        setLoading(true);
+        const storedUserId = sessionStorage.getItem("userId");
+
+        if (!storedUserId) {
+          router.push("/login");
+          return;
+        }
+
+        await apiService.cancelFriendRequest(storedUserId, friendId);
+        setSentRequests((prev) =>
+          prev.filter((user) => user.id !== friendId)
+        );
+      } catch (err) {
+        console.error("Error canceling friend request:", err);
+        setError("Failed to cancel friend request");
+      } finally {
+        setLoading(false);
+      }
+    };
+  }
 
   if (loading) {
     return (
@@ -131,6 +155,14 @@ export default function SentRequestsTable() {
                       user.status === "ONLINE" ? "bg-green-500" : "bg-red-500"
                     }`}
                   ></span>
+                </td>
+                <td className="px-2 py-1 space-x-2">
+                    <button
+                      onClick={handleCancelRequest(user.id)}
+                      className="text-gray-600 hover:underline text-sm"
+                    >
+                      Cancel
+                    </button>
                 </td>
               </tr>
             ))}

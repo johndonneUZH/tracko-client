@@ -83,6 +83,17 @@ export function FriendsTable() {
     );
   }, [allUsers, newFriendUsername, currentUsername, friends]);
 
+  function handleRequest() {
+    if (newFriendUsername.trim() === "") return;
+    const friend = filteredUsers[0];
+    const storedUserId = sessionStorage.getItem("userId");
+    if (friend && storedUserId) {
+      apiService.sendFriendRequest(storedUserId, friend.id).then(() => {
+        setNewFriendUsername("");
+      });
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex flex-col items-start justify-center h-screen pt-10 px-4">
@@ -103,22 +114,6 @@ export function FriendsTable() {
     );
   }
 
-  if (filteredFriends.length === 0) {
-    return (
-      <div className="space-y-4 max-w-2xl mx-auto">
-        <Input
-          placeholder="Search friends..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full"
-        />
-        <div className="bg-gray-50 border border-gray-200 text-gray-600 p-4 rounded">
-          Go touch some grass, you have no friends
-        </div>
-      </div>
-    );
-  } 
-
   return (
     <div className="space-y-4 max-w-2xl mx-auto">
       <Input
@@ -127,38 +122,45 @@ export function FriendsTable() {
         onChange={(e) => setSearchTerm(e.target.value)}
         className="w-full"
       />
-      <ScrollArea className="h-52 w-full rounded-md border">
-        <table className="w-full">
-          <tbody>
-            {filteredFriends.map((friend) => (
-              <tr key={friend.id} className="">
-                <td className="px-2 py-1 text-left w-1">
-                  <Avatar className="h-8 w-8 rounded-lg">
-                    <AvatarImage
-                      src={
-                        friend.avatarUrl ||
-                        `https://avatar.vercel.sh/${friend.username}`
-                      }
-                    />
-                  </Avatar>
-                </td>
-                <td className="px-2 py-1 text-left w-full">
-                  {friend.name || friend.username}
-                </td>
-                <td className="px-2 py-1 text-right w-1">
-                  <span
-                    className={`h-3 w-3 rounded-full inline-block ${
-                      friend.status === "ONLINE"
-                        ? "bg-green-500"
-                        : "bg-red-500"
-                    }`}
-                  ></span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </ScrollArea>
+  
+      {filteredFriends.length === 0 ? (
+        <div className="bg-gray-50 border border-gray-200 text-gray-600 p-4 rounded">
+          Go touch some grass, you have no friends
+        </div>
+      ) : (
+        <ScrollArea className="h-52 w-full rounded-md border">
+          <table className="w-full">
+            <tbody>
+              {filteredFriends.map((friend) => (
+                <tr key={friend.id}>
+                  <td className="px-2 py-1 text-left w-1">
+                    <Avatar className="h-8 w-8 rounded-lg">
+                      <AvatarImage
+                        src={
+                          friend.avatarUrl ||
+                          `https://avatar.vercel.sh/${friend.username}`
+                        }
+                      />
+                    </Avatar>
+                  </td>
+                  <td className="px-2 py-1 text-left w-full">
+                    {friend.name || friend.username}
+                  </td>
+                  <td className="px-2 py-1 text-right w-1">
+                    <span
+                      className={`h-3 w-3 rounded-full inline-block ${
+                        friend.status === "ONLINE"
+                          ? "bg-green-500"
+                          : "bg-red-500"
+                      }`}
+                    ></span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </ScrollArea>
+      )}
 
       <div className="flex justify-end pt-2">
         <Dialog>
@@ -217,7 +219,7 @@ export function FriendsTable() {
 
               <div className="flex justify-end gap-2 pt-4">
                 <Button variant="outline">Cancel</Button>
-                <Button>Add</Button>
+                <Button onClick={handleRequest}>Add</Button>
               </div>
             </div>
           </DialogContent>
