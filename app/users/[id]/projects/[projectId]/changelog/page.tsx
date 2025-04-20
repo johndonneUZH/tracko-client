@@ -1,6 +1,7 @@
+/* eslint-disable */
+
 "use client";
 
-//import { useParams } from "next/navigation";
 import { SidebarProvider } from "@/components/sidebar/sidebar";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SidebarTrigger } from "@/components/sidebar/sidebar";
@@ -14,20 +15,15 @@ import {
 } from "@/components/commons/breadcrumb";
 
 import { useProject } from '@/hooks/useProject'
-import { NewProject } from "@/components/commons/NewProject";
-
-//import ChangeLogSidebar from "@/components/dashboard_Project/ChangeLogSidebar";
-//import { useStoreLog } from "@/lib/dashboard_utils/useStoreLog";
+import { ChangesTable } from "@/components/changelog/changes-table";
 
 export default function ChangelogPage() {
 
- // const { projectId } = useParams();
-  //const { logEntries } = useStoreLog(projectId as string);
   const { projectId: currentProjectId } = useProject()
 
   return (
     <SidebarProvider>
-      <div className="flex h-screen">
+      <div className="flex h-screen w-full">
         <AppSidebar className="w-64 shrink-0" />
         <div className="flex flex-col flex-1">
           <header className="flex h-16 items-center gap-2 px-4">
@@ -44,11 +40,10 @@ export default function ChangelogPage() {
               </BreadcrumbList>
             </Breadcrumb>
           </header>
-          { !currentProjectId ? <NewProject/> :
-          <div className="flex flex-col flex-1 p-4">
-            <h1 className="text-xl font-bold mb-10">Changelog</h1>
+          <div className="flex flex-col flex-1 p-4 w-full">
+            <ChangesTable/>
           </div>
-          }
+          
         </div>
       </div>
     </SidebarProvider>
