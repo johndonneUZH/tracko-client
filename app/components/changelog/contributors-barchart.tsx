@@ -1,13 +1,11 @@
 "use client"
 
-import { TrendingUp } from "lucide-react"
 import { Bar, BarChart, XAxis, YAxis } from "recharts"
 
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/commons/card"
@@ -18,35 +16,40 @@ import {
   ChartTooltipContent,
 } from "@/components/commons/chart"
 const chartData = [
-  { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
-  { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
-  { browser: "firefox", visitors: 187, fill: "var(--color-firefox)" },
-  { browser: "edge", visitors: 173, fill: "var(--color-edge)" },
-  { browser: "other", visitors: 90, fill: "var(--color-other)" },
+  { user: "john", contributions: 275, edit: 145, add: 71, upvote: 26, downvote: 19, comment: 10, close: 4 },
+  { user: "jill", contributions: 200, edit: 91, add: 46, upvote: 33, downvote: 12, comment: 13, close: 5 },
+  { user: "jack", contributions: 187, edit: 85, add: 28, upvote: 28, downvote: 17, comment: 32, close: 10 },
+  { user: "jane", contributions: 173, edit: 92, add: 34, upvote: 15, downvote: 17, comment: 14, close: 1 },
+  { user: "jeff", contributions: 90, edit: 55, add: 16, upvote: 6, downvote: 4, comment: 8, close: 1 },
+  { user: "jason", contributions: 56, edit: 36, add: 11, upvote: 4, downvote: 1, comment: 4, close: 0 },
 ]
 
 const chartConfig = {
-  visitors: {
-    label: "Visitors",
+  contributions: {
+    label: "Contributions",
   },
-  chrome: {
-    label: "Chrome",
+  john: {
+    label: "John",
     color: "hsl(var(--chart-1))",
   },
-  safari: {
-    label: "Safari",
+  jill: {
+    label: "Jill",
     color: "hsl(var(--chart-2))",
   },
-  firefox: {
-    label: "Firefox",
+  jack: {
+    label: "Jack",
     color: "hsl(var(--chart-3))",
   },
-  edge: {
-    label: "Edge",
+  jane: {
+    label: "Jane",
     color: "hsl(var(--chart-4))",
   },
-  other: {
-    label: "Other",
+  jeff: {
+    label: "Jeff",
+    color: "hsl(var(--chart-5))",
+  },
+  jason: {
+    label: "Jason",
     color: "hsl(var(--chart-5))",
   },
 } satisfies ChartConfig
@@ -69,7 +72,7 @@ export function ContributorsBarchart() {
             }}
           >
             <YAxis
-              dataKey="browser"
+              dataKey="user"
               type="category"
               tickLine={false}
               tickMargin={10}
@@ -78,12 +81,17 @@ export function ContributorsBarchart() {
                 chartConfig[value as keyof typeof chartConfig]?.label
               }
             />
-            <XAxis dataKey="visitors" type="number" hide />
+            <XAxis dataKey="contributions" type="number" hide />
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
             />
-            <Bar dataKey="visitors" layout="vertical" radius={5} />
+            <Bar dataKey="edit" stackId="a" layout="vertical" fill={"#155e75"}/>
+            <Bar dataKey="add" stackId="a" layout="vertical" fill={"#0e7490"}/>
+            <Bar dataKey="upvote" stackId="a" layout="vertical" fill={"#0891b2"}/>
+            <Bar dataKey="downvote" stackId="a" layout="vertical" fill={"#06b6d4"}/>
+            <Bar dataKey="comment" stackId="a" layout="vertical" fill={"#22d3ee"}/>
+            <Bar dataKey="close" stackId="a" layout="vertical" fill={"#67e8f9"}/>
           </BarChart>
         </ChartContainer>
       </CardContent>

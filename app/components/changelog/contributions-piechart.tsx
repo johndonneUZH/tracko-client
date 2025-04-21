@@ -1,13 +1,11 @@
 "use client"
 
-import { TrendingUp } from "lucide-react"
 import { Pie, PieChart } from "recharts"
 
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/commons/card"
@@ -18,35 +16,40 @@ import {
   ChartTooltipContent,
 } from "@/components/commons/chart"
 const chartData = [
-  { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
-  { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
-  { browser: "firefox", visitors: 187, fill: "var(--color-firefox)" },
-  { browser: "edge", visitors: 173, fill: "var(--color-edge)" },
-  { browser: "other", visitors: 90, fill: "var(--color-other)" },
+  { type: "edit", count: 275, fill: "#155e75" },
+  { type: "add", count: 200, fill: "#0e7490" },
+  { type: "upvote", count: 187, fill: "#0891b2" },
+  { type: "downvote", count: 173, fill: "#06b6d4" },
+  { type: "comment", count: 90, fill: "#22d3ee" },
+  { type: "close", count: 56, fill: "#67e8f9" },
 ]
 
 const chartConfig = {
-  visitors: {
-    label: "Visitors",
+  count: {
+    label: "Count",
   },
-  chrome: {
-    label: "Chrome",
+  edit: {
+    label: "edit",
     color: "hsl(var(--chart-1))",
   },
-  safari: {
-    label: "Safari",
+  add: {
+    label: "add",
     color: "hsl(var(--chart-2))",
   },
-  firefox: {
-    label: "Firefox",
+  upvote: {
+    label: "upvote",
     color: "hsl(var(--chart-3))",
   },
-  edge: {
-    label: "Edge",
+  downvote: {
+    label: "downvote",
     color: "hsl(var(--chart-4))",
   },
-  other: {
-    label: "Other",
+  comment: {
+    label: "comment",
+    color: "hsl(var(--chart-5))",
+  },
+  closet: {
+    label: "close",
     color: "hsl(var(--chart-5))",
   },
 } satisfies ChartConfig
@@ -61,7 +64,7 @@ export function ContributionsPiechart() {
       <CardContent className="flex-1 pb-0">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-h-[250px]"
+          className="aspect-square h-full"
         >
           <PieChart>
             <ChartTooltip
@@ -70,8 +73,8 @@ export function ContributionsPiechart() {
             />
             <Pie
               data={chartData}
-              dataKey="visitors"
-              nameKey="browser"
+              dataKey="count"
+              nameKey="type"
               stroke="0"
             />
           </PieChart>

@@ -10,12 +10,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/commons/card"
+
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/commons/chart"
+
 const chartData = [
     { date: "2024-04-01", edit: 16, close: 2, comment: 3, upvote: 8, downvote: 4, add: 8 },
     { date: "2024-04-02", edit: 11, close: 0, comment: 7, upvote: 5, downvote: 3, add: 3 },
