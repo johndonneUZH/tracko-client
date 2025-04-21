@@ -1,43 +1,44 @@
 import { ApiService } from "@/api/apiService";
 import { getApiDomain } from "@/utils/domain";
-
-
 import { Comment } from "@/types/comment";
 import { useMemo, useEffect, useRef } from "react";
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
+import { connectWebSocket, disconnectWebSocket } from "@/lib/websocketService";
+import { useRouter } from "next/navigation";
 
 export function useComments(projectId: string, ideaId: string) {
   const api = useMemo(() => new ApiService(), []);
-  const stompRef = useRef<Client | null>(null);
+  const router = useRouter();
 
-  // WebSocket
+  // WebSocket for comment notifications (optional, can be removed if not needed)
   useEffect(() => {
     if (!ideaId) return;
 
-   
-  const socket = new SockJS(`${getApiDomain()}/ws`);
-    const client = new Client({
-      webSocketFactory: () => socket,
-      onConnect: () => {
-        client.subscribe(`/topic/comments/${ideaId}`, (message) => {
-          const data = JSON.parse(message.body);
-          if ("deletedId" in data) {
-            console.log("deleted comment:", data.deletedId);
-          } else {
-            console.log("comment obtained:", data);
-          }
-        });
-      },
-      debug: (str) => console.log(str),
-      reconnectDelay: 5000,
-    });
+    // Connect WebSocket
+    const token = sessionStorage.getItem('token');
+    const userId = sessionStorage.getItem('userId');
+    if (!userId || !token) {
+      console.error("User ID or token not found");
+      router.push("/login");
+      return;
+    }
 
-    client.activate();
-    stompRef.current = client;
+    const client = connectWebSocket(
+      userId,
+      ideaId,
+      (data) => {
+        if ("deletedId" in data) {
+          console.log("Deleted comment:", data.deletedId);
+        } else {
+          console.log("New comment received:", data);
+        }
+      },
+      `/topic/comments/${ideaId}`
+    );
 
     return () => {
-      client.deactivate();
+      disconnectWebSocket();
     };
   }, [ideaId]);
 

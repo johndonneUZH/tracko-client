@@ -1,15 +1,15 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { Comment } from "@/types/comment";
 import { ApiService } from "@/api/apiService";
-import { Client } from "@stomp/stompjs";
-import SockJS from "sockjs-client";
-import { getApiDomain } from "@/utils/domain";
+import { connectWebSocket, disconnectWebSocket } from "@/lib/websocketService";
+import { useRouter } from "next/navigation";
 
 export function useCommentFetcher(projectId: string, ideaId: string) {
   const [commentMap, setCommentMap] = useState<Record<string, Comment>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const stompRef = useRef<Client | null>(null);
+  const [wsError, setWsError] = useState<string | null>(null);
+  const router = useRouter(); // Use Next.js router for navigation
 
   const fetchComments = async () => {
     setLoading(true);
@@ -26,71 +26,71 @@ export function useCommentFetcher(projectId: string, ideaId: string) {
       setCommentMap(map);
     } catch (err: unknown) {
       console.error("Error fetching comments:", err);
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("Failed to load comments.");
-      }
+      setError(err instanceof Error ? err.message : "Failed to load comments.");
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    if (projectId && ideaId) fetchComments();
-  }, [projectId, ideaId]);
+  // Handle incoming WebSocket messages
+  const handleCommentMessage = (data: any) => {
+    setCommentMap((prev) => {
+      const updated = { ...prev };
 
-  // WebSocket 
-  useEffect(() => {
-    if (!ideaId) return;
+      if ("deletedId" in data) {
+        delete updated[data.deletedId];
+      } else {
+        const newComment: Comment = data.comment || data;
+        updated[newComment.commentId] = newComment;
 
-  
-    const socket = new SockJS(`${getApiDomain()}/ws`);
-    const client = new Client({
-      webSocketFactory: () => socket,
-      onConnect: () => {
-        client.subscribe(`/topic/comments/${ideaId}`, (message) => {
-          const data = JSON.parse(message.body);
+        const parentId = data.parentId;
+        if (parentId && updated[parentId]) {
+          const parent = { ...updated[parentId] };
+          if (!parent.replies?.includes(newComment.commentId)) {
+            parent.replies = [...(parent.replies || []), newComment.commentId];
+            updated[parentId] = parent;
+          }
+        }
+      }
 
-          setCommentMap((prev) => {
-            const updated = { ...prev };
-
-            if ("deletedId" in data) {
-              delete updated[data.deletedId];
-            } else {
-              const newComment: Comment = data.comment || data;
-              updated[newComment.commentId] = newComment;
-
-              const parentId = data.parentId;
-              if (parentId && updated[parentId]) {
-                const parent = { ...updated[parentId] };
-                if (!parent.replies.includes(newComment.commentId)) {
-                  parent.replies = [...parent.replies, newComment.commentId];
-                  updated[parentId] = parent;
-                }
-              }
-            }
-
-            return updated;
-          });
-        });
-      },
-      debug: (str) => console.log("[WebSocket Comment Debug]", str),
-      reconnectDelay: 5000,
+      return updated;
     });
+  };
 
-    client.activate();
-    stompRef.current = client;
+  // Initial fetch and WebSocket setup
+  useEffect(() => {
+    if (!projectId || !ideaId) return;
+
+    let isMounted = true;
+
+    fetchComments();
+
+    // Connect WebSocket
+    const token = sessionStorage.getItem('token');
+    const userId = sessionStorage.getItem('userId');
+    if (!userId || !token) {
+      setWsError("User ID or token not found");
+      router.push("/login");
+      return;
+    }
+
+    const client = connectWebSocket(
+      userId,
+      ideaId,
+      handleCommentMessage,
+      `/topic/comments/${ideaId}`
+    );
 
     return () => {
-      client.deactivate();
+      isMounted = false;
+      disconnectWebSocket();
     };
-  }, [ideaId]);
+  }, [projectId, ideaId]);
 
   return {
     commentMap,
     loading,
-    error,
+    error: error || wsError,
     refreshComments: fetchComments,
   };
 }

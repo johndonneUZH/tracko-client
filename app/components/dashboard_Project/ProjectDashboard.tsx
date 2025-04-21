@@ -3,6 +3,7 @@
 import { Idea } from "@/types/idea";
 import IdeaBox from "./IdeaBox";
 import { useCurrentUserId } from "@/lib/commons/useCurrentUserId";
+import { useRef, useState, useEffect } from "react";
 
 interface ProjectDashboardProps {
   ideas: Idea[];
@@ -21,96 +22,63 @@ export default function ProjectDashboard({
   onToggleVote,
 }: ProjectDashboardProps) {
   const currentUserId = useCurrentUserId();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
 
-  const getAdjustedPosition = (
-    startX: number,
-    startY: number,
-    ideaId: string,
-    ideaWidth: number,
-    ideaHeight: number
-  ) => {
-    let adjustedX = startX;
-    let adjustedY = startY;
-    const maxIterations = 10;
-    let iterations = 0;
-    let collisionFound = true;
-
-    while (collisionFound && iterations < maxIterations) {
-      collisionFound = false;
-      for (const other of ideas) {
-        if (other.ideaId === ideaId) continue;
-
-        if (
-          adjustedX < other.x + ideaWidth &&
-          adjustedX + ideaWidth > other.x &&
-          adjustedY < other.y + ideaHeight &&
-          adjustedY + ideaHeight > other.y
-        ) {
-          collisionFound = true;
-          const overlapX =
-            Math.min(adjustedX + ideaWidth, other.x + ideaWidth) -
-            Math.max(adjustedX, other.x);
-          const overlapY =
-            Math.min(adjustedY + ideaHeight, other.y + ideaHeight) -
-            Math.max(adjustedY, other.y);
-
-          if (overlapX < overlapY) {
-            if (adjustedX < other.x) {
-              adjustedX = other.x - ideaWidth;
-            } else {
-              adjustedX = other.x + ideaWidth;
-            }
-          } else {
-            if (adjustedY < other.y) {
-              adjustedY = other.y - ideaHeight;
-            } else {
-              adjustedY = other.y + ideaHeight;
-            }
-          }
-        }
+  // Track container size
+  useEffect(() => {
+    const updateSize = () => {
+      if (containerRef.current) {
+        setContainerSize({
+          width: containerRef.current.offsetWidth,
+          height: containerRef.current.offsetHeight,
+        });
       }
-      iterations++;
+    };
+
+    updateSize();
+    const resizeObserver = new ResizeObserver(updateSize);
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current);
     }
-    return { x: adjustedX, y: adjustedY };
-  };
 
-  const handleDragEnd = (
-    e: React.DragEvent<HTMLDivElement>,
-    ideaId: string
-  ) => {
-    const board = e.currentTarget.parentElement?.getBoundingClientRect();
-    if (!board) return;
+    return () => resizeObserver.disconnect();
+  }, []);
 
+  const handleDragEnd = (e: React.DragEvent<HTMLDivElement>, ideaId: string) => {
+    if (!containerRef.current) return;
+  
+    const containerRect = containerRef.current.getBoundingClientRect();
     const ideaWidth = 200;
     const ideaHeight = 120;
-
-    let newX = e.clientX - board.left;
-    let newY = e.clientY - board.top;
-
-    newX = Math.max(0, Math.min(newX, board.width - ideaWidth));
-    newY = Math.max(0, Math.min(newY, board.height - ideaHeight));
-
-    const adjusted = getAdjustedPosition(newX, newY, ideaId, ideaWidth, ideaHeight);
-
-    adjusted.x = Math.max(0, Math.min(adjusted.x, board.width - ideaWidth));
-    adjusted.y = Math.max(0, Math.min(adjusted.y, board.height - ideaHeight));
-
-
-    updateIdea(ideaId, { x: adjusted.x, y: adjusted.y });
+  
+    // Get the mouse position relative to the container
+    const mouseX = e.clientX - containerRect.left;
+    const mouseY = e.clientY - containerRect.top;
+  
+    // Calculate new position (centering the idea box on the mouse)
+    let newX = mouseX - (ideaWidth / 2);
+    let newY = mouseY - (ideaHeight / 2);
+  
+    // Apply boundaries
+    newX = Math.max(0, Math.min(newX, containerRect.width - ideaWidth));
+    newY = Math.max(0, Math.min(newY, containerRect.height - ideaHeight));
+  
+    updateIdea(ideaId, { x: newX, y: newY });
   };
 
   return (
-    <div
-      style={{
-        background: "#fff",
-        overflow: "auto",
-      }}
+    <div 
+      ref={containerRef}
+      className="relative w-full h-full bg-white overflow-hidden" // Changed from overflow-auto
+      style={{ minHeight: '600px' }} // Fallback minimum height
     >
-      <div
-        style={{
-          width: "100%",
-          height: "800px",
-          position: "relative",
+      <div 
+        className="absolute inset-0" 
+        style={{ 
+          width: '100%',
+          height: '100%',
+          minHeight: containerSize.height > 0 ? containerSize.height : '600px'
         }}
       >
         {ideas.map((idea) => (
@@ -121,7 +89,7 @@ export default function ProjectDashboard({
             onDragEnd={(e) => handleDragEnd(e, idea.ideaId)}
             onClick={() => onIdeaClick(idea.ideaId)}
             currentUserId={currentUserId}
-            onToggleVote={onToggleVote} 
+            onToggleVote={onToggleVote}
           />
         ))}
       </div>

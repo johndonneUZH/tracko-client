@@ -1,79 +1,78 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { Idea } from "@/types/idea";
 import { ApiService } from "@/api/apiService";
-import { Client } from "@stomp/stompjs";
-import SockJS from "sockjs-client";
-import { getApiDomain } from "@/utils/domain";
+import { connectWebSocket, disconnectWebSocket } from "@/lib/websocketService";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { object } from "zod";
 
 export function useIdeas(projectId: string) {
   const [ideas, setIdeas] = useState<Idea[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
+  const [wsError, setWsError] = useState<string | null>(null);
   const apiService = useMemo(() => new ApiService(), []);
-  const stompClientRef = useRef<Client | null>(null);
+  const router = useRouter(); 
 
-  // Fetch inicial
+  // Handle incoming WebSocket messages
+  const handleMessage = (message: any) => {
+    if ("deletedId" in message) {
+      setIdeas((prev) => prev.filter((i) => i.ideaId !== message.deletedId));
+    } else {
+      setIdeas((prev) => {
+        const exists = prev.find((i) => i.ideaId === message.ideaId);
+        if (exists) {
+          return prev.map((i) => (i.ideaId === message.ideaId ? message : i));
+        } else {
+          return [...prev, message];
+        }
+      });
+    }
+  };
+
+  // Initial fetch and WebSocket setup
   useEffect(() => {
     if (!projectId) return;
 
+    let isMounted = true;
+
     async function fetchIdeas() {
-      setLoading(true);
-      setError(null);
       try {
+        setLoading(true);
         const response = await apiService.get<Idea[]>(`/projects/${projectId}/ideas`);
-        setIdeas(response);
+        if (isMounted) setIdeas(response);
       } catch (err: unknown) {
-        console.error("Error fetching ideas:", err);
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError("Failed to fetch ideas.");
+        if (isMounted) {
+          console.error("Error fetching ideas:", err);
+          setError(err instanceof Error ? err.message : "Failed to fetch ideas.");
         }
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     }
 
     fetchIdeas();
-  }, [projectId, apiService]);
 
-  // WebSocket 
-  useEffect(() => {
-    if (!projectId) return;
+    // Connect WebSocket
+    const token = sessionStorage.getItem('token');
+    const userId = sessionStorage.getItem('userId');
+    if (!userId || !token) {
+      setWsError("User ID or token not found");
+      router.push("/login");
+      return;
+    }
 
-    
-  const socket = new SockJS(`${getApiDomain()}/ws`);
-    const client = new Client({
-      webSocketFactory: () => socket,
-      onConnect: () => {
-        client.subscribe(`/topic/ideas/${projectId}`, (message) => {
-          const idea = JSON.parse(message.body);
-          if ("deletedId" in idea) {
-            setIdeas((prev) => prev.filter((i) => i.ideaId !== idea.deletedId));
-          } else {
-            setIdeas((prev) => {
-              const exists = prev.find((i) => i.ideaId === idea.ideaId);
-              if (exists) {
-                return prev.map((i) => (i.ideaId === idea.ideaId ? idea : i));
-              } else {
-                return [...prev, idea];
-              }
-            });
-          }
-        });
-      },
-      debug: (str) => console.log(str),
-      reconnectDelay: 5000,
-    });
-
-    client.activate();
-    stompClientRef.current = client;
+    const client = connectWebSocket(
+      userId,
+      projectId,
+      handleMessage
+    );
 
     return () => {
-      client.deactivate();
+      isMounted = false;
+      disconnectWebSocket();
     };
-  }, [projectId]);
+  }, [projectId, apiService]);
 
   async function createIdea(title: string, body: string | null) {
     const inputIdea = {
@@ -116,6 +115,7 @@ export function useIdeas(projectId: string) {
       apiService.postChanges("CLOSED_IDEA", projectId); // For analytics purpose
       return true; 
     } catch (err: unknown) {
+      toast.error("You don't have permission to delete this idea.");
       console.error("Error deleting idea:", err);
       return false;
     }

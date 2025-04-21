@@ -163,7 +163,7 @@ export default function ProjectLayout({
       y: oldIdea.y, 
     });
     
-    router.push(`/users/${id}/projects/${projectId}/dashboard/ideas/${ideaId}`);
+    router.push(`/users/${id}/projects/${projectId}/dashboard`);
   };
 
   return (
@@ -173,125 +173,125 @@ export default function ProjectLayout({
           {/* Left sidebar */}
           <AppSidebar className="w-64 shrink-0" />
           
-          {/* Main content */}
-          <div className="flex flex-col flex-1">
-            <header className="flex h-16 items-center gap-2 px-4">
-              <SidebarTrigger className="-ml-1 mr-2" />
-              <Breadcrumb>
-                <BreadcrumbList>
-                  <BreadcrumbItem className="hidden md:block">
-                    <BreadcrumbLink href="#">Home</BreadcrumbLink>
-                  </BreadcrumbItem>
-                  <BreadcrumbSeparator className="hidden md:block" />
-                  <BreadcrumbItem>
-                    <BreadcrumbPage>Dashboard</BreadcrumbPage>
-                  </BreadcrumbItem>
-                </BreadcrumbList>
-              </Breadcrumb>
-            </header>
-            
-            {!currentProjectId ? (
-              <NewProject/>
-            ) : (
-              <div className="flex flex-col flex-1 p-4">
-                <div className="flex justify-between mb-10">
-                  <h1 className="text-xl font-bold">Dashboard Project {projectName}</h1>
-                  <NewIdeaButton onClick={handleCreate} />
-                </div>
-                
-                <ProjectDashboard 
-                  ideas={ideas}
-                  selectedIdeaId={selectedIdeaId}
-                  onIdeaClick={(ideaId) => router.push(`/users/${id}/projects/${projectId}/dashboard/ideas/${ideaId}`)}
-                  updateIdea={updateIdea}
-                  onToggleVote={toggleVote}
-                />
-                
-                {children}            
-
-                {selectedIdea && (
-                  <IdeaModal
-                    idea={selectedIdea}
-                    canEdit={true}
-                    onSave={(title, body) => {
-                      handleSave(selectedIdea.ideaId, title, body);
-                      router.push(`/users/${id}/projects/${projectId}/dashboard/ideas/${selectedIdea.ideaId}`);
-                    }}
-                    onDelete={() => handleDelete(selectedIdea.ideaId)}
-                    onCancel={() => handleCancel(selectedIdea)}
-                    currentUserId={currentUserId}
-                    onAddComment={async (content, parentId) => {
-                      const newComment = await addComment(content, parentId);
-                      if (newComment && !parentId) {
-                        await updateIdea(selectedIdea.ideaId, {
-                          comments: [...(selectedIdea.comments || []), newComment.commentId],
-                        });
-                      }
-                      await refreshComments();
-                    }} 
-                    onDeleteComment={(commentId) => deleteComment(commentId)}
-                    commentMap={commentMap}
-                  />
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Cursors */}
-          <div className="flex-1 overflow-y-auto px-2 pt-2">
-            <RealtimeCursors roomName={roomName} username={user?.username ?? "Hidden user"} />
-          </div>
-          
-         {/* Right sidebar for chat */}
-          <div 
-            className={`fixed right-0 top-0 bottom-0 transition-all duration-300 ease-in-out ${
-              isRightSidebarCollapsed ? 'w-12' : 'w-80'
-            } bg-white border-l border-gray-200 shadow-xl z-40 flex flex-col`}
-          >
-            {/* Collapse button */}
-            <button
-              onClick={() => setIsRightSidebarCollapsed(!isRightSidebarCollapsed)}
-              className="absolute left-0 top-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-12 bg-white border border-gray-200 rounded-l-md flex items-center justify-center hover:bg-gray-100 z-50"
-            >
-              {isRightSidebarCollapsed ? (
-                <ChevronLeft className="h-4 w-4" />
+          {/* Main content area - will extend under right sidebar */}
+          <div className="flex flex-1 min-w-0">
+            {/* Main content container */}
+            <div className="flex flex-col flex-1 min-w-0">
+              <header className="flex h-16 items-center gap-2 px-4">
+                <SidebarTrigger className="-ml-1 mr-2" />
+                <Breadcrumb>
+                  <BreadcrumbList>
+                    <BreadcrumbItem className="hidden md:block">
+                      <BreadcrumbLink href="#">Home</BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator className="hidden md:block" />
+                    <BreadcrumbItem>
+                      <BreadcrumbPage>Dashboard</BreadcrumbPage>
+                    </BreadcrumbItem>
+                  </BreadcrumbList>
+                </Breadcrumb>
+              </header>
+              
+              {!currentProjectId ? (
+                <NewProject/>
               ) : (
-                <ChevronRight className="h-4 w-4" />
+                <div className="flex flex-col flex-1 p-4 min-w-0">
+                  <div className="flex justify-between mb-10">
+                    <h1 className="text-xl font-bold">Dashboard Project {projectName}</h1>
+                    <NewIdeaButton onClick={handleCreate} />
+                  </div>
+                  
+                  {/* Dashboard container with responsive width */}
+                  <div className="relative flex-1 min-w-0">
+                    <ProjectDashboard 
+                      ideas={ideas}
+                      selectedIdeaId={selectedIdeaId}
+                      onIdeaClick={(ideaId) => router.push(`/users/${id}/projects/${projectId}/dashboard/ideas/${ideaId}`)}
+                      updateIdea={updateIdea}
+                      onToggleVote={toggleVote}
+                    />
+                  </div>
+                  
+                  {children}            
+  
+                  {selectedIdea && (
+                    <IdeaModal
+                      idea={selectedIdea}
+                      canEdit={true}
+                      onSave={(title, body) => {
+                        handleSave(selectedIdea.ideaId, title, body);
+                      }}
+                      onDelete={() => handleDelete(selectedIdea.ideaId)}
+                      onCancel={() => handleCancel(selectedIdea)}
+                      currentUserId={currentUserId}
+                      onAddComment={async (content, parentId) => {
+                        const newComment = await addComment(content, parentId);
+                        if (newComment && !parentId) {
+                          await updateIdea(selectedIdea.ideaId, {
+                            comments: [...(selectedIdea.comments || []), newComment.commentId],
+                          });
+                        }
+                        await refreshComments();
+                      }} 
+                      onDeleteComment={(commentId) => deleteComment(commentId)}
+                      commentMap={commentMap}
+                    />
+                  )}
+                </div>
               )}
-            </button>
-            
-            {!isRightSidebarCollapsed && hasMounted && (
-              <div className="flex flex-col h-full">
-                {/* Header - fixed height */}
-                <div className="px-4 py-2 border-b text-sm font-medium text-gray-700 bg-gray-50">
-                  Live Collaboration
+            </div>
+  
+            {/* Right sidebar for chat - now properly overlays content */}
+            <div 
+              className={`relative transition-all duration-300 ease-in-out ${
+                isRightSidebarCollapsed ? 'w-12' : 'w-80'
+              } bg-white border-l border-gray-200 shadow-xl z-40 flex flex-col`}
+            >
+              {/* Collapse button */}
+              <button
+                onClick={() => setIsRightSidebarCollapsed(!isRightSidebarCollapsed)}
+                className="absolute left-0 top-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-12 bg-white border border-gray-200 rounded-l-md flex items-center justify-center hover:bg-gray-100 z-50"
+              >
+                {isRightSidebarCollapsed ? (
+                  <ChevronLeft className="h-4 w-4" />
+                ) : (
+                  <ChevronRight className="h-4 w-4" />
+                )}
+              </button>
+              
+              {!isRightSidebarCollapsed && hasMounted && (
+                <div className="flex flex-col h-full">
+                  {/* Header - fixed height */}
+                  <div className="px-4 py-2 border-b text-sm font-medium text-gray-700 bg-gray-50">
+                    Live Collaboration
+                  </div>
+  
+                  {/* Cursors - optional, can remove if not needed */}
+                  <div className="px-2 pt-2">
+                    <RealtimeCursors roomName={roomName} username={user?.username ?? "Hidden user"} />
+                  </div>
+                  
+                  {/* Chat section - takes remaining space */}
+                  <div className="border-t border-gray-200 flex flex-col flex-1 min-h-0">
+                    <div className="text-xs text-gray-500 py-1 px-1">Chat</div>
+                    <RealtimeChat 
+                      roomName={roomName} 
+                      username={user?.username ?? "Unknown user"} 
+                      className="flex-1 min-h-0"
+                    />
+                  </div>
                 </div>
-
-                {/* Cursors - optional, can remove if not needed */}
-                <div className="px-2 pt-2">
-                  <RealtimeCursors roomName={roomName} username={user?.username ?? "Hidden user"} />
+              )}
+              
+              {isRightSidebarCollapsed && (
+                <div className="flex flex-col items-center justify-center h-full space-y-4">
+                  <MessageSquare className="h-5 w-5 text-gray-500" />
+                  <span className="text-xs text-gray-500 rotate-90 whitespace-nowrap">
+                    Live Chat
+                  </span>
                 </div>
-                
-                {/* Chat section - takes remaining space */}
-                <div className="border-t border-gray-200 flex flex-col flex-1 min-h-0">
-                  <div className="text-xs text-gray-500 py-1 px-1">Chat</div>
-                  <RealtimeChat 
-                    roomName={roomName} 
-                    username={user?.username ?? "Unknown user"} 
-                    className="flex-1 min-h-0"
-                  />
-                </div>
-              </div>
-            )}
-            
-            {isRightSidebarCollapsed && (
-              <div className="flex flex-col items-center justify-center h-full space-y-4">
-                <MessageSquare className="h-5 w-5 text-gray-500" />
-                <span className="text-xs text-gray-500 rotate-90 whitespace-nowrap">
-                  Live Chat
-                </span>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </SidebarProvider>
