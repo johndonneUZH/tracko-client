@@ -24,7 +24,7 @@ export const connectWebSocket = (
   stompClient = new Client({
     webSocketFactory: () => socket,
     connectHeaders: {
-      Authorization: `Bearer ${localStorage.getItem('token')}`
+      Authorization: sessionStorage.getItem('token') || ''
     },
     debug: (str: string) => console.log('STOMP:', str),
     reconnectDelay: 5000,
