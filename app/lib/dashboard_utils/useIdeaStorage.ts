@@ -74,7 +74,7 @@ export function useIdeas(projectId: string) {
       isMounted = false;
       disconnectWebSocket();
     };
-  }, [projectId, apiService]);
+  }, [projectId, apiService]); 
 
   async function createIdea(title: string, body: string | null) {
     const inputIdea = {
