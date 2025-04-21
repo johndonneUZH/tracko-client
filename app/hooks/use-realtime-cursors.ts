@@ -63,20 +63,24 @@ export const useRealtimeCursors = ({
   username: string
   throttleMs: number
 }) => {
-  const [color] = useState(() => {
-    const existing = localStorage.getItem('cursor-color')
-    if (existing) return existing
-    const newColor = generateRandomColor()
-    localStorage.setItem('cursor-color', newColor)
-    return newColor
-  })
-  const [userId] = useState(() => {
-    const existing = localStorage.getItem('cursor-user-id')
-    if (existing) return parseInt(existing)
-    const newId = generateRandomNumber()
-    localStorage.setItem('cursor-user-id', newId.toString())
-    return newId
-  })
+  const [color, setColor] = useState<string>('')
+  const [userId, setUserId] = useState<number>(0)
+  
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const existingColor = localStorage.getItem('cursor-color')
+      const existingId = localStorage.getItem('cursor-user-id')
+  
+      const finalColor = existingColor || generateRandomColor()
+      const finalId = existingId ? parseInt(existingId) : generateRandomNumber()
+  
+      if (!existingColor) localStorage.setItem('cursor-color', finalColor)
+      if (!existingId) localStorage.setItem('cursor-user-id', finalId.toString())
+  
+      setColor(finalColor)
+      setUserId(finalId)
+    }
+  }, [])
   
   const [cursors, setCursors] = useState<Record<string, CursorEventPayload>>({})
   const channelRef = useRef<RealtimeChannel | null>(null)
