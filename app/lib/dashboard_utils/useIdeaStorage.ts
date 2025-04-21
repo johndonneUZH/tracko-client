@@ -1,4 +1,7 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+"use client";
+
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { IMessage } from "@stomp/stompjs";
 import { Idea } from "@/types/idea";
 import { ApiService } from "@/api/apiService";
 import { Client } from "@stomp/stompjs";
@@ -8,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { connectWebSocket, disconnectWebSocket } from "../websocketService";
 import { toast } from "sonner";
 
+/* ---------- hook ---------- */
 export function useIdeas(projectId: string) {
   const [ideas, setIdeas] = useState<Idea[]>([]);
   const [loading, setLoading] = useState(true);
@@ -52,6 +56,7 @@ export function useIdeas(projectId: string) {
         if (isMounted) setLoading(false);
       }
     }
+  }, [projectId, api]);
 
     fetchIdeas();
 
@@ -82,52 +87,25 @@ export function useIdeas(projectId: string) {
       ideaDescription: body ? body : ""
     };
 
-    try {
-      const newIdea = await apiService.post<Idea>(`/projects/${projectId}/ideas`, inputIdea);
-      apiService.postChanges("ADDED_IDEA", projectId); // For analytics purpose
-      return newIdea; 
-    } catch (err: unknown) {
-      console.error("Error creating idea:", err);
-      if (err instanceof Error) {
-        throw err;
-      } else {
-        throw new Error("Unknown error occurred while creating idea.");
-      }
-    }
-  }
-
-  async function updateIdea(ideaId: string, updatedData: Partial<Idea>) {
-    try {
-      const updatedIdea = await apiService.put<Idea>(`/projects/${projectId}/ideas/${ideaId}`, updatedData);
-      apiService.postChanges("MODIFIED_IDEA", projectId); // For analytics purpose
-      return updatedIdea;
-    } catch (err: unknown) {
-      console.error("Error updating idea:", err);
-      if (err instanceof Error) {
-        throw err;
-      } else {
-        throw new Error("Unknown error occurred while updating idea.");
-      }
-    }
-  }
-
-  async function deleteIdea(ideaId: string) {
-    try {
-      await apiService.delete(`/projects/${projectId}/ideas/${ideaId}`);
-      apiService.postChanges("CLOSED_IDEA", projectId); // For analytics purpose
-      return true; 
-    } catch (err: unknown) {
-      console.error("Error deleting idea:", err);
-      return false;
-    }
-  }
-
-  return {
-    ideas,
-    loading,
-    error,
-    createIdea,
-    updateIdea,
-    deleteIdea,
+  /*  REST */
+  const createIdea = async (title: string, body: string | null) => {
+    const inputIdea = { ideaName: title, ideaDescription: body ?? "" };
+    const newIdea = await api.post<Idea>(`/projects/${projectId}/ideas`, inputIdea);
+    api.postChanges("ADDED_IDEA", projectId);
+    return newIdea;
   };
+
+  const updateIdea = async (ideaId: string, data: Partial<Idea>) => {
+    const updated = await api.put<Idea>(`/projects/${projectId}/ideas/${ideaId}`, data);
+    api.postChanges("MODIFIED_IDEA", projectId);
+    return updated;
+  };
+
+  const deleteIdea = async (ideaId: string) => {
+    await api.delete(`/projects/${projectId}/ideas/${ideaId}`);
+    api.postChanges("CLOSED_IDEA", projectId);
+    return true;
+  };
+
+  return { ideas, loading, error, createIdea, updateIdea, deleteIdea };
 }

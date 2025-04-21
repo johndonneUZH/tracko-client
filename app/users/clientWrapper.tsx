@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ApiService } from '@/api/apiService';
+import { WebSocketProvider } from '@/hooks/WebSocketContext'; 
 
 export default function ClientWrapper({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -11,19 +12,17 @@ export default function ClientWrapper({ children }: { children: React.ReactNode 
   useEffect(() => {
     const token = sessionStorage.getItem("token");
 
-    // If no token exists, force redirect to login
     if (!token || token === "") {
       router.push("/login");
       return;
     }
 
-    // const userId = Number(sessionStorage.getItem("currentUserId"));
-    const LOGOUT_AFTER = 30* 60 * 1000; // 30 min
+    const LOGOUT_AFTER = 30 * 60 * 1000; // 30 min
     let logoutTimer: NodeJS.Timeout;
 
     const logout = async () => {
       try {
-        apiService.logOut(); 
+        apiService.logOut();
       } catch (err) {
         console.error("Error setting user offline:", err);
       } finally {
@@ -41,8 +40,7 @@ export default function ClientWrapper({ children }: { children: React.ReactNode 
 
     const events = ["click", "mousemove", "keydown"];
     events.forEach((event) => window.addEventListener(event, resetTimer));
-
-    resetTimer(); // Start timer on mount
+    resetTimer();
 
     return () => {
       events.forEach((event) => window.removeEventListener(event, resetTimer));
@@ -50,5 +48,9 @@ export default function ClientWrapper({ children }: { children: React.ReactNode 
     };
   }, [router]);
 
-  return <>{children}</>;
+  return (
+    <WebSocketProvider>
+      {children}
+    </WebSocketProvider>
+  );
 }
