@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { createClient } from '@/lib/supabase/client'
 import { RealtimeChannel } from '@supabase/supabase-js'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -36,7 +38,7 @@ const useThrottleCallback = <Params extends unknown[], Return>(
 const supabase = createClient()
 
 const generateRandomColor = () => `hsl(${Math.floor(Math.random() * 360)}, 100%, 70%)`
-const generateRandomNumber = () => Math.floor(Math.random() * 100)
+const generateRandomNumber = () => Math.floor(Math.random() * 10000) // Increased range for less collision
 
 const EVENT_NAME = 'realtime-cursor-move'
 const EVENT_LEAVE = 'realtime-cursor-leave'
@@ -57,95 +59,100 @@ type CursorEventPayload = {
 export const useRealtimeCursors = ({
   roomName,
   username,
-  throttleMs,
+  throttleMs = 50,
 }: {
   roomName: string
   username: string
-  throttleMs: number
+  throttleMs?: number
 }) => {
   const [color, setColor] = useState<string>('')
   const [userId, setUserId] = useState<number>(0)
-  
+  const [cursors, setCursors] = useState<Record<string, CursorEventPayload>>({})
+  const channelRef = useRef<RealtimeChannel | null>(null)
+  const containerRef = useRef<HTMLElement | null>(null)
+
+  // Initialize user color and ID
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      containerRef.current = document.getElementById('cursor-container')
+      
       const existingColor = localStorage.getItem('cursor-color')
       const existingId = localStorage.getItem('cursor-user-id')
-  
+
       const finalColor = existingColor || generateRandomColor()
       const finalId = existingId ? parseInt(existingId) : generateRandomNumber()
-  
+
       if (!existingColor) localStorage.setItem('cursor-color', finalColor)
       if (!existingId) localStorage.setItem('cursor-user-id', finalId.toString())
-  
+
       setColor(finalColor)
       setUserId(finalId)
     }
   }, [])
-  
-  const [cursors, setCursors] = useState<Record<string, CursorEventPayload>>({})
-  const channelRef = useRef<RealtimeChannel | null>(null)
 
-  const callback = useCallback(
-    (event: MouseEvent) => {
-      const { clientX, clientY } = event
+  // Handle mouse movement
+  const handleMouseMove = useThrottleCallback((event: MouseEvent) => {
+    if (!channelRef.current) return
 
-      const payload: CursorEventPayload = {
-        position: { x: clientX, y: clientY },
-        user: { id: userId, name: username },
-        color,
-        timestamp: Date.now(),
-      }
+    const payload: CursorEventPayload = {
+      position: { x: event.clientX, y: event.clientY },
+      user: { id: userId, name: username },
+      color,
+      timestamp: Date.now(),
+    }
 
-      channelRef.current?.send({
-        type: 'broadcast',
-        event: EVENT_NAME,
-        payload,
-      })
-    },
-    [color, userId, username]
-  )
+    channelRef.current.send({
+      type: 'broadcast',
+      event: EVENT_NAME,
+      payload,
+    })
+  }, throttleMs)
 
+  // Clean up old cursors
   useEffect(() => {
     const interval = setInterval(() => {
       const now = Date.now()
-      setCursors((prev) => {
-        const updated: typeof prev = {}
-        for (const [key, cursor] of Object.entries(prev)) {
-          // 5000ms = 5 seconds
-          if (now - cursor.timestamp < 5000) {
-            updated[key] = cursor
-          }
-        }
-        return updated
+      setCursors(prev => {
+        return Object.fromEntries(
+          Object.entries(prev).filter(([_, cursor]) => now - cursor.timestamp < 5000)
+        )
       })
-    }, 1000) // check every 1 second
-  
+    }, 1000)
+
     return () => clearInterval(interval)
   }, [])
-  
 
-  const handleMouseMove = useThrottleCallback(callback, throttleMs)
-
+  // Set up Supabase channel
   useEffect(() => {
-    const channel = supabase.channel(roomName)
+    if (!roomName || !username || !userId) return
+
+    const channel = supabase.channel(`realtime-cursors:${roomName}`, {
+      config: {
+        presence: { key: userId.toString() },
+        broadcast: { ack: true }
+      }
+    })
+
     channelRef.current = channel
 
     channel
-      .on('broadcast', { event: EVENT_NAME }, (data: { payload: CursorEventPayload }) => {
-        const { user } = data.payload
-        if (user.id === userId) return
-
-        setCursors((prev) => ({
+      .on('broadcast', { event: EVENT_NAME }, ({ payload }: { payload: CursorEventPayload }) => {
+        if (payload.user.id === userId) return
+        setCursors(prev => ({
           ...prev,
-          [user.id]: data.payload,
+          [payload.user.id]: {
+            ...payload,
+            position: {
+              x: payload.position.x - (containerRef.current?.getBoundingClientRect().left || 0),
+              y: payload.position.y - (containerRef.current?.getBoundingClientRect().top || 0)
+            }
+          }
         }))
       })
-      .on('broadcast', { event: EVENT_LEAVE }, (data: { payload: { userId: number } }) => {
-        const leftUserId = data.payload.userId
-        setCursors((prev) => {
-          const updated = { ...prev }
-          delete updated[leftUserId]
-          return updated
+      .on('broadcast', { event: EVENT_LEAVE }, ({ payload }: { payload: { userId: number } }) => {
+        setCursors(prev => {
+          const { [payload.userId]: _, ...rest } = prev
+          return rest
         })
       })
       .subscribe()
@@ -154,21 +161,19 @@ export const useRealtimeCursors = ({
       channel.send({
         type: 'broadcast',
         event: EVENT_LEAVE,
-        payload: {
-          userId,
-        },
-      })
-
-      channel.unsubscribe()
+        payload: { userId }
+      }).then(() => channel.unsubscribe())
     }
-  }, [roomName, userId])
+  }, [roomName, username, userId])
 
+  // Set up event listeners
   useEffect(() => {
     window.addEventListener('mousemove', handleMouseMove)
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove)
-    }
+    return () => window.removeEventListener('mousemove', handleMouseMove)
   }, [handleMouseMove])
 
-  return { cursors }
+  return { 
+    cursors,
+    currentUser: { id: userId, color }
+  }
 }
