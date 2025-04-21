@@ -1,91 +1,94 @@
-import { useEffect, useState, useRef } from "react";
+"use client";
+
+import { useCallback, useEffect, useState } from "react";
+import { IMessage } from "@stomp/stompjs";
 import { Comment } from "@/types/comment";
 import { ApiService } from "@/api/apiService";
-import { Client } from "@stomp/stompjs";
-import SockJS from "sockjs-client";
-import { getApiDomain } from "@/utils/domain";
+import { useWebSocket } from "@/hooks/WebSocketContext";
 
+/* ---------- type‑guards ---------- */
+const isDelete = (d: unknown): d is { deletedId: string } =>
+  typeof d === "object" && d !== null && "deletedId" in d;
+
+const isCommentPayload = (
+  d: unknown
+): d is { comment: Comment; parentId?: string } => {
+  if (typeof d !== "object" || d === null) return false;
+  return "comment" in d;
+};
+
+const isBareComment = (d: unknown): d is Comment =>
+  typeof d === "object" && d !== null && "commentId" in d;
+
+/* ---------- hook ---------- */
 export function useCommentFetcher(projectId: string, ideaId: string) {
   const [commentMap, setCommentMap] = useState<Record<string, Comment>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const stompRef = useRef<Client | null>(null);
 
-  const fetchComments = async () => {
+  const { subscribe, unsubscribe } = useWebSocket();
+
+  /* fetch  manual refresh */
+  const fetchComments = useCallback(async () => {
+    if (!projectId || !ideaId) return;
+
     setLoading(true);
     setError(null);
     try {
       const api = new ApiService();
-      const comments: Comment[] = await api.get(`/projects/${projectId}/ideas/${ideaId}/comments`);
-
-      const map: Record<string, Comment> = {};
-      comments.forEach((comment) => {
-        map[comment.commentId] = comment;
-      });
-
-      setCommentMap(map);
-    } catch (err: unknown) {
+      const comments = await api.get<Comment[]>(
+        `/projects/${projectId}/ideas/${ideaId}/comments`
+      );
+      setCommentMap(Object.fromEntries(comments.map(c => [c.commentId, c])));
+    } catch (err) {
       console.error("Error fetching comments:", err);
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("Failed to load comments.");
-      }
+      setError(err instanceof Error ? err.message : "Failed to load comments.");
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    if (projectId && ideaId) fetchComments();
   }, [projectId, ideaId]);
 
-  // WebSocket 
+  useEffect(() => {
+    fetchComments();
+  }, [fetchComments]);
+
+  /*  WebSocket */
+  const handleMessage = useCallback((msg: IMessage) => {
+    const payload: unknown = JSON.parse(msg.body);
+
+    setCommentMap(prev => {
+      const map = { ...prev };
+
+      if (isDelete(payload)) {
+        delete map[payload.deletedId];
+
+      } else if (isCommentPayload(payload)) {
+        const c = payload.comment;
+        map[c.commentId] = c;
+
+        if (payload.parentId && map[payload.parentId]) {
+          const parent = { ...map[payload.parentId] };
+          if (!parent.replies.includes(c.commentId)) {
+            parent.replies = [...parent.replies, c.commentId];
+            map[parent.commentId] = parent;
+          }
+        }
+
+      } else if (isBareComment(payload)) {
+        map[payload.commentId] = payload;
+      }
+
+      return map;
+    });
+  }, []);
+
   useEffect(() => {
     if (!ideaId) return;
 
-  
-    const socket = new SockJS(`${getApiDomain()}/ws`);
-    const client = new Client({
-      webSocketFactory: () => socket,
-      onConnect: () => {
-        client.subscribe(`/topic/comments/${ideaId}`, (message) => {
-          const data = JSON.parse(message.body);
-
-          setCommentMap((prev) => {
-            const updated = { ...prev };
-
-            if ("deletedId" in data) {
-              delete updated[data.deletedId];
-            } else {
-              const newComment: Comment = data.comment || data;
-              updated[newComment.commentId] = newComment;
-
-              const parentId = data.parentId;
-              if (parentId && updated[parentId]) {
-                const parent = { ...updated[parentId] };
-                if (!parent.replies.includes(newComment.commentId)) {
-                  parent.replies = [...parent.replies, newComment.commentId];
-                  updated[parentId] = parent;
-                }
-              }
-            }
-
-            return updated;
-          });
-        });
-      },
-      debug: (str) => console.log("[WebSocket Comment Debug]", str),
-      reconnectDelay: 5000,
-    });
-
-    client.activate();
-    stompRef.current = client;
-
-    return () => {
-      client.deactivate();
-    };
-  }, [ideaId]);
+    const topic = `/topic/comments/${ideaId}`;
+    subscribe(topic, handleMessage);
+    return () => unsubscribe(topic);
+  }, [ideaId, subscribe, unsubscribe, handleMessage]);
 
   return {
     commentMap,

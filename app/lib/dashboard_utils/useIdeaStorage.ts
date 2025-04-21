@@ -1,132 +1,90 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+"use client";
+
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { IMessage } from "@stomp/stompjs";
 import { Idea } from "@/types/idea";
 import { ApiService } from "@/api/apiService";
-import { Client } from "@stomp/stompjs";
-import SockJS from "sockjs-client";
-import { getApiDomain } from "@/utils/domain";
+import { useWebSocket } from "@/hooks/WebSocketContext";
 
+/* ---------- type‑guards ---------- */
+const isDelete = (d: unknown): d is { deletedId: string } =>
+  typeof d === "object" && d !== null && "deletedId" in d;
+
+const isIdea = (d: unknown): d is Idea =>
+  typeof d === "object" && d !== null && "ideaId" in d;
+
+/* ---------- hook ---------- */
 export function useIdeas(projectId: string) {
   const [ideas, setIdeas] = useState<Idea[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const apiService = useMemo(() => new ApiService(), []);
-  const stompClientRef = useRef<Client | null>(null);
+  const api = useMemo(() => new ApiService(), []);
+  const { subscribe, unsubscribe } = useWebSocket();
 
-  // Fetch inicial
+  /* fetch */
+  const fetchIdeas = useCallback(async () => {
+    if (!projectId) return;
+
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await api.get<Idea[]>(`/projects/${projectId}/ideas`);
+      setIdeas(data);
+    } catch (err) {
+      console.error("Error fetching ideas:", err);
+      setError(err instanceof Error ? err.message : "Failed to fetch ideas.");
+    } finally {
+      setLoading(false);
+    }
+  }, [projectId, api]);
+
+  useEffect(() => { fetchIdeas(); }, [fetchIdeas]);
+
+  /*  WebSocket */
+  const handleMessage = useCallback((msg: IMessage) => {
+    const payload: unknown = JSON.parse(msg.body);
+
+    if (isDelete(payload)) {
+      setIdeas(prev => prev.filter(i => i.ideaId !== payload.deletedId));
+    } else if (isIdea(payload)) {
+      setIdeas(prev => {
+        const exists = prev.some(i => i.ideaId === payload.ideaId);
+        return exists
+          ? prev.map(i => (i.ideaId === payload.ideaId ? payload : i))
+          : [...prev, payload];
+      });
+    }
+  }, []);
+
+  /*  */
   useEffect(() => {
     if (!projectId) return;
 
-    async function fetchIdeas() {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await apiService.get<Idea[]>(`/projects/${projectId}/ideas`);
-        setIdeas(response);
-      } catch (err: unknown) {
-        console.error("Error fetching ideas:", err);
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError("Failed to fetch ideas.");
-        }
-      } finally {
-        setLoading(false);
-      }
-    }
+    const topic = `/topic/ideas/${projectId}`;
+    subscribe(topic, handleMessage);
+    return () => unsubscribe(topic);
+  }, [projectId, subscribe, unsubscribe, handleMessage]);
 
-    fetchIdeas();
-  }, [projectId, apiService]);
-
-  // WebSocket 
-  useEffect(() => {
-    if (!projectId) return;
-
-    
-  const socket = new SockJS(`${getApiDomain()}/ws`);
-    const client = new Client({
-      webSocketFactory: () => socket,
-      onConnect: () => {
-        client.subscribe(`/topic/ideas/${projectId}`, (message) => {
-          const idea = JSON.parse(message.body);
-          if ("deletedId" in idea) {
-            setIdeas((prev) => prev.filter((i) => i.ideaId !== idea.deletedId));
-          } else {
-            setIdeas((prev) => {
-              const exists = prev.find((i) => i.ideaId === idea.ideaId);
-              if (exists) {
-                return prev.map((i) => (i.ideaId === idea.ideaId ? idea : i));
-              } else {
-                return [...prev, idea];
-              }
-            });
-          }
-        });
-      },
-      debug: (str) => console.log(str),
-      reconnectDelay: 5000,
-    });
-
-    client.activate();
-    stompClientRef.current = client;
-
-    return () => {
-      client.deactivate();
-    };
-  }, [projectId]);
-
-  async function createIdea(title: string, body: string | null) {
-    const inputIdea = {
-      ideaName: title,
-      ideaDescription: body ? body : ""
-    };
-
-    try {
-      const newIdea = await apiService.post<Idea>(`/projects/${projectId}/ideas`, inputIdea);
-      apiService.postChanges("ADDED_IDEA", projectId); // For analytics purpose
-      return newIdea; 
-    } catch (err: unknown) {
-      console.error("Error creating idea:", err);
-      if (err instanceof Error) {
-        throw err;
-      } else {
-        throw new Error("Unknown error occurred while creating idea.");
-      }
-    }
-  }
-
-  async function updateIdea(ideaId: string, updatedData: Partial<Idea>) {
-    try {
-      const updatedIdea = await apiService.put<Idea>(`/projects/${projectId}/ideas/${ideaId}`, updatedData);
-      apiService.postChanges("MODIFIED_IDEA", projectId); // For analytics purpose
-      return updatedIdea;
-    } catch (err: unknown) {
-      console.error("Error updating idea:", err);
-      if (err instanceof Error) {
-        throw err;
-      } else {
-        throw new Error("Unknown error occurred while updating idea.");
-      }
-    }
-  }
-
-  async function deleteIdea(ideaId: string) {
-    try {
-      await apiService.delete(`/projects/${projectId}/ideas/${ideaId}`);
-      apiService.postChanges("CLOSED_IDEA", projectId); // For analytics purpose
-      return true; 
-    } catch (err: unknown) {
-      console.error("Error deleting idea:", err);
-      return false;
-    }
-  }
-
-  return {
-    ideas,
-    loading,
-    error,
-    createIdea,
-    updateIdea,
-    deleteIdea,
+  /*  REST */
+  const createIdea = async (title: string, body: string | null) => {
+    const inputIdea = { ideaName: title, ideaDescription: body ?? "" };
+    const newIdea = await api.post<Idea>(`/projects/${projectId}/ideas`, inputIdea);
+    api.postChanges("ADDED_IDEA", projectId);
+    return newIdea;
   };
+
+  const updateIdea = async (ideaId: string, data: Partial<Idea>) => {
+    const updated = await api.put<Idea>(`/projects/${projectId}/ideas/${ideaId}`, data);
+    api.postChanges("MODIFIED_IDEA", projectId);
+    return updated;
+  };
+
+  const deleteIdea = async (ideaId: string) => {
+    await api.delete(`/projects/${projectId}/ideas/${ideaId}`);
+    api.postChanges("CLOSED_IDEA", projectId);
+    return true;
+  };
+
+  return { ideas, loading, error, createIdea, updateIdea, deleteIdea };
 }
