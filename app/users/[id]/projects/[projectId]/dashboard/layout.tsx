@@ -207,16 +207,17 @@ export default function ProjectLayout({
                   onToggleVote={toggleVote}
                 />
                 
+                <RealtimeCursors 
+                  roomName={roomName} 
+                  username={user?.username ?? "Unknown user"} 
+                />
                 {children}            
 
                 {selectedIdea && (
                   <IdeaModal
                     idea={selectedIdea}
                     canEdit={true}
-                    onSave={(title, body) => {
-                      handleSave(selectedIdea.ideaId, title, body);
-                      router.push(`/users/${id}/projects/${projectId}/dashboard/ideas/${selectedIdea.ideaId}`);
-                    }}
+                    onSave={(title, body) => { handleSave(selectedIdea.ideaId, title, body) }}
                     onDelete={() => handleDelete(selectedIdea.ideaId)}
                     onCancel={() => handleCancel(selectedIdea)}
                     currentUserId={currentUserId}
@@ -237,11 +238,8 @@ export default function ProjectLayout({
             )}
           </div>
 
-          {/* Cursors */}
-          <div className="flex-1 overflow-y-auto px-2 pt-2">
-            <RealtimeCursors roomName={roomName} username={user?.username ?? "Hidden user"} />
-          </div>
-          
+         
+
          {/* Right sidebar for chat */}
           <div 
             className={`fixed right-0 top-0 bottom-0 transition-all duration-300 ease-in-out ${
@@ -265,11 +263,6 @@ export default function ProjectLayout({
                 {/* Header - fixed height */}
                 <div className="px-4 py-2 border-b text-sm font-medium text-gray-700 bg-gray-50">
                   Live Collaboration
-                </div>
-
-                {/* Cursors - optional, can remove if not needed */}
-                <div className="px-2 pt-2">
-                  <RealtimeCursors roomName={roomName} username={user?.username ?? "Hidden user"} />
                 </div>
                 
                 {/* Chat section - takes remaining space */}
