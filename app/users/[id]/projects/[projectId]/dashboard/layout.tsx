@@ -23,6 +23,7 @@ import IdeaModal from "@/components/dashboard_Project/IdeaModal";
 import { useEffect, useState, useMemo } from "react";
 import { ApiService } from "@/api/apiService";
 import { useProject } from '@/hooks/useProject'
+import { NewProject } from "@/components/commons/NewProject";
 
 
 import { useCommentFetcher } from "@/lib/dashboard_utils/useCommentFetcher";
@@ -49,7 +50,7 @@ export default function ProjectLayout({
   const { id, projectId, ideaId } = useParams();
   const router = useRouter();
   const currentUserId = useCurrentUserId();
-  // const { projectId: currentProjectId } = useProject()
+  const { projectId: currentProjectId } = useProject()
   // const { logEntries, pushLog } = useStoreLog(projectId as string);
   
   const { ideas, createIdea, updateIdea, deleteIdea } = useIdeas(projectId as string);
@@ -193,6 +194,7 @@ export default function ProjectLayout({
               </BreadcrumbList>
             </Breadcrumb>
           </header>
+          { !currentProjectId ? <NewProject/> :
           <div className="flex flex-col flex-1 p-4">
               <div className="flex justify-between mb-10">
                 <h1 className="text-xl font-bold">Dashboard Project {projectName}</h1>
@@ -243,6 +245,7 @@ export default function ProjectLayout({
               sendMessage={(content: string) => sendWebSocketMessage("/app/test-message", content || "Test message")} 
             /> */}
           </div>
+          }
         </div>
       </div>
     </SidebarProvider>
