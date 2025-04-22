@@ -9,7 +9,7 @@ interface ProjectDashboardProps {
   ideas: Idea[];
   selectedIdeaId: string | null;
   onIdeaClick: (ideaId: string) => void;
-  updateIdea: (ideaId: string, data: Partial<Idea>) => Promise<Idea>;
+  updateIdea: (ideaId: string, data: Partial<Idea>) => void;
   onToggleVote: (ideaId: string, userId: string, type: "up" | "down") => void;
 
 }
