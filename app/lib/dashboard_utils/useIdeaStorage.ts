@@ -1,112 +1,161 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
+"use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { v4 as uuid } from "uuid";
 import { Idea } from "@/types/idea";
 import { ApiService } from "@/api/apiService";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { connectWebSocket, disconnectWebSocket } from "../websocketService";
 
+/* ---------websocketService --------- */
+type WebSocketMessage = {
+  deletedId?: string;
+  ideaId?: string;
+  [key: string]: unknown;
+};
+
 export function useIdeas(projectId: string) {
   const [ideas, setIdeas] = useState<Idea[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [wsError, setWsError] = useState<string | null>(null);
+
   const api = useMemo(() => new ApiService(), []);
   const router = useRouter();
 
-  const handleMessage = useCallback((message: any) => {
-    if ("deletedId" in message) {
-      setIdeas((prev) => prev.filter((i) => i.ideaId !== message.deletedId));
-      toast.success('Idea deleted');
-    } else if (message.ideaId) {
-      setIdeas((prev) => {
-        const exists = prev.find((i) => i.ideaId === message.ideaId);
-        if (exists) {
-          return prev.map((i) => (i.ideaId === message.ideaId ? message : i));
-        } else {
-          return [...prev, message];
-        }
+  /* --------- handler WS  --------- */
+  const handleMessage = useCallback((payload: WebSocketMessage) => {
+    if (payload.deletedId) {
+      setIdeas(prev => prev.filter(i => i.ideaId !== payload.deletedId));
+      toast.success("Idea deleted");
+      return;
+    }
+
+    if (
+      payload.ideaId &&
+      typeof payload.ideaName === "string" &&
+      typeof payload.ideaDescription === "string"
+    ) {
+      const idea = payload as unknown as Idea;
+
+      setIdeas(prev => {
+        const exists = prev.some(i => i.ideaId === idea.ideaId);
+        return exists
+          ? prev.map(i => (i.ideaId === idea.ideaId ? idea : i))
+          : [...prev, idea];
       });
     }
   }, []);
 
+  /* --------- fetch WS --------- */
   useEffect(() => {
     if (!projectId) return;
 
-    let isMounted = true;
+    let alive = true;
 
-    async function fetchIdeas() {
+    (async () => {
       try {
         setLoading(true);
-        const response = await api.get<Idea[]>(`/projects/${projectId}/ideas`);
-        if (isMounted) setIdeas(response);
-      } catch (err: unknown) {
-        if (isMounted) {
-          console.error("Error fetching ideas:", err);
-          setError(err instanceof Error ? err.message : "Failed to fetch ideas.");
+        const data = await api.get<Idea[]>(`/projects/${projectId}/ideas`);
+        if (alive) setIdeas(data);
+      } catch (err) {
+        if (alive) {
+          console.error(err);
+          setError(err instanceof Error ? err.message : "Failed to fetch ideas");
           toast.error("Failed to load ideas");
         }
       } finally {
-        if (isMounted) setLoading(false);
+        if (alive) setLoading(false);
       }
-    }
+    })();
 
-    fetchIdeas();
-
-    const token = sessionStorage.getItem('token');
-    const userId = sessionStorage.getItem('userId');
+    const token = sessionStorage.getItem("token");
+    const userId = sessionStorage.getItem("userId");
     if (!token || !userId) {
       setWsError("Authentication token or userId not found");
       router.push("/login");
       return;
     }
 
-    const client = connectWebSocket(userId, projectId, handleMessage);
+    connectWebSocket(userId, projectId, handleMessage);
 
     return () => {
-      isMounted = false;
+      alive = false;
       disconnectWebSocket();
     };
   }, [projectId, api, router, handleMessage]);
 
-  const createIdea = async (title: string, body: string | null) => {
-    try {
-      const inputIdea = {
-        ideaName: title,
-        ideaDescription: body || ""
-      };
+  /* --------- optimistic create --------- */
+  const createIdea = async (
+    title: string,
+    body: string | null,
+    coords?: { x: number; y: number }
+  ) => {
+    const tmpId = uuid();
+    const creatorId = sessionStorage.getItem("userId") ?? "temp-user";
+    const { x, y } = coords ?? { x: 100, y: 100 };
 
-      // Only REST call - service will handle WebSocket notification
-      const idea = await api.post<Idea>(`/projects/${projectId}/ideas`, inputIdea);
-      return idea;
-    } catch (error) {
-      console.error("Error creating idea:", error);
+    const optimistic: Idea = {
+      ideaId: tmpId,
+      projectId,
+      creatorId,
+      ideaName: title,
+      ideaDescription: body ?? "",
+      x,
+      y,
+      comments: [],
+      upVotes: [],
+      downVotes: [],
+    };
+
+    setIdeas(prev => [...prev, optimistic]);
+
+    try {
+      const input = { ideaName: title, ideaDescription: body ?? "", x, y };
+      const real = await api.post<Idea>(`/projects/${projectId}/ideas`, input);
+
+      setIdeas(prev => prev.map(i => (i.ideaId === tmpId ? real : i)));
+      return real;
+    } catch (err) {
+      setIdeas(prev => prev.filter(i => i.ideaId !== tmpId));
       toast.error("Failed to create idea");
-      throw error;
+      throw err;
     }
   };
 
+  /* --------- optimistic update --------- */
   const updateIdea = async (ideaId: string, data: Partial<Idea>) => {
+    const snapshot = ideas.find(i => i.ideaId === ideaId);
+    if (!snapshot) return;
+
+    setIdeas(prev => prev.map(i => (i.ideaId === ideaId ? { ...i, ...data } : i)));
+
     try {
-      // Only REST call - service will handle WebSocket notification
-      const updatedIdea = await api.put<Idea>(`/projects/${projectId}/ideas/${ideaId}`, data);
-      return updatedIdea;
-    } catch (error) {
-      console.error("Error updating idea:", error);
+      const real = await api.put<Idea>(
+        `/projects/${projectId}/ideas/${ideaId}`,
+        data
+      );
+      return real;
+    } catch (err) {
+      setIdeas(prev => prev.map(i => (i.ideaId === ideaId ? snapshot : i)));
       toast.error("Failed to update idea");
-      throw error;
+      throw err;
     }
   };
 
+  /* --------- optimistic delete --------- */
   const deleteIdea = async (ideaId: string) => {
+    const snapshot = ideas.find(i => i.ideaId === ideaId);
+    if (!snapshot) return false;
+
+    setIdeas(prev => prev.filter(i => i.ideaId !== ideaId));
+
     try {
-      // Only REST call - service will handle WebSocket notification
       await api.delete(`/projects/${projectId}/ideas/${ideaId}`);
       return true;
-    } catch (error) {
-      console.error("Error deleting idea:", error);
+    } catch (err) {
+      setIdeas(prev => [...prev, snapshot]);
       toast.error("Failed to delete idea");
       return false;
     }
