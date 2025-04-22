@@ -85,12 +85,12 @@ export function useIdeas(projectId: string) {
 
       // Send via WebSocket
       const success = await sendMessage(`/ideas/${projectId}/create`, inputIdea);
-      
+
       if (!success) {
         throw new Error('Failed to send WebSocket message');
       }
       
-      return inputIdea;
+      return success;
     } catch (error) {
       console.error("Error creating idea:", error);
       toast.error("Failed to create idea");
