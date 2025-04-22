@@ -18,8 +18,10 @@ export const connectWebSocket = (
   if (stompClient) {
     disconnectWebSocket();
   }
-
-  const socket = new SockJS(`${getApiDomain()}/ws`);
+  const apiDomain = getApiDomain().endsWith('/') 
+  ? getApiDomain().slice(0, -1) 
+  : getApiDomain();
+  const socket = new SockJS(`${apiDomain}/ws`);
   const token = sessionStorage.getItem('token') || '';
 
   stompClient = new Client({
