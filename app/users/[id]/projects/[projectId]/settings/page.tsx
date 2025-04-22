@@ -12,7 +12,6 @@ import { ApiService } from "@/api/apiService";
 import { MembersTable } from "@/components/settings_page/members_table";
 import { EditDialog } from "@/components/settings_page/edit_dialog";
 import { useProject } from '@/hooks/useProject'
-import { NewProject } from "@/components/commons/NewProject";
 import { FriendsDialog } from "@/components/settings_page/friends_dialog";
 import { KickDialog } from "@/components/settings_page/kick_dialog";
 import { User } from "@/types/user";
@@ -149,7 +148,6 @@ export default function SettingsPage() {
               </BreadcrumbList>
             </Breadcrumb>
           </header>
-          {!currentProjectId ? <NewProject/> : (
             <div className="m-4 space-y-4">
               <div className="flex justify-between">
                 <div className="flex space-x-4 items-center">
@@ -211,7 +209,6 @@ export default function SettingsPage() {
                 )}
               </div>
             </div>
-          )}
         </div>
       </div>
     </SidebarProvider>

@@ -12,12 +12,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/commons/breadcrumb";
 
-import { useProject } from '@/hooks/useProject'
-import { NewProject } from "@/components/commons/NewProject";
-
 export default function CalendarPage() {
-
-  const { projectId: currentProjectId } = useProject()
 
   return (
     <SidebarProvider>
@@ -38,11 +33,9 @@ export default function CalendarPage() {
               </BreadcrumbList>
             </Breadcrumb>
           </header>
-          { !currentProjectId ? <NewProject/> :
           <div className="flex flex-col flex-1 p-4">
             <h1 className="text-xl font-bold">Calendar</h1>
           </div>
-          }
         </div>
       </div>
     </SidebarProvider>
