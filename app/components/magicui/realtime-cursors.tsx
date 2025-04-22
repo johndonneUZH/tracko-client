@@ -1,29 +1,48 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 'use client'
 
 import { Cursor } from '@/components/magicui/cursor'
 import { useRealtimeCursors } from '@/hooks/use-realtime-cursors'
+import { useEffect, useRef } from 'react'
 
 const THROTTLE_MS = 50
 
-export const RealtimeCursors = ({ roomName, username }: { roomName: string; username: string }) => {
-  const { cursors } = useRealtimeCursors({ roomName, username, throttleMs: THROTTLE_MS })
+export const RealtimeCursors = ({ 
+  roomName, 
+  username 
+}: { 
+  roomName: string; 
+  username: string 
+}) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { cursors } = useRealtimeCursors({ 
+    roomName, 
+    username, 
+    throttleMs: THROTTLE_MS 
+  });
 
   return (
-    <div>
-      {Object.keys(cursors).map((id) => (
+    <div 
+      ref={containerRef}
+      className="fixed inset-0 pointer-events-none z-[49]" // Below modals but above content
+      style={{
+        // Ensure it covers the entire interactive area
+        marginRight: '320px', // Match your sidebar width
+        transition: 'margin-right 0.3s ease', // Match sidebar animation
+      }}
+    >
+      {Object.entries(cursors).map(([id, cursor]) => (
         <Cursor
           key={id}
-          className="fixed transition-transform ease-in-out z-50"
+          className="absolute transition-transform ease-linear duration-75"
           style={{
-            transitionDuration: '20ms',
-            top: 0,
-            left: 0,
-            transform: `translate(${cursors[id].position.x}px, ${cursors[id].position.y}px)`,
+            transform: `translate(${cursor.position.x}px, ${cursor.position.y}px)`,
           }}
-          color={cursors[id].color}
-          name={cursors[id].user.name}
+          color={cursor.color}
+          name={cursor.user.name}
         />
       ))}
     </div>
-  )
+  );
 }
