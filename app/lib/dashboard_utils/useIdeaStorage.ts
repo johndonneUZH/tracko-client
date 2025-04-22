@@ -1,12 +1,12 @@
-/* eslint-disable */
-"use client";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Idea } from "@/types/idea";
 import { ApiService } from "@/api/apiService";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { connectWebSocket, disconnectWebSocket, sendMessage } from "../websocketService";
+import { connectWebSocket, disconnectWebSocket } from "../websocketService";
 
 export function useIdeas(projectId: string) {
   const [ideas, setIdeas] = useState<Idea[]>([]);
@@ -16,7 +16,6 @@ export function useIdeas(projectId: string) {
   const api = useMemo(() => new ApiService(), []);
   const router = useRouter();
 
-  // Handle incoming WebSocket messages
   const handleMessage = useCallback((message: any) => {
     if ("deletedId" in message) {
       setIdeas((prev) => prev.filter((i) => i.ideaId !== message.deletedId));
@@ -25,17 +24,14 @@ export function useIdeas(projectId: string) {
       setIdeas((prev) => {
         const exists = prev.find((i) => i.ideaId === message.ideaId);
         if (exists) {
-          toast.success('Idea updated');
           return prev.map((i) => (i.ideaId === message.ideaId ? message : i));
         } else {
-          toast.success('New idea created');
           return [...prev, message];
         }
       });
     }
   }, []);
 
-  // Initial fetch and WebSocket setup
   useEffect(() => {
     if (!projectId) return;
 
@@ -59,12 +55,11 @@ export function useIdeas(projectId: string) {
 
     fetchIdeas();
 
-    // Connect WebSocket
     const token = sessionStorage.getItem('token');
     const userId = sessionStorage.getItem('userId');
     if (!token || !userId) {
       setWsError("Authentication token or userId not found");
-      router.push("/login"); 
+      router.push("/login");
       return;
     }
 
@@ -83,14 +78,9 @@ export function useIdeas(projectId: string) {
         ideaDescription: body || ""
       };
 
-      // Send via WebSocket
-      const success = await sendMessage(`/ideas/${projectId}/create`, inputIdea);
-
-      if (!success) {
-        throw new Error('Failed to send WebSocket message');
-      }
-      
-      return success;
+      // Only REST call - service will handle WebSocket notification
+      const idea = await api.post<Idea>(`/projects/${projectId}/ideas`, inputIdea);
+      return idea;
     } catch (error) {
       console.error("Error creating idea:", error);
       toast.error("Failed to create idea");
@@ -100,18 +90,9 @@ export function useIdeas(projectId: string) {
 
   const updateIdea = async (ideaId: string, data: Partial<Idea>) => {
     try {
-      const updatePayload = {
-        ideaId,
-        ...data
-      };
-      
-      const success = await sendMessage(`/ideas/${projectId}/update`, updatePayload);
-      
-      if (!success) {
-        throw new Error('Failed to send WebSocket message');
-      }
-      
-      return updatePayload;
+      // Only REST call - service will handle WebSocket notification
+      const updatedIdea = await api.put<Idea>(`/projects/${projectId}/ideas/${ideaId}`, data);
+      return updatedIdea;
     } catch (error) {
       console.error("Error updating idea:", error);
       toast.error("Failed to update idea");
@@ -121,12 +102,8 @@ export function useIdeas(projectId: string) {
 
   const deleteIdea = async (ideaId: string) => {
     try {
-      const success = await sendMessage(`/ideas/${projectId}/delete`, { ideaId });
-      
-      if (!success) {
-        throw new Error('Failed to send WebSocket message');
-      }
-      
+      // Only REST call - service will handle WebSocket notification
+      await api.delete(`/projects/${projectId}/ideas/${ideaId}`);
       return true;
     } catch (error) {
       console.error("Error deleting idea:", error);

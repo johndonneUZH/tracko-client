@@ -100,7 +100,7 @@ export default function ProjectLayout({
   const handleCreate = async (title: string, body: string | null) => {
     try {
       const newIdea = await createIdea(title, body);
-      router.push(`/users/${id}/projects/${projectId}/dashboard`);
+      router.push(`/users/${id}/projects/${projectId}/dashboard/ideas/${newIdea.ideaId}`);
     } catch (error) {
       console.error("Error creating idea:", error);
     }
