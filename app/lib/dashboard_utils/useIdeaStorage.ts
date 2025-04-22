@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Idea } from "@/types/idea";
 import { ApiService } from "@/api/apiService";
