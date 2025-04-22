@@ -6,7 +6,7 @@ import { Idea } from "@/types/idea";
 import { ApiService } from "@/api/apiService";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { connectWebSocket, disconnectWebSocket } from "../websocketService";
+import { connectWebSocket, disconnectWebSocket, sendMessage } from "../websocketService";
 
 export function useIdeas(projectId: string) {
   const [ideas, setIdeas] = useState<Idea[]>([]);
@@ -20,12 +20,15 @@ export function useIdeas(projectId: string) {
   const handleMessage = useCallback((message: any) => {
     if ("deletedId" in message) {
       setIdeas((prev) => prev.filter((i) => i.ideaId !== message.deletedId));
-    } else {
+      toast.success('Idea deleted');
+    } else if (message.ideaId) {
       setIdeas((prev) => {
         const exists = prev.find((i) => i.ideaId === message.ideaId);
         if (exists) {
+          toast.success('Idea updated');
           return prev.map((i) => (i.ideaId === message.ideaId ? message : i));
         } else {
+          toast.success('New idea created');
           return [...prev, message];
         }
       });
@@ -65,11 +68,7 @@ export function useIdeas(projectId: string) {
       return;
     }
 
-    const client = connectWebSocket(
-      userId,
-      projectId,
-      handleMessage
-    );
+    const client = connectWebSocket(userId, projectId, handleMessage);
 
     return () => {
       isMounted = false;
@@ -83,9 +82,15 @@ export function useIdeas(projectId: string) {
         ideaName: title,
         ideaDescription: body || ""
       };
-      const newIdea = await api.post<Idea>(`/projects/${projectId}/ideas`, inputIdea);
-      api.postChanges("ADDED_IDEA", projectId);
-      return newIdea;
+
+      // Send via WebSocket
+      const success = await sendMessage(`/ideas/${projectId}/create`, inputIdea);
+      
+      if (!success) {
+        throw new Error('Failed to send WebSocket message');
+      }
+      
+      return inputIdea;
     } catch (error) {
       console.error("Error creating idea:", error);
       toast.error("Failed to create idea");
@@ -95,9 +100,18 @@ export function useIdeas(projectId: string) {
 
   const updateIdea = async (ideaId: string, data: Partial<Idea>) => {
     try {
-      const updatedIdea = await api.put<Idea>(`/projects/${projectId}/ideas/${ideaId}`, data);
-      api.postChanges("MODIFIED_IDEA", projectId);
-      return updatedIdea;
+      const updatePayload = {
+        ideaId,
+        ...data
+      };
+      
+      const success = await sendMessage(`/ideas/${projectId}/update`, updatePayload);
+      
+      if (!success) {
+        throw new Error('Failed to send WebSocket message');
+      }
+      
+      return updatePayload;
     } catch (error) {
       console.error("Error updating idea:", error);
       toast.error("Failed to update idea");
@@ -107,8 +121,12 @@ export function useIdeas(projectId: string) {
 
   const deleteIdea = async (ideaId: string) => {
     try {
-      await api.delete(`/projects/${projectId}/ideas/${ideaId}`);
-      api.postChanges("CLOSED_IDEA", projectId);
+      const success = await sendMessage(`/ideas/${projectId}/delete`, { ideaId });
+      
+      if (!success) {
+        throw new Error('Failed to send WebSocket message');
+      }
+      
       return true;
     } catch (error) {
       console.error("Error deleting idea:", error);

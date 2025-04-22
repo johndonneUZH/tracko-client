@@ -1,5 +1,5 @@
 
-import { Client, IFrame, IMessage } from '@stomp/stompjs';
+import { Client, IFrame, IMessage, Stomp } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { getApiDomain } from "@/utils/domain";
 
@@ -16,15 +16,17 @@ export const connectWebSocket = (
   projectId: string,
   onMessage: (message: WebSocketMessage) => void
 ): Client => {
-  if (stompClient && stompClient.connected) {
-    return stompClient;
+  if (stompClient) {
+    disconnectWebSocket();
   }
-
   const socket = new SockJS(`${getApiDomain()}/ws`);
+  const token = sessionStorage.getItem('token') || '';
+
   stompClient = new Client({
     webSocketFactory: () => socket,
     connectHeaders: {
-      Authorization: sessionStorage.getItem('token') || ''
+      Authorization: `Bearer ${token}`,
+      userId: userId
     },
     debug: (str: string) => console.log('STOMP:', str),
     reconnectDelay: 5000,
@@ -34,7 +36,9 @@ export const connectWebSocket = (
 
   stompClient.onConnect = () => {
     console.log('Connected to WebSocket');
-    stompClient?.subscribe(`/topic/ideas/${projectId}`, (message: IMessage) => {
+    
+    // Subscribe to project-specific topic
+    stompClient?.subscribe(`/topic/projects/${projectId}/ideas`, (message: IMessage) => {
       try {
         const parsedMessage = JSON.parse(message.body) as WebSocketMessage;
         onMessage(parsedMessage);
@@ -42,6 +46,7 @@ export const connectWebSocket = (
         console.error('Error parsing WebSocket message:', error);
       }
     });
+
   };
 
   stompClient.onStompError = (frame: IFrame) => {
@@ -63,21 +68,33 @@ export const connectWebSocket = (
 
 export const disconnectWebSocket = (): void => {
   if (stompClient) {
-    stompClient.deactivate();
-    stompClient = null;
+    stompClient.deactivate().then(() => {
+      console.log('WebSocket client deactivated');
+      stompClient = null;
+    });
   }
 };
 
-export const sendMessage = <T>(destination: string, body: T): boolean => {
-  if (!stompClient || !stompClient.connected) {
-    console.error('STOMP client not connected');
-    return false;
-  }
-  
-  stompClient.publish({
-    destination,
-    body: JSON.stringify(body)
+export const sendMessage = <T>(destination: string, body: T): Promise<boolean> => {
+  return new Promise((resolve) => {
+    if (!stompClient || !stompClient.connected) {
+      console.error('STOMP client not connected');
+      resolve(false);
+      return;
+    }
+
+    try {
+      stompClient.publish({
+        destination: `/app${destination}`, // Note the /app prefix
+        body: JSON.stringify(body),
+        headers: {
+          'content-type': 'application/json'
+        }
+      });
+      resolve(true);
+    } catch (error) {
+      console.error('Error sending message:', error);
+      resolve(false);
+    }
   });
-  
-  return true;
 };
