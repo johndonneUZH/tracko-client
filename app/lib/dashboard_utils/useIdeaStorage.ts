@@ -154,11 +154,12 @@ export function useIdeas(projectId: string) {
     try {
       await api.delete(`/projects/${projectId}/ideas/${ideaId}`);
       return true;
-    } catch (err) {
+    } catch {
       setIdeas(prev => [...prev, snapshot]);
       toast.error("Failed to delete idea");
       return false;
     }
+    
   };
 
   return {
