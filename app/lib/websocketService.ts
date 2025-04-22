@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { Client, IFrame, IMessage, Stomp } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
