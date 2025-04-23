@@ -4,11 +4,11 @@ import React from "react";
 import { Idea } from "@/types/idea";
 import Votes from "./Votes";
 import { Card, CardContent } from "@/components/commons/card";
+import { useDraggable } from "@dnd-kit/core";
 
 interface IdeaBoxProps {
   idea: Idea;
   isSelected: boolean;
-  onDragEnd: (e: React.DragEvent<HTMLDivElement>, ideaId: string) => void;
   onClick: (ideaId: string) => void;
   currentUserId: string;
   onToggleVote: (ideaId: string, userId: string, type: "up" | "down") => void;
@@ -17,11 +17,14 @@ interface IdeaBoxProps {
 export default function IdeaBox({
   idea,
   isSelected,
-  onDragEnd,
   onClick,
   currentUserId,
   onToggleVote,
 }: IdeaBoxProps) {
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: idea.ideaId,
+  });
+
   const pastelColors = [
     "#FFB3BA", "#FFDFBA", "#FFFFBA", "#BAFFC9",
     "#BAE1FF", "#E6E6FA", "#FADADD", "#D1C4E9",
@@ -35,30 +38,26 @@ export default function IdeaBox({
     return pastelColors[Math.abs(hash) % pastelColors.length];
   };
 
-  const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
-    const dragImage = new Image();
-    dragImage.src =
-      "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
-    e.dataTransfer.setDragImage(dragImage, 0, 0);
-    e.dataTransfer.setData("text/plain", idea.ideaId);
+  const style = {
+    left: `${idea.x}px`,
+    top: `${idea.y}px`,
+    zIndex: isSelected ? 10 : 1,
+    transform: transform
+      ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
+      : undefined,
+    transition: isDragging ? "none" : "transform 0.15s ease-in-out",
   };
 
   return (
     <Card
-      key={idea.ideaId}
-      className={`absolute w-[200px] h-[120px] p-4 rounded-2xl select-none transition-transform duration-200 hover:scale-105 cursor-grab`}
-      style={{
-        left: `${idea.x}px`,
-        top: `${idea.y}px`,
-        zIndex: isSelected ? 10 : 1,
-        touchAction: "none",
-        userSelect: "none",
-      }}
-      draggable
-      onDragStart={handleDragStart}
-      onDragOver={(e) => e.preventDefault()}
-      onDragEnd={(e) => onDragEnd(e, idea.ideaId)}
-      onClick={() => onClick(idea.ideaId)}
+      ref={setNodeRef}
+      style={style}
+      className={`absolute w-[200px] h-[120px] p-4 rounded-2xl select-none ${
+        isDragging ? "" : "hover:scale-105"
+      } cursor-grab`}
+      onClick={() => !isDragging && onClick(idea.ideaId)}
+      {...listeners}
+      {...attributes}
     >
       <CardContent className="flex flex-col justify-between h-full p-0">
         <div className="mb-2">
@@ -70,7 +69,11 @@ export default function IdeaBox({
           </p>
         </div>
         <div className="self-end">
-          <Votes idea={idea} currentUserId={currentUserId} onToggleVote={onToggleVote} />
+          <Votes
+            idea={idea}
+            currentUserId={currentUserId}
+            onToggleVote={onToggleVote}
+          />
         </div>
       </CardContent>
     </Card>
