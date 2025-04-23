@@ -28,7 +28,6 @@ export const connectWebSocket = (
     webSocketFactory: () => socket,
     connectHeaders: {
       Authorization: token,
-      userId: userId
     },
     reconnectDelay: 5000,
     heartbeatIncoming: 4000,
