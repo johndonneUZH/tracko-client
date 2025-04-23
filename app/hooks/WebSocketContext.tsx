@@ -42,7 +42,15 @@ export const WebSocketProvider = ({ children }: { children: React.ReactNode }) =
 
   // Initialize WebSocket connection
   useEffect(() => {
-    const socket = new SockJS(`${getApiDomain()}/ws`);
+    const apiDomain = getApiDomain().endsWith('/') 
+    ? getApiDomain().slice(0, -1) 
+    : getApiDomain();
+    
+    const socket = new SockJS(`${apiDomain}/ws`, {
+      transports: ['websocket'],
+      timeout: 5000,
+    });
+  
     const client = new Client({
       webSocketFactory: () => socket,
       connectHeaders: {

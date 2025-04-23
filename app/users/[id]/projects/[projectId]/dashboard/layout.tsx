@@ -241,12 +241,12 @@ export default function ProjectLayout({
          
 
          {/* Right sidebar for chat */}
-          <div 
+          {/* <div 
             className={`fixed right-0 top-0 bottom-0 transition-all duration-300 ease-in-out ${
               isRightSidebarCollapsed ? 'w-12' : 'w-80'
             } bg-white border-l border-gray-200 shadow-xl z-40 flex flex-col`}
           >
-            {/* Collapse button */}
+
             <button
               onClick={() => setIsRightSidebarCollapsed(!isRightSidebarCollapsed)}
               className="absolute left-0 top-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-12 bg-white border border-gray-200 rounded-l-md flex items-center justify-center hover:bg-gray-100 z-50"
@@ -260,12 +260,11 @@ export default function ProjectLayout({
             
             {!isRightSidebarCollapsed && hasMounted && (
               <div className="flex flex-col h-full">
-                {/* Header - fixed height */}
+
                 <div className="px-4 py-2 border-b text-sm font-medium text-gray-700 bg-gray-50">
                   Live Collaboration
                 </div>
                 
-                {/* Chat section - takes remaining space */}
                 <div className="border-t border-gray-200 flex flex-col flex-1 min-h-0">
                   <div className="text-xs text-gray-500 py-1 px-1">Chat</div>
                   <RealtimeChat 
@@ -284,9 +283,8 @@ export default function ProjectLayout({
                   Live Chat
                 </span>
               </div>
-            )}
-          </div>
-        </div>
+            )}*/}
+          </div> 
       </SidebarProvider>
     </>
   );

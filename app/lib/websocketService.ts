@@ -1,4 +1,3 @@
-
 import { Client, IFrame, IMessage } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { getApiDomain } from "@/utils/domain";
@@ -16,17 +15,20 @@ export const connectWebSocket = (
   projectId: string,
   onMessage: (message: WebSocketMessage) => void
 ): Client => {
-  if (stompClient && stompClient.connected) {
-    return stompClient;
+  if (stompClient) {
+    disconnectWebSocket();
   }
+  const apiDomain = getApiDomain().endsWith('/') 
+  ? getApiDomain().slice(0, -1) 
+  : getApiDomain();
+  const socket = new SockJS(`${apiDomain}/ws`);
+  const token = sessionStorage.getItem('token') || '';
 
-  const socket = new SockJS(`${getApiDomain()}/ws`);
   stompClient = new Client({
     webSocketFactory: () => socket,
     connectHeaders: {
-      Authorization: sessionStorage.getItem('token') || ''
+      Authorization: token,
     },
-    debug: (str: string) => console.log('STOMP:', str),
     reconnectDelay: 5000,
     heartbeatIncoming: 4000,
     heartbeatOutgoing: 4000,
@@ -34,27 +36,20 @@ export const connectWebSocket = (
 
   stompClient.onConnect = () => {
     console.log('Connected to WebSocket');
-    stompClient?.subscribe(`/topic/ideas/${projectId}`, (message: IMessage) => {
+    
+    // Subscribe to notifications channel
+    stompClient?.subscribe(`/topic/projects/${projectId}/ideas`, (message: IMessage) => {
       try {
-        const parsedMessage = JSON.parse(message.body) as WebSocketMessage;
-        onMessage(parsedMessage);
+        const parsed = JSON.parse(message.body) as WebSocketMessage;
+        onMessage(parsed);
       } catch (error) {
-        console.error('Error parsing WebSocket message:', error);
+        console.error('Error parsing notification:', error);
       }
     });
   };
 
   stompClient.onStompError = (frame: IFrame) => {
     console.error('STOMP error:', frame.headers.message);
-    console.error('Additional details:', frame.body);
-  };
-
-  stompClient.onWebSocketError = (event: Event) => {
-    console.error('WebSocket error:', event);
-  };
-
-  stompClient.onDisconnect = () => {
-    console.log('Disconnected from WebSocket');
   };
 
   stompClient.activate();
@@ -63,21 +58,9 @@ export const connectWebSocket = (
 
 export const disconnectWebSocket = (): void => {
   if (stompClient) {
-    stompClient.deactivate();
-    stompClient = null;
+    stompClient.deactivate().then(() => {
+      console.log('WebSocket disconnected');
+      stompClient = null;
+    });
   }
-};
-
-export const sendMessage = <T>(destination: string, body: T): boolean => {
-  if (!stompClient || !stompClient.connected) {
-    console.error('STOMP client not connected');
-    return false;
-  }
-  
-  stompClient.publish({
-    destination,
-    body: JSON.stringify(body)
-  });
-  
-  return true;
 };
