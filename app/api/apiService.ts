@@ -9,8 +9,7 @@ export class ApiService {
   constructor() {
     this.baseURL = getApiDomain();
     this.defaultHeaders = {
-      "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*",
+      "Content-Type": "application/json"
     };
   }
 
