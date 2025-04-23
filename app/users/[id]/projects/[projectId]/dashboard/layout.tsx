@@ -241,7 +241,7 @@ export default function ProjectLayout({
          
 
          {/* Right sidebar for chat */}
-          {/* <div 
+          <div 
             className={`fixed right-0 top-0 bottom-0 transition-all duration-300 ease-in-out ${
               isRightSidebarCollapsed ? 'w-12' : 'w-80'
             } bg-white border-l border-gray-200 shadow-xl z-40 flex flex-col`}
@@ -283,8 +283,9 @@ export default function ProjectLayout({
                   Live Chat
                 </span>
               </div>
-            )}*/}
-          </div> 
+            )}
+          </div>
+        </div>
       </SidebarProvider>
     </>
   );

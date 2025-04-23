@@ -1,9 +1,14 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import { X, Save, Trash2, Undo2 } from "lucide-react";
 import { Idea } from "@/types/idea";
 import { Comment } from "@/types/comment";
 import Comments from "./Comments";
+import { Textarea } from "@/components/commons/textarea";
+import { Input } from "@/components/commons/input";
+import { Button } from "@/components/commons/button";
+import { Card, CardContent } from "@/components/commons/card";
 
 interface CommentWithChildren extends Comment {
   children: CommentWithChildren[];
@@ -47,7 +52,6 @@ export default function IdeaModal({
     "#FFB3BA", "#FFDFBA", "#FFFFBA", "#BAFFC9",
     "#BAE1FF", "#E6E6FA", "#FADADD", "#D1C4E9",
   ];
-  const modalBackground = pastelColors[parseInt(idea.ideaId, 16) % pastelColors.length];
 
   const buildCommentTree = (rootIds: string[]): CommentWithChildren[] => {
     return rootIds
@@ -66,138 +70,88 @@ export default function IdeaModal({
 
   return (
     <div
-      className="idea-modal"
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
-        background: "rgba(0,0,0,0.5)",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        zIndex: 9999,
-      }}
+      className="fixed top-0 left-0 w-full h-full bg-black/50 z-[10000] flex items-center justify-center"
       onClick={(e) => {
         if (e.target === e.currentTarget) onCancel();
       }}
     >
-      <div
-        style={{
-          background: modalBackground,
-          padding: "2rem",
-          borderRadius: "8px",
-          width: "400px",
-          maxHeight: "80%",
-          overflow: "auto",
-        }}
+      <Card
+        className="relative w-[400px] max-h-[80%] overflow-auto p-6"
         onClick={(e) => e.stopPropagation()}
       >
-        <label>Title:</label>
-        <input
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          disabled={!canEdit}
-          style={{ width: "100%", marginBottom: "1rem" }}
-        />
+        <button
+          onClick={onCancel}
+          className="absolute top-3 right-3 text-gray-600 hover:text-black"
+        >
+          <X className="w-5 h-5" />
+        </button>
 
-        <label>Body:</label>
-        <textarea
-          value={body}
-          onChange={(e) => setBody(e.target.value)}
-          disabled={!canEdit}
-          style={{ width: "100%", height: "120px" }}
-        />
+        <div className="space-y-4">
+          <div>
+            <label className="text-sm font-medium">Title</label>
+            <Input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              disabled={!canEdit}
+              className="mt-1"
+            />
+          </div>
 
-        <div style={{ marginTop: "1rem", textAlign: "right" }}>
-          {canEdit ? (
-            hasChanges ? (
-              <>
-                <button
-                  onClick={() => onSave(title, body)}
-                  style={{
-                    marginRight: "0.5rem",
-                    background: "#1677ff",
-                    color: "#fff",
-                    border: "none",
-                    padding: "0.5rem 1rem",
-                    cursor: "pointer",
-                  }}
-                >
-                  Save
-                </button>
-                <button
-                  onClick={handleDiscardChanges}
-                  style={{
-                    marginRight: "0.5rem",
-                    background: "#ccc",
-                    border: "none",
-                    padding: "0.5rem 1rem",
-                    cursor: "pointer",
-                  }}
-                >
-                  Cancel
-                </button>
-              </>
+          <div>
+            <label className="text-sm font-medium">Description</label>
+            <Textarea
+              value={body}
+              onChange={(e) => setBody(e.target.value)}
+              disabled={!canEdit}
+              className="mt-1 h-32"
+            />
+          </div>
+
+          <div className="flex justify-end gap-2 mt-2 flex-wrap">
+            {canEdit ? (
+              hasChanges ? (
+                <>
+                  <Button onClick={() => onSave(title, body)} variant="default">
+                    <Save className="w-4 h-4" />
+                    Save
+                  </Button>
+                  <Button onClick={handleDiscardChanges} variant="secondary">
+                    <Undo2 className="w-4 h-4" />
+                    Cancel
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button onClick={onDelete} variant="destructive">
+                    <Trash2 className="w-4 h-4" />
+                    Delete
+                  </Button>
+                </>
+              )
             ) : (
-              <>
-                <button
-                  onClick={onDelete}
-                  style={{
-                    marginRight: "0.5rem",
-                    background: "#ff4d4f",
-                    color: "#fff",
-                    border: "none",
-                    padding: "0.5rem 1rem",
-                    cursor: "pointer",
-                  }}
-                >
-                  Delete
-                </button>
-                <button
-                  onClick={onCancel}
-                  style={{
-                    background: "#ccc",
-                    border: "none",
-                    padding: "0.5rem 1rem",
-                    cursor: "pointer",
-                  }}
-                >
-                  Close
-                </button>
-              </>
-            )
-          ) : (
-            <button
-              onClick={onCancel}
-              style={{
-                background: "#ccc",
-                border: "none",
-                padding: "0.5rem 1rem",
-                cursor: "pointer",
-              }}
-            >
-              Close
-            </button>
+              <Button onClick={onCancel} variant="secondary">
+                <X className="w-4 h-4 mr-2" />
+                Close
+              </Button>
+            )}
+          </div>
+
+          {title.trim() !== "" && body.trim() !== "" && (
+            <div className="mt-4">
+              <hr className="mb-4" />
+              <Comments
+                comments={commentTree}
+                currentUserId={currentUserId}
+                onAddComment={(content, parentId) => {
+                  onAddComment(content, parentId);
+                  onLogComment?.("Added comment", title);
+                }}
+                onDeleteComment={onDeleteComment}
+              />
+            </div>
           )}
         </div>
-
-        {title.trim() !== "" && body.trim() !== "" && (
-          <>
-            <hr style={{ margin: "1rem 0" }} />
-            <Comments
-              comments={commentTree}
-              currentUserId={currentUserId}
-              onAddComment={(content, parentId) => {
-                onAddComment(content, parentId);
-                onLogComment?.("Added comment", title);
-              }}
-              onDeleteComment={onDeleteComment}
-            />
-          </>
-        )}
-      </div>
+      </Card>
     </div>
   );
 }

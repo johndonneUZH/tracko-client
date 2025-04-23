@@ -3,6 +3,7 @@
 import React from "react";
 import { Idea } from "@/types/idea";
 import Votes from "./Votes";
+import { Card, CardContent } from "@/components/commons/card";
 
 interface IdeaBoxProps {
   idea: Idea;
@@ -22,7 +23,7 @@ export default function IdeaBox({
   onToggleVote,
 }: IdeaBoxProps) {
   const pastelColors = [
-    "#FFB3BA", "#FFDFBA", "#FFFFBA", "#BAFFC9", 
+    "#FFB3BA", "#FFDFBA", "#FFFFBA", "#BAFFC9",
     "#BAE1FF", "#E6E6FA", "#FADADD", "#D1C4E9",
   ];
 
@@ -34,50 +35,44 @@ export default function IdeaBox({
     return pastelColors[Math.abs(hash) % pastelColors.length];
   };
 
-  const backgroundColor = getColorForIdea(idea.ideaId);
-  const innerShadow = "inset 0 4px 6px rgba(0, 0, 0, 0.1)";
-  const boxShadow = isSelected
-    ? `0 0 0 2px #91caff, ${innerShadow}`
-    : innerShadow;
-
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
     const dragImage = new Image();
-    dragImage.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+    dragImage.src =
+      "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
     e.dataTransfer.setDragImage(dragImage, 0, 0);
-    e.dataTransfer.setData('text/plain', idea.ideaId);
+    e.dataTransfer.setData("text/plain", idea.ideaId);
   };
 
   return (
-    <div
+    <Card
       key={idea.ideaId}
-      className="idea-box hover:scale-105 transition-transform duration-200 rounded-lg select-none"
+      className={`absolute w-[200px] h-[120px] p-4 rounded-2xl select-none transition-transform duration-200 hover:scale-105 cursor-grab`}
+      style={{
+        left: `${idea.x}px`,
+        top: `${idea.y}px`,
+        zIndex: isSelected ? 10 : 1,
+        touchAction: "none",
+        userSelect: "none",
+      }}
       draggable
       onDragStart={handleDragStart}
       onDragOver={(e) => e.preventDefault()}
       onDragEnd={(e) => onDragEnd(e, idea.ideaId)}
       onClick={() => onClick(idea.ideaId)}
-      style={{
-        position: "absolute",
-        left: `${idea.x}px`,
-        top: `${idea.y}px`,
-        width: "200px",
-        height: "120px",
-        border: isSelected ? "2px solid #1677ff" : "1px solid #ccc",
-        boxShadow,
-        backgroundColor,
-        cursor: "grab",
-        overflow: "hidden",
-        padding: "1rem",
-        touchAction: "none",
-        userSelect: "none",
-        zIndex: isSelected ? 10 : 1,
-        willChange: "transform", // Improves animation performance
-      }}
     >
-      <strong>{idea.ideaName || "Untitled Idea"}</strong>
-      <div style={{ position: "absolute", bottom: "1rem", right: "1rem" }}>
-        <Votes idea={idea} currentUserId={currentUserId} onToggleVote={onToggleVote} />
-      </div>
-    </div>
+      <CardContent className="flex flex-col justify-between h-full p-0">
+        <div className="mb-2">
+          <strong className="block text-sm font-semibold text-gray-900 truncate">
+            {idea.ideaName || "Untitled Idea"}
+          </strong>
+          <p className="text-sm text-gray-700 line-clamp-3">
+            {idea.ideaDescription}
+          </p>
+        </div>
+        <div className="self-end">
+          <Votes idea={idea} currentUserId={currentUserId} onToggleVote={onToggleVote} />
+        </div>
+      </CardContent>
+    </Card>
   );
 }
