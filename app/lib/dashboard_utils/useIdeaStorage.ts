@@ -58,6 +58,7 @@ export function useIdeas(projectId: string) {
       try {
         setLoading(true);
         const data = await api.get<Idea[]>(`/projects/${projectId}/ideas`);
+        console.log("Ideas: ", data)
         if (alive) setIdeas(data);
       } catch (err) {
         if (alive) {
@@ -93,13 +94,13 @@ export function useIdeas(projectId: string) {
     coords?: { x: number; y: number }
   ) => {
     const tmpId = uuid();
-    const creatorId = sessionStorage.getItem("userId") ?? "temp-user";
+    const ownerId = sessionStorage.getItem("userId") ?? "temp-user";
     const { x, y } = coords ?? { x: 100, y: 100 };
 
     const optimistic: Idea = {
       ideaId: tmpId,
       projectId,
-      creatorId,
+      ownerId,
       ideaName: title,
       ideaDescription: body ?? "",
       x,

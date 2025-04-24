@@ -1,6 +1,6 @@
 import { Idea } from "@/types/idea";
 
-export function generateNewIdea(proId: string, nextId: string, creatorId: string): Idea {
+export function generateNewIdea(proId: string, nextId: string, ownerId: string): Idea {
   // Create a more random position using the ID and current timestamp
   const hash = hashCode(nextId + Date.now().toString());
   
@@ -21,7 +21,7 @@ export function generateNewIdea(proId: string, nextId: string, creatorId: string
     ideaDescription: "",
     x: x,
     y: y,
-    creatorId,
+    ownerId,
     comments: [],
     downVotes: [],   
     upVotes: [],

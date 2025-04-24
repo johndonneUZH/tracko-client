@@ -72,9 +72,9 @@ export default function IdeaBox({
         <div className="mb-2">
           <div className="flex flex-row gap-2 items-center">
             <Avatar className="h-4 w-4 rounded-sm">
-              <AvatarImage src={members.find((m) => m.id === idea.creatorId)?.avatarUrl ?? "https://avatar.vercel.sh/john"} />
+              <AvatarImage src={members.find((m) => m.id === idea.ownerId)?.avatarUrl ?? "https://avatar.vercel.sh/john"} />
             </Avatar>
-            <strong>{members.find((m) => m.id === idea.creatorId)?.username ?? "Unknown"}</strong>
+            <strong>{members.find((m) => m.id === idea.ownerId)?.username ?? "Unknown"}</strong>
           </div>
           <strong className="block text-sm font-semibold text-gray-900 truncate">
             {idea.ideaName || "Untitled Idea"}

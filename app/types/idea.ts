@@ -5,7 +5,7 @@ export interface Idea {
   ideaName: string;
   x: number;
   y: number;
-  creatorId: string;
+  ownerId: string;
   comments: string[];
   upVotes: string[];
   downVotes: string[];
