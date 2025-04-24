@@ -5,6 +5,12 @@ import { Comment } from "@/types/comment";
 import { Button } from "@/components/commons/button";
 import { Textarea } from "@/components/commons/textarea";
 import { MessageSquarePlus, Reply, Trash2, X } from "lucide-react";
+import { User } from "@/types/user";
+
+import {
+  Avatar,
+  AvatarImage,
+} from "@/components/commons/avatar"
 
 interface CommentWithChildren extends Comment {
   children: CommentWithChildren[];
@@ -15,6 +21,7 @@ interface CommentsProps {
   currentUserId: string;
   onAddComment: (content: string, parentId?: string) => void;
   onDeleteComment: (commentId: string) => void;
+  members: User[],
 }
 
 export default function Comments({
@@ -22,6 +29,7 @@ export default function Comments({
   currentUserId,
   onAddComment,
   onDeleteComment,
+  members,
 }: CommentsProps) {
   const [replyTargetId, setReplyTargetId] = useState<string | null>(null);
   const [replyContent, setReplyContent] = useState("");
@@ -37,9 +45,12 @@ export default function Comments({
     return commentList.map((comment) => (
       <div key={comment.commentId} className="ml-4 mt-4">
         <div className="border border-gray-300 p-3 rounded-md">
-          <p>
-            <strong>User {comment.ownerId}</strong>: 
-          </p>
+          <div className="flex flex-row gap-2 items-center">
+            <Avatar className="h-4 w-4 rounded-sm">
+              <AvatarImage src={members.find((m) => m.id === comment.ownerId)?.avatarUrl ?? "https://avatar.vercel.sh/john"} />
+            </Avatar>
+            <strong>{members.find((m) => m.id === comment.ownerId)?.username ?? "Unknown"}</strong>
+          </div>
           <p> 
             {comment.commentText}
           </p>

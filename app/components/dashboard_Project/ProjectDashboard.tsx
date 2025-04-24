@@ -3,6 +3,7 @@
 import { Idea } from "@/types/idea";
 import IdeaBox from "./IdeaBox";
 import { useCurrentUserId } from "@/lib/commons/useCurrentUserId";
+import { User } from "@/types/user"
 import {
   DndContext,
   PointerSensor,
@@ -18,6 +19,7 @@ interface ProjectDashboardProps {
   onIdeaClick: (ideaId: string) => void;
   updateIdea: (ideaId: string, data: Partial<Idea>) => void;
   onToggleVote: (ideaId: string, userId: string, type: "up" | "down") => void;
+  members: User[];
 }
 
 export default function ProjectDashboard({
@@ -26,6 +28,7 @@ export default function ProjectDashboard({
   onIdeaClick,
   updateIdea,
   onToggleVote,
+  members
 }: ProjectDashboardProps) {
   const currentUserId = useCurrentUserId();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -98,6 +101,7 @@ export default function ProjectDashboard({
               onClick={onIdeaClick}
               currentUserId={currentUserId}
               onToggleVote={onToggleVote}
+              members={members}
             />
           ))}
         </div>

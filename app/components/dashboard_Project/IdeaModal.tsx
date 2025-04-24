@@ -1,3 +1,4 @@
+/* eslint-disable */
 "use client";
 
 import React, { useState, useMemo } from "react";
@@ -9,6 +10,7 @@ import { Textarea } from "@/components/commons/textarea";
 import { Input } from "@/components/commons/input";
 import { Button } from "@/components/commons/button";
 import { Card, CardContent } from "@/components/commons/card";
+import { User } from '@/types/user';
 
 interface CommentWithChildren extends Comment {
   children: CommentWithChildren[];
@@ -25,6 +27,7 @@ interface IdeaModalProps {
   onDeleteComment: (commentId: string) => void;
   onLogComment?: (action: string, title: string) => void;
   commentMap: Record<string, Comment>;
+  members: User[];
 }
 
 export default function IdeaModal({
@@ -38,6 +41,7 @@ export default function IdeaModal({
   onDeleteComment,
   onLogComment,
   commentMap,
+  members,
 }: IdeaModalProps) {
   const [title, setTitle] = useState(idea.ideaName || "");
   const [body, setBody] = useState(idea.ideaDescription || "");
@@ -147,6 +151,7 @@ export default function IdeaModal({
                   onLogComment?.("Added comment", title);
                 }}
                 onDeleteComment={onDeleteComment}
+                members={members}
               />
             </div>
           )}

@@ -1,3 +1,4 @@
+/* eslint-disable */
 "use client";
 
 import React from "react";
@@ -5,6 +6,12 @@ import { Idea } from "@/types/idea";
 import Votes from "./Votes";
 import { Card, CardContent } from "@/components/commons/card";
 import { useDraggable } from "@dnd-kit/core";
+import { User } from "@/types/user"
+
+import {
+  Avatar,
+  AvatarImage,
+} from "@/components/commons/avatar"
 
 interface IdeaBoxProps {
   idea: Idea;
@@ -12,6 +19,7 @@ interface IdeaBoxProps {
   onClick: (ideaId: string) => void;
   currentUserId: string;
   onToggleVote: (ideaId: string, userId: string, type: "up" | "down") => void;
+  members: User[];
 }
 
 export default function IdeaBox({
@@ -20,6 +28,7 @@ export default function IdeaBox({
   onClick,
   currentUserId,
   onToggleVote,
+  members,
 }: IdeaBoxProps) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: idea.ideaId,
@@ -52,7 +61,7 @@ export default function IdeaBox({
     <Card
       ref={setNodeRef}
       style={style}
-      className={`absolute w-[200px] h-[120px] p-4 rounded-2xl select-none ${
+      className={`absolute w-[200px] h-[140px] p-4 rounded-2xl select-none ${
         isDragging ? "" : "hover:scale-105"
       } cursor-grab`}
       onClick={() => !isDragging && onClick(idea.ideaId)}
@@ -61,6 +70,12 @@ export default function IdeaBox({
     >
       <CardContent className="flex flex-col justify-between h-full p-0">
         <div className="mb-2">
+          <div className="flex flex-row gap-2 items-center">
+            <Avatar className="h-4 w-4 rounded-sm">
+              <AvatarImage src={members.find((m) => m.id === idea.creatorId)?.avatarUrl ?? "https://avatar.vercel.sh/john"} />
+            </Avatar>
+            <strong>{members.find((m) => m.id === idea.creatorId)?.username ?? "Unknown"}</strong>
+          </div>
           <strong className="block text-sm font-semibold text-gray-900 truncate">
             {idea.ideaName || "Untitled Idea"}
           </strong>

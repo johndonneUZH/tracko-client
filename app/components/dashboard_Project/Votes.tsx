@@ -48,7 +48,6 @@ export default function Votes({ idea, currentUserId, onToggleVote }: VotesProps)
           border: "none",
           cursor: "pointer",
           borderRadius: "4px",
-          padding: "0px 6px",
         }}
       >
         <ArrowBigUp className={`w-6 h-6 transition-colors duration-150 
@@ -66,7 +65,6 @@ export default function Votes({ idea, currentUserId, onToggleVote }: VotesProps)
           border: "none",
           cursor: "pointer",
           borderRadius: "4px",
-          padding: "0px 6px",
         }}
       >
        <ArrowBigDown className={`w-6 h-6 transition-colors duration-150 

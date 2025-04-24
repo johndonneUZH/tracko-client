@@ -46,6 +46,7 @@ export default function ProjectLayout({
   const [hasMounted, setHasMounted] = useState(false);
   const [isRightSidebarCollapsed, setIsRightSidebarCollapsed] = useState(false);
   const [projectName, setProjectName] = useState<string>("");
+  const [members, setMembers] = useState<User[]>([]);
 
   const apiService = useMemo(() => new ApiService(), []);
 
@@ -71,6 +72,28 @@ export default function ProjectLayout({
     }
     fetchUser();
   }, [id, apiService]);
+
+  useEffect(() => {
+    const fetchMembersData = async () => {
+      const projectId = sessionStorage.getItem("projectId");
+      const token = sessionStorage.getItem("token");
+
+      if (!projectId || !token) {
+        router.push("/login");
+        return;
+      }
+
+      try {
+        const data = await apiService.get<User[]>(`/projects/${projectId}/members`)
+        setMembers(data);
+        console.log("Members data:", data);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchMembersData();
+  }, []); 
 
   useEffect(() => {
     async function fetchProjectName() {
@@ -196,7 +219,7 @@ export default function ProjectLayout({
               <div className="flex flex-col flex-1 p-4">
                 <div className="flex justify-between mb-10">
                   <h1 className="text-xl font-bold">Dashboard Project {projectName}</h1>
-                  <NewIdeaButton onClick={handleCreate} />
+                  <NewIdeaButton onClick={handleCreate}/>
                 </div>
                 
                 <ProjectDashboard 
@@ -205,6 +228,7 @@ export default function ProjectLayout({
                   onIdeaClick={(ideaId) => router.push(`/users/${id}/projects/${projectId}/dashboard/ideas/${ideaId}`)}
                   updateIdea={updateIdea}
                   onToggleVote={toggleVote}
+                  members={members}
                 />
                 
                 <RealtimeCursors 
@@ -232,6 +256,7 @@ export default function ProjectLayout({
                     }} 
                     onDeleteComment={(commentId) => deleteComment(commentId)}
                     commentMap={commentMap}
+                    members={members}
                   />
                 )}
               </div>
