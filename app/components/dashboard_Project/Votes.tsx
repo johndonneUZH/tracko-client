@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Idea } from "@/types/idea";
+import { ArrowBigUp, ArrowBigDown } from "lucide-react";
 
 interface VotesProps {
   idea: Idea;
@@ -45,13 +46,13 @@ export default function Votes({ idea, currentUserId, onToggleVote }: VotesProps)
         }}
         style={{
           border: "none",
-          backgroundColor: hasUpvoted ? "#eafff2" : "transparent",
           cursor: "pointer",
           borderRadius: "4px",
-          padding: "2px 6px",
         }}
       >
-        ▲
+        <ArrowBigUp className={`w-6 h-6 transition-colors duration-150 
+          ${hasUpvoted ? "fill-black text-black" : "fill-none hover:text-black"}`}
+        />
       </button>
 
       {/* Downvote */}
@@ -62,13 +63,13 @@ export default function Votes({ idea, currentUserId, onToggleVote }: VotesProps)
         }}
         style={{
           border: "none",
-          backgroundColor: hasDownvoted ? "#fff1f0" : "transparent",
           cursor: "pointer",
           borderRadius: "4px",
-          padding: "2px 6px",
         }}
       >
-        ▼
+       <ArrowBigDown className={`w-6 h-6 transition-colors duration-150 
+          ${hasDownvoted ? "fill-black text-black" : "fill-none hover:text-black"}`}
+        />
       </button>
     </div>
   );

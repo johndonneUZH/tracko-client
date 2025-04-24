@@ -3,6 +3,14 @@
 import { Idea } from "@/types/idea";
 import IdeaBox from "./IdeaBox";
 import { useCurrentUserId } from "@/lib/commons/useCurrentUserId";
+import { User } from "@/types/user"
+import {
+  DndContext,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
 import { useRef, useState, useEffect } from "react";
 
 interface ProjectDashboardProps {
@@ -11,7 +19,7 @@ interface ProjectDashboardProps {
   onIdeaClick: (ideaId: string) => void;
   updateIdea: (ideaId: string, data: Partial<Idea>) => void;
   onToggleVote: (ideaId: string, userId: string, type: "up" | "down") => void;
-
+  members: User[];
 }
 
 export default function ProjectDashboard({
@@ -20,12 +28,20 @@ export default function ProjectDashboard({
   onIdeaClick,
   updateIdea,
   onToggleVote,
+  members
 }: ProjectDashboardProps) {
   const currentUserId = useCurrentUserId();
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
 
-  // Track container size
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
+
   useEffect(() => {
     const updateSize = () => {
       if (containerRef.current) {
@@ -45,50 +61,51 @@ export default function ProjectDashboard({
     return () => resizeObserver.disconnect();
   }, []);
 
-  const handleDragEnd = (e: React.DragEvent<HTMLDivElement>, ideaId: string) => {
-    if (!containerRef.current) return;
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, delta } = event;
+    const draggedIdea = ideas.find((idea) => idea.ideaId === active.id);
+    if (!draggedIdea || !containerRef.current) return;
 
-    const containerRect = containerRef.current.getBoundingClientRect();
-    const ideaWidth = 200; 
-    const ideaHeight = 120;
+    const newX = Math.max(
+      0,
+      Math.min(draggedIdea.x + delta.x, containerSize.width - 200)
+    );
+    const newY = Math.max(
+      0,
+      Math.min(draggedIdea.y + delta.y, containerSize.height - 120)
+    );
 
-    // Calculate relative position within container
-    let newX = e.clientX - containerRect.left;
-    let newY = e.clientY - containerRect.top;
-
-    // Apply boundaries
-    newX = Math.max(0, Math.min(newX, containerRect.width - ideaWidth));
-    newY = Math.max(0, Math.min(newY, containerRect.height - ideaHeight));
-
-    updateIdea(ideaId, { x: newX, y: newY });
+    updateIdea(active.id as string, { x: newX, y: newY });
   };
 
   return (
-    <div 
-      ref={containerRef}
-      className="relative w-full h-full bg-white overflow-hidden" // Changed from overflow-auto
-      style={{ minHeight: '600px' }} // Fallback minimum height
-    >
-      <div 
-        className="absolute inset-0" 
-        style={{ 
-          width: '100%',
-          height: '100%',
-          minHeight: containerSize.height > 0 ? containerSize.height : '600px'
-        }}
+    <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+      <div
+        ref={containerRef}
+        className="relative w-full h-full bg-white overflow-hidden"
+        style={{ minHeight: "600px" }}
       >
-        {ideas.map((idea) => (
-          <IdeaBox
-            key={idea.ideaId}
-            idea={idea}
-            isSelected={idea.ideaId === selectedIdeaId}
-            onDragEnd={(e) => handleDragEnd(e, idea.ideaId)}
-            onClick={() => onIdeaClick(idea.ideaId)}
-            currentUserId={currentUserId}
-            onToggleVote={onToggleVote}
-          />
-        ))}
+        <div
+          className="absolute inset-0"
+          style={{
+            width: "100%",
+            height: "100%",
+            minHeight: containerSize.height > 0 ? containerSize.height : "600px",
+          }}
+        >
+          {ideas.map((idea) => (
+            <IdeaBox
+              key={idea.ideaId}
+              idea={idea}
+              isSelected={idea.ideaId === selectedIdeaId}
+              onClick={onIdeaClick}
+              currentUserId={currentUserId}
+              onToggleVote={onToggleVote}
+              members={members}
+            />
+          ))}
+        </div>
       </div>
-    </div>
+    </DndContext>
   );
 }

@@ -2,6 +2,15 @@
 
 import React, { useState } from "react";
 import { Comment } from "@/types/comment";
+import { Button } from "@/components/commons/button";
+import { Textarea } from "@/components/commons/textarea";
+import { MessageSquarePlus, Reply, Trash2, X } from "lucide-react";
+import { User } from "@/types/user";
+
+import {
+  Avatar,
+  AvatarImage,
+} from "@/components/commons/avatar"
 
 interface CommentWithChildren extends Comment {
   children: CommentWithChildren[];
@@ -12,6 +21,7 @@ interface CommentsProps {
   currentUserId: string;
   onAddComment: (content: string, parentId?: string) => void;
   onDeleteComment: (commentId: string) => void;
+  members: User[],
 }
 
 export default function Comments({
@@ -19,6 +29,7 @@ export default function Comments({
   currentUserId,
   onAddComment,
   onDeleteComment,
+  members,
 }: CommentsProps) {
   const [replyTargetId, setReplyTargetId] = useState<string | null>(null);
   const [replyContent, setReplyContent] = useState("");
@@ -32,101 +43,92 @@ export default function Comments({
 
   function renderCommentList(commentList: CommentWithChildren[]): React.ReactNode[] {
     return commentList.map((comment) => (
-      <div key={comment.commentId} style={{ marginLeft: "1rem", marginTop: "1rem" }}>
-        <div style={{ border: "1px solid #ccc", padding: "0.5rem" }}>
-          <p>
-            <strong>User {comment.ownerId}</strong>: {comment.commentText}
+      <div key={comment.commentId} className="ml-4 mt-4">
+        <div className="border border-gray-300 p-3 rounded-md">
+          <div className="flex flex-row gap-2 items-center">
+            <Avatar className="h-4 w-4 rounded-sm">
+              <AvatarImage src={members.find((m) => m.id === comment.ownerId)?.avatarUrl ?? "https://avatar.vercel.sh/john"} />
+            </Avatar>
+            <strong>{members.find((m) => m.id === comment.ownerId)?.username ?? "Unknown"}</strong>
+          </div>
+          <p> 
+            {comment.commentText}
           </p>
-  
-          <div style={{ display: "flex", gap: "0.5rem" }}>
-            <button
+
+          <div className="flex gap-2 mt-2">
+            <Button
+              size="sm"
               onClick={() => {
                 setReplyTargetId(comment.commentId);
                 setReplyContent("");
               }}
-              style={{
-                background: "#1677ff",
-                color: "#fff",
-                border: "none",
-                borderRadius: "4px",
-                padding: "0.25rem 0.5rem",
-                cursor: "pointer",
-              }}
             >
+              <Reply className="w-4 h-4" />
               Reply
-            </button>
-  
+            </Button>
+
             {comment.ownerId === currentUserId && (
-              <button
+              <Button
+                size="sm"
+                variant="destructive"
                 onClick={() => onDeleteComment(comment.commentId)}
-                style={{
-                  background: "#ff4d4f",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: "4px",
-                  padding: "0.25rem 0.5rem",
-                  cursor: "pointer",
-                }}
               >
+                <Trash2 className="w-4 h-4 mr-1" />
                 Delete
-              </button>
+              </Button>
             )}
           </div>
         </div>
-  
+
         {comment.children && comment.children.length > 0 && (
-          <div style={{ marginLeft: "1rem" }}>
+          <div className="ml-4">
             {renderCommentList(comment.children)}
           </div>
         )}
       </div>
     ));
   }
-  
+
   return (
-    <div style={{ marginTop: "1rem" }}>
-      <h3>Comments</h3>
+    <div className="mt-4">
+      <h3 className="text-lg font-semibold mb-2">Comments</h3>
       {renderCommentList(comments)}
 
-      <hr />
+      <hr className="my-4" />
       <div>
-        <label>
-          {replyTargetId ? `Reply to comment` : "Add new comment"}:
+        <label className="text-sm font-medium block mb-1">
+          {replyTargetId ? `Reply to comment:` : "Add new comment:"}
         </label>
-        <textarea
+        <Textarea
           value={replyContent}
           onChange={(e) => setReplyContent(e.target.value)}
-          style={{ width: "100%", height: "60px" }}
+          className="h-20"
         />
-        <div style={{ textAlign: "right", marginTop: "0.5rem" }}>
-          <button
-            onClick={handleSubmitReply}
-            style={{
-              background: "#1677ff",
-              color: "#fff",
-              border: "none",
-              padding: "0.25rem 0.5rem",
-              cursor: "pointer",
-              marginRight: "0.5rem",
-            }}
-          >
-            {replyTargetId ? "Add Reply" : "Add Comment"}
-          </button>
+        <div className="flex justify-end gap-2 mt-2 flex-wrap">
+          <Button onClick={handleSubmitReply}>
+            {replyTargetId ? (
+              <>
+                <Reply className="w-4 h-4" />
+                Add Reply
+              </>
+            ) : (
+              <>
+                <MessageSquarePlus className="w-4 h-4" />
+                Add Comment
+              </>
+            )}
+          </Button>
           {replyTargetId && (
-            <button
+            <Button
+              variant="secondary"
               onClick={() => {
                 setReplyTargetId(null);
                 setReplyContent("");
               }}
-              style={{
-                background: "#ccc",
-                border: "none",
-                padding: "0.25rem 0.5rem",
-                cursor: "pointer",
-              }}
             >
+              <X className="w-4 h-4" />
               Cancel
-            </button>
+            </Button>
           )}
         </div>
       </div>
