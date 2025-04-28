@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { SidebarProvider } from "@/components/sidebar/sidebar";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SidebarTrigger } from "@/components/sidebar/sidebar";
@@ -11,8 +12,22 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/commons/breadcrumb";
+import { useNotification } from "@/lib/dashboard_utils/useNotificationStorage";
 
 export default function NotificationsPage() {
+  const [projectId, setProjectId] = useState<string>("defaultProjectId"); // Default value
+
+  // Access sessionStorage only on the client side
+  useEffect(() => {
+    const storedProjectId = sessionStorage.getItem("projectId");
+    if (storedProjectId) {
+      setProjectId(storedProjectId);
+    }
+
+    console.log("NotificationsPage rendered with projectId:", storedProjectId);
+  }, []);
+
+  useNotification();
 
   return (
     <SidebarProvider>

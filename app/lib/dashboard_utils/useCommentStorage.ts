@@ -57,7 +57,6 @@ export function useComments(projectId: string, ideaId: string) {
         : `/projects/${projectId}/ideas/${ideaId}/comments`;
 
       const comment = await api.post<Comment>(path, { commentText: content });
-      api.postChanges("ADDED_COMMENT", projectId);
       return comment;
     } catch (err) {
       console.error("Failed to add comment:", err);
@@ -70,7 +69,6 @@ export function useComments(projectId: string, ideaId: string) {
       await api.delete(
         `/projects/${projectId}/ideas/${ideaId}/comments/${commentId}`,
       );
-      api.postChanges("DELETED_COMMENT", projectId);
       return true;
     } catch (err) {
       console.error("Failed to delete comment:", err);

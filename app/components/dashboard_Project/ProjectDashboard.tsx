@@ -95,7 +95,7 @@ export default function ProjectDashboard({
         >
           {ideas.map((idea) => (
             <IdeaBox
-              key={idea.ideaId}
+              key={`${idea.ideaId}-${idea.ownerId || ''}`}
               idea={idea}
               isSelected={idea.ideaId === selectedIdeaId}
               onClick={onIdeaClick}

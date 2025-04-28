@@ -1,6 +1,8 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { Bar, BarChart, XAxis, YAxis } from "recharts"
+import { ApiService } from "@/api/apiService"
 
 import {
   Card,
@@ -15,46 +17,123 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/commons/chart"
-const chartData = [
-  { user: "john", contributions: 275, edit: 145, add: 71, upvote: 26, downvote: 19, comment: 10, close: 4 },
-  { user: "jill", contributions: 200, edit: 91, add: 46, upvote: 33, downvote: 12, comment: 13, close: 5 },
-  { user: "jack", contributions: 187, edit: 85, add: 28, upvote: 28, downvote: 17, comment: 32, close: 10 },
-  { user: "jane", contributions: 173, edit: 92, add: 34, upvote: 15, downvote: 17, comment: 14, close: 1 },
-  { user: "jeff", contributions: 90, edit: 55, add: 16, upvote: 6, downvote: 4, comment: 8, close: 1 },
-  { user: "jason", contributions: 56, edit: 36, add: 11, upvote: 4, downvote: 1, comment: 4, close: 0 },
-]
+import { Project, ProjectMember } from "@/types/project"
+import { User } from "@/types/user"
 
-const chartConfig = {
-  contributions: {
-    label: "Contributions",
-  },
-  john: {
-    label: "John",
-    color: "hsl(var(--chart-1))",
-  },
-  jill: {
-    label: "Jill",
-    color: "hsl(var(--chart-2))",
-  },
-  jack: {
-    label: "Jack",
-    color: "hsl(var(--chart-3))",
-  },
-  jane: {
-    label: "Jane",
-    color: "hsl(var(--chart-4))",
-  },
-  jeff: {
-    label: "Jeff",
-    color: "hsl(var(--chart-5))",
-  },
-  jason: {
-    label: "Jason",
-    color: "hsl(var(--chart-5))",
-  },
-} satisfies ChartConfig
+interface UserAnalytics {
+  user: string
+  username: string
+  contributions: number
+  edit: number
+  add: number
+  upvote: number
+  downvote: number
+  comment: number
+  close: number
+}
 
 export function ContributorsBarchart() {
+  const [chartData, setChartData] = useState<UserAnalytics[]>([])
+  const [loading, setLoading] = useState(true)
+  const [chartConfig, setChartConfig] = useState<Record<string, any>>({
+    contributions: {
+      label: "Contributions",
+    }
+  })
+  const apiService = new ApiService()
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Get projectId from session storage
+        const projectId = sessionStorage.getItem("projectId")
+        if (!projectId) throw new Error("Project ID not found in session storage")
+
+        // Fetch project data to get members
+        const project = await apiService.get<Project>(`/projects/${projectId}`)
+        console.log("Project data:", project)
+        const projectOwner = await apiService.getUser(project.ownerId) as User
+        const projectMembers = project.projectMembers
+        projectMembers.push(projectOwner.id)
+
+        // Fetch all users data and their analytics
+        const analyticsPromises = projectMembers.map(async (member) => {
+          const userId = member // or member.id depending on your model
+          const user = await apiService.get<User>(`/users/${userId}`)
+          const analyticsData = await apiService.get<any[]>(`/projects/${projectId}/changes/analytics/${userId}`)
+          
+          const totals = analyticsData.reduce((acc: any, entry: any) => ({
+            add: (acc.add || 0) + (entry.addIdea || 0),
+            edit: (acc.edit || 0) + (entry.editIdea || 0),
+            close: (acc.close || 0) + (entry.closeIdea || 0),
+            comment: (acc.comment || 0) + (entry.addComment || 0),
+            upvote: (acc.upvote || 0) + (entry.upvote || 0),
+            downvote: (acc.downvote || 0) + (entry.downvote || 0)
+          }), {})
+        
+          const contributions = Object.values(totals as Record<string, number>).reduce((sum, val) => sum + val, 0)
+        
+          return {
+            user: userId,
+            username: user.username,
+            contributions,
+            ...totals
+          }
+        })
+        
+
+        const usersAnalytics = await Promise.all(analyticsPromises)
+        
+        // Sort by contributions descending
+        const sortedData = usersAnalytics.sort((a, b) => b.contributions - a.contributions)
+        
+        setChartData(sortedData)
+        
+        // Generate dynamic chart config based on users
+        const newChartConfig = {
+          contributions: { label: "Contributions" },
+          ...sortedData.reduce((acc, user, index) => ({
+            ...acc,
+            [user.user]: {
+              label: user.username,
+              color: `hsl(var(--chart-${index % 5 + 1}))`
+            }
+          }), {})
+        }
+        
+        setChartConfig(newChartConfig)
+      } catch (error) {
+        console.error("Error fetching contributors data:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [])
+
+  if (loading) {
+    return (
+      <Card className="border-none shadow-none">
+        <CardHeader>
+          <CardTitle>Top Contributors</CardTitle>
+          <CardDescription>Loading data...</CardDescription>
+        </CardHeader>
+      </Card>
+    )
+  }
+
+  if (chartData.length === 0) {
+    return (
+      <Card className="border-none shadow-none">
+        <CardHeader>
+          <CardTitle>Top Contributors</CardTitle>
+          <CardDescription>No contributor data available</CardDescription>
+        </CardHeader>
+      </Card>
+    )
+  }
+
   return (
     <Card className="border-none shadow-none">
       <CardHeader>
@@ -78,7 +157,7 @@ export function ContributorsBarchart() {
               tickMargin={10}
               axisLine={false}
               tickFormatter={(value) =>
-                chartConfig[value as keyof typeof chartConfig]?.label
+                chartConfig[value]?.label || value
               }
             />
             <XAxis dataKey="contributions" type="number" hide />
