@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { getApiDomain } from "@/utils/domain";
 import { ApplicationError } from "@/types/error";
-
+import { ApiResponse } from "@/components/dashboard_Project/AIDialog";
 export class ApiService {
   private baseURL: string;
   private defaultHeaders: HeadersInit;
@@ -419,5 +419,28 @@ export class ApiService {
     );
   }
 
+ // AI ENDPOINTS
 
+
+public async refineIdea(ideaContent: string): Promise<ApiResponse> {
+  return this.post<ApiResponse>("/api/ai/refine", { ideaContent });
+}
+
+public async suggestWithTwist(
+  originalIdea: string,
+  twist: string
+): Promise<ApiResponse> {
+  return this.post<ApiResponse>("/api/ai/twist", { originalIdea, twist });
+}
+
+public async combineIdeas(
+  ideaOne: string,
+  ideaTwo: string
+): Promise<ApiResponse> {
+  return this.post<ApiResponse>("/api/ai/combine", { ideaOne, ideaTwo });
+}
+
+public async generateFromTemplate(template: string): Promise<ApiResponse> {
+  return this.post<ApiResponse>("/api/ai/template", { template });
+}
 }
