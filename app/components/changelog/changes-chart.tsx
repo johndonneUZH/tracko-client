@@ -45,38 +45,47 @@ interface ContributionData {
 export function ChangesChart() {
   const [chartData, setChartData] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const [projectId, setProjectId] = useState<string | null>(null);
+  const [projectId, setProjectId] = useState<string | null>(null)
   const apiService = new ApiService()
   const router = useRouter()
 
   useEffect(() => {
-    const storedProjectId = sessionStorage.getItem("projectId");
+    const storedProjectId = sessionStorage.getItem("projectId")
     if (!storedProjectId) {
-      toast.error("Project ID not found in session storage");
-      router.push("/login");
+      toast.error("Project ID not found in session storage")
+      router.push("/login")
     } else {
-      setProjectId(storedProjectId);
+      setProjectId(storedProjectId)
     }
-  }, [router]);
+  }, [router])
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!projectId) return // Don't fetch until projectId is set
+      
       try {
-        const response = await apiService.get<ContributionData[]>(`/projects/${projectId}/changes/analytics`)
+        const response = await apiService.get<any>(`/projects/${projectId}/changes/analytics`)
         console.log("DATA", response)
         
+        // Check if response is an object and convert to array if needed
+        let dataArray = Array.isArray(response) ? response : Object.entries(response).map(([date, values]) => ({
+          date,
+          ...(values as object)
+        }))
+        
         // Transform API data to match chart format
-        const transformedData = response.map((item: any) => ({
+        const transformedData = dataArray.map((item: any) => ({
           date: item.date,
-          edit: item.editIdea,
-          add: item.addIdea,
-          upvote: item.upvote,
-          downvote: item.downvote,
-          comment: item.addComment,
-          close: item.closeIdea
+          edit: item.editIdea || item.edit || 0,
+          add: item.addIdea || item.add || 0,
+          upvote: item.upvote || 0,
+          downvote: item.downvote || 0,
+          comment: item.addComment || item.comment || 0,
+          close: item.closeIdea || item.close || 0
         }))
         
         setChartData(transformedData)
+        console.log("Transformed Chart Data:", transformedData)
       } catch (error) {
         console.error("Error fetching chart data:", error)
       } finally {
@@ -85,6 +94,7 @@ export function ChangesChart() {
     }
 
     fetchData()
+
   }, [projectId])
 
   if (loading) {

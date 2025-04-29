@@ -33,6 +33,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/commons/breadcrumb";
 import { User } from '@/types/user';
+import NewReport from "@/components/dashboard_Project/NewReport";
 
 export default function ProjectLayout({
   children,
@@ -223,6 +224,7 @@ export default function ProjectLayout({
                 <div className="flex justify-between mb-10">
                   <h1 className="text-xl font-bold">Dashboard Project {projectName}</h1>
                   <div className="flex gap-2">
+                  <NewReport projectId={sessionStorage.getItem("projectId") || ""} />
                   <NewIdeaButton onClick={handleCreate} />
                   <AiDialog ideas={ideas} createIdea={createIdea} updateIdea={updateIdea} />
                 </div>
