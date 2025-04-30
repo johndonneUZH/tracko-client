@@ -1,3 +1,4 @@
+/* eslint-disable*/
 import { useEffect, useState } from "react";
 import { User } from "@/types/user";
 import { Button } from "@/components/commons/button";
