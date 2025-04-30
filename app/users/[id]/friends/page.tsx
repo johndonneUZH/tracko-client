@@ -17,10 +17,16 @@ import {
 } from "@/components/commons/breadcrumb";
 import { FriendsTable } from "@/components/user_page/friends-table";
 import PendingRequestsTable from "@/components/user_page/pending-table";
-import SentRequestsTable from "@/components/user_page/sent-table"; 
+import SentRequestsTable from "@/components/user_page/sent-table";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function FriendsPage() {
   const [userId, setUserId] = useState<string | null>(null);
+  const tabOrder = ["friends", "pending", "sent"];
+  const [tabValue, setTabValue] = useState("friends");
+  const [prevTabIndex, setPrevTabIndex] = useState(0);
+  const [direction, setDirection] = useState(1);
   const apiService = new ApiService();
   const router = useRouter();
 
@@ -42,9 +48,7 @@ export default function FriendsPage() {
         {/* Sidebar */}
         <AppSidebar className="w-64 shrink-0" />
 
-        {/* Main Content Wrapper */}
         <div className="flex flex-col flex-1">
-          {/* Fixed Header with Breadcrumb */}
           <header className="flex h-16 items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1 mr-2" />
             <Breadcrumb>
@@ -60,37 +64,79 @@ export default function FriendsPage() {
             </Breadcrumb>
           </header>
 
-          {/* Main Content */}
-          <div className="px-4 pb-6 space-y-10 overflow-y-auto">
-            <div>
-              <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
-                Friends
-              </h3>
-              <div className="mt-4">
-                <FriendsTable />
-              </div>
-            </div>
+          <div className="flex flex-col items-center justify-center px-4 pb-6 flex-grow w-full mt-32">
+  <Tabs
+    value={tabValue}
+    onValueChange={(newValue) => {
+      const newIndex = tabOrder.indexOf(newValue);
+      const currentIndex = tabOrder.indexOf(tabValue);
+      setPrevTabIndex(currentIndex);
+      setDirection(newIndex > currentIndex ? 1 : -1);
+      setTabValue(newValue);
+    }}
+    className="w-full flex flex-col items-center"
+  >
+    <div className="max-w-2xl mx-auto w-full">
+      <TabsList className="flex w-full">
+        <TabsTrigger value="friends" className="flex-1 text-center cursor-pointer">
+          Friends
+        </TabsTrigger>
+        <TabsTrigger value="pending" className="flex-1 text-center cursor-pointer">
+          Pending
+        </TabsTrigger>
+        <TabsTrigger value="sent" className="flex-1 text-center cursor-pointer">
+          Sent
+        </TabsTrigger>
+      </TabsList>
+    </div>
 
-            <div>
-              <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
-                Pending Requests
-              </h3>
-              <div className="mt-4">
-                <PendingRequestsTable />
-              </div>
-            </div>
+            <div className="relative w-full">
+                <AnimatePresence mode="wait">
+                  {tabValue === "friends" && (
+                    <motion.div
+                      key="friends"
+                      initial={{ x: direction * 100, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      exit={{ x: -direction * 100, opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="w-full"
+                    >
+                      <FriendsTable />
+                    </motion.div>
+                  )}
 
-            <div>
-              <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
-                Sent Requests
-              </h3>
-              <div className="mt-4">
-                <SentRequestsTable />
+                  {tabValue === "pending" && (
+                    <motion.div
+                      key="pending"
+                      initial={{ x: direction * 100, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      exit={{ x: -direction * 100, opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="w-full"
+                    >
+                      <PendingRequestsTable />
+                    </motion.div>
+                  )}
+
+                  {tabValue === "sent" && (
+                    <motion.div
+                      key="sent"
+                      initial={{ x: direction * 100, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      exit={{ x: -direction * 100, opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="w-full"
+                    >
+                      <SentRequestsTable />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
-            </div> 
+            </Tabs>
           </div>
         </div>
       </div>
     </SidebarProvider>
   );
 }
+

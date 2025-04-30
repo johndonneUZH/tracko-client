@@ -7,6 +7,8 @@ import { ApiService } from "@/api/apiService";
 import { Avatar, AvatarImage } from "@/components/commons/avatar";
 import { Input } from "@/components/commons/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { toast } from "sonner";
+
 
 interface UserData {
   id: string;
@@ -68,24 +70,31 @@ export default function SentRequestsTable() {
       try {
         setLoading(true);
         const storedUserId = sessionStorage.getItem("userId");
-
+  
         if (!storedUserId) {
           router.push("/login");
           return;
         }
-
+  
         await apiService.cancelFriendRequest(storedUserId, friendId);
         setSentRequests((prev) =>
           prev.filter((user) => user.id !== friendId)
         );
+        
+        // Show a success notification
+        toast.success("Friend request canceled successfully!");
       } catch (err) {
         console.error("Error canceling friend request:", err);
         setError("Failed to cancel friend request");
+  
+        // Show an error notification
+        toast.error("Failed to cancel the friend request.");
       } finally {
         setLoading(false);
       }
     };
   }
+  
 
   if (loading) {
     return (
@@ -124,51 +133,57 @@ export default function SentRequestsTable() {
   }
 
   return (
-    <div className="space-y-4 max-w-2xl mx-auto">
+    <div className="flex flex-col min-h-screen px-4 py-6 space-y-4">
+      <div className="w-full max-w-2xl mx-auto flex-1 flex flex-col space-y-4">
+  
       <Input
         placeholder="Search sent requests..."
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         className="w-full"
       />
-      <ScrollArea className="h-52 w-full rounded-md border">
-        <table className="w-full">
-          <tbody>
-            {filteredSent.map((user) => (
-              <tr key={user.id}>
-                <td className="px-2 py-1 text-left w-1">
-                  <Avatar className="h-8 w-8 rounded-lg">
-                    <AvatarImage
-                      src={
-                        user.avatarUrl ||
-                        `https://avatar.vercel.sh/${user.username}`
-                      }
-                    />
-                  </Avatar>
-                </td>
-                <td className="px-2 py-1 text-left w-full">
-                  {user.name || user.username}
-                </td>
-                <td className="px-2 py-1 text-right w-1">
-                  <span
-                    className={`h-3 w-3 rounded-full inline-block ${
-                      user.status === "ONLINE" ? "bg-green-500" : "bg-red-500"
-                    }`}
-                  ></span>
-                </td>
-                <td className="px-2 py-1 space-x-2">
-                    <button
-                      onClick={handleCancelRequest(user.id)}
-                      className="text-gray-600 hover:underline text-sm"
-                    >
-                      Cancel
-                    </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </ScrollArea>
+      <ScrollArea className="max-w-full overflow-x-auto rounded-md border">
+  <div className="min-w-full">
+    <table className="w-full table-auto">
+    <tbody>
+  {filteredSent.map((user) => (
+    <tr key={user.id} className="last:border-b-0">
+      <td className="px-2 py-1 text-left w-1">
+        <Avatar className="h-8 w-8 rounded-lg">
+          <AvatarImage
+            src={user.avatarUrl || `https://avatar.vercel.sh/${user.username}`}
+          />
+        </Avatar>
+      </td>
+      <td className="px-2 py-1 text-left whitespace-nowrap">
+        {user.name || user.username}
+      </td>
+      <td className="px-2 py-1 text-right">
+        <div className="flex items-center justify-end space-x-2">
+          <span
+            className={`h-3 w-3 rounded-full inline-block ${
+              user.status === "ONLINE" ? "bg-green-500" : "bg-red-500"
+            }`}
+          ></span>
+          <button
+            onClick={handleCancelRequest(user.id)}
+            className="text-gray-600 hover:cursor-pointer hover:underline text-sm"
+          >
+            Cancel
+          </button>
+        </div>
+      </td>
+    </tr>
+  ))}
+</tbody>
+
+
+
+    </table>
+  </div>
+</ScrollArea>
+
+    </div>
     </div>
   );
 }
