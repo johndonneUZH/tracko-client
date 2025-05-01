@@ -64,6 +64,7 @@ export default function IdeaModal({
         if (!comment) return null;
         return {
           ...comment,
+          key: `${comment.commentId}-${comment.ownerId || Date.now()}`, // Add unique key
           children: buildCommentTree(comment.replies || []),
         };
       })
