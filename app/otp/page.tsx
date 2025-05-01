@@ -1,7 +1,6 @@
-/* eslint-disable*/
+/* eslint-disable */
 "use client"
 
-import { useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import {
   InputOTP,
@@ -17,36 +16,48 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/commons/card"
-import { ApiService } from "@/api/apiService";
+import { ApiService } from "@/api/apiService"
 
 export default function InputOTPDemo() {
   const apiService = new ApiService();
-  const expectedCode = "123456"
+  const expectedCode = "123456"; // Replace with dynamic OTP later
   const [email, setEmail] = useState("");
-
-useEffect(() => {
-  const storedEmail = sessionStorage.getItem("email");
-  if (storedEmail) {
-    setEmail(storedEmail);
-  }
-}, []);
-
-  //const expectedCode = await apiService.get
+  const [username, setUsername] = useState("");
   const [enteredCode, setEnteredCode] = useState("");
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
 
   useEffect(() => {
+    const storedEmail = sessionStorage.getItem("email");
+    const storedUsername = sessionStorage.getItem("username");
+    if (storedEmail) setEmail(storedEmail);
+    if (storedUsername) setUsername(storedUsername);
+  }, []);
+
+  useEffect(() => {
+    const tryLogin = async () => {
+      try {
+        const response = await apiService.rawPost("/auth/login", {
+          username,
+          password: expectedCode,
+        });
+        console.log("Login success:", response);
+      } catch (error) {
+        console.error("Login failed:", error);
+        setStatus("error");
+      }
+    };
+
     if (enteredCode.length === 6) {
       if (enteredCode === expectedCode) {
         setStatus("success");
-        // Special Post Request to verify the code instead of changing password to otp in database and then redirect to change password page
+        tryLogin();
       } else {
         setStatus("error");
       }
     } else {
       setStatus("idle");
     }
-  }, [enteredCode, expectedCode]);
+  }, [enteredCode, expectedCode, username]);
 
   return (
     <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
@@ -85,7 +96,7 @@ useEffect(() => {
             <p className="text-green-600 font-medium">✅ Code verified successfully!</p>
           )}
           {status === "error" && (
-            <p className="text-red-600 font-medium">❌ Incorrect code. Please try again.</p>
+            <p className="text-red-600 font-medium">❌ Incorrect code or login failed. Please try again.</p>
           )}
         </CardContent>
       </Card>
