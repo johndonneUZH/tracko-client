@@ -37,7 +37,19 @@ const FormSchema = z.object({
   name: z.string().min(1),
   username: z.string().min(1),
   birthday: z.date().optional(),
+  email: z.string().email().optional(),
+  newPassword: z.string().min(6, "Password must be at least 6 characters").optional(),
+  confirmPassword: z.string().optional(),
+}).refine(data => {
+  if (data.newPassword || data.confirmPassword) {
+    return data.newPassword === data.confirmPassword
+  }
+  return true
+}, {
+  message: "Passwords do not match",
+  path: ["confirmPassword"]
 })
+
 
 export function EditProfileDialog({ onProfileUpdated }: { onProfileUpdated: () => void }) {
   const [loading, setLoading] = useState(true)
@@ -50,8 +62,12 @@ export function EditProfileDialog({ onProfileUpdated }: { onProfileUpdated: () =
       name: "",
       username: "",
       birthday: undefined,
+      email: "",
+      newPassword: "",
+      confirmPassword: "",
     },
   })
+  
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -68,7 +84,11 @@ export function EditProfileDialog({ onProfileUpdated }: { onProfileUpdated: () =
         name: fetchedUser.name || "",
         username: fetchedUser.username || "",
         birthday: fetchedUser.birthday ? new Date(fetchedUser.birthday) : undefined,
+        email: fetchedUser.email || "",
+        newPassword: "",
+        confirmPassword: "",
       })
+      
 
       setLoading(false)
     }
@@ -83,6 +103,9 @@ export function EditProfileDialog({ onProfileUpdated }: { onProfileUpdated: () =
 
     if (data.name?.trim() && data.name !== user.name) cleanedData.name = data.name
     if (data.username?.trim() && data.username !== user.username) cleanedData.username = data.username
+    if (data.email?.trim() && data.email !== user.email) cleanedData.email = data.email
+    if (data.newPassword?.trim()) cleanedData.password = data.newPassword
+
 
     const birthdayChanged =
       data.birthday instanceof Date &&
@@ -132,12 +155,9 @@ export function EditProfileDialog({ onProfileUpdated }: { onProfileUpdated: () =
           <DialogTitle>Edit Profile</DialogTitle>
           <DialogDescription>Update your personal information.</DialogDescription>
         </DialogHeader>
-
+  
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(handleSave)}
-            className="grid gap-4 py-4"
-          >
+          <form onSubmit={form.handleSubmit(handleSave)} className="grid gap-4 py-4">
             <FormField
               control={form.control}
               name="name"
@@ -151,7 +171,7 @@ export function EditProfileDialog({ onProfileUpdated }: { onProfileUpdated: () =
                 </FormItem>
               )}
             />
-
+  
             <FormField
               control={form.control}
               name="username"
@@ -165,7 +185,7 @@ export function EditProfileDialog({ onProfileUpdated }: { onProfileUpdated: () =
                 </FormItem>
               )}
             />
-
+  
             <FormField
               control={form.control}
               name="birthday"
@@ -175,16 +195,15 @@ export function EditProfileDialog({ onProfileUpdated }: { onProfileUpdated: () =
                   <FormControl>
                     <Input
                       type="date"
-                      value= {field.value instanceof Date && !isNaN(field.value.getTime())
-                        ? format(field.value, "yyyy-MM-dd")
-                        : ""
+                      value={
+                        field.value instanceof Date && !isNaN(field.value.getTime())
+                          ? format(field.value, "yyyy-MM-dd")
+                          : ""
                       }
                       onChange={(e) => {
-                        const selectedDate = e.target.value
-                          ? new Date(e.target.value)
-                          : undefined
+                        const selectedDate = e.target.value ? new Date(e.target.value) : undefined;
                         if (selectedDate instanceof Date && !isNaN(selectedDate.getTime())) {
-                          field.onChange(selectedDate)
+                          field.onChange(selectedDate);
                         }
                       }}
                     />
@@ -193,7 +212,49 @@ export function EditProfileDialog({ onProfileUpdated }: { onProfileUpdated: () =
                 </FormItem>
               )}
             />
-
+  
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input type="email" placeholder="Email" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+  
+            <FormField
+              control={form.control}
+              name="newPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>New Password</FormLabel>
+                  <FormControl>
+                    <Input type="password" placeholder="New Password" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+  
+            <FormField
+              control={form.control}
+              name="confirmPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Confirm Password</FormLabel>
+                  <FormControl>
+                    <Input type="password" placeholder="Confirm Password" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+  
             <DialogFooter>
               <DialogClose asChild>
                 <Button type="submit">Save</Button>
@@ -204,4 +265,5 @@ export function EditProfileDialog({ onProfileUpdated }: { onProfileUpdated: () =
       </DialogContent>
     </Dialog>
   )
+  
 }

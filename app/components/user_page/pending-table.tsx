@@ -7,6 +7,8 @@ import { ApiService } from "@/api/apiService";
 import { Avatar, AvatarImage } from "@/components/commons/avatar";
 import { Input } from "@/components/commons/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Check, X } from "lucide-react";
+import { toast } from "sonner";
 
   export default function PendingRequestsTable() {
     const apiService = new ApiService();
@@ -70,14 +72,19 @@ import { ScrollArea } from "@/components/ui/scroll-area";
           }
           await apiService.acceptFriendRequest(storedUserId, friendId);
           await fetchSentRequests();
+    
+          toast.success("Friend request accepted!");
         } catch (err) {
           console.error("Error accepting friend request:", err);
           setError("Failed to accept friend request");
+    
+          toast.error("Failed to accept the friend request.");
         } finally {
           setLoading(false);
         }
       };
     }
+    
 
     function handleDeclineRequest(friendId: string) {
       return async () => {
@@ -90,14 +97,19 @@ import { ScrollArea } from "@/components/ui/scroll-area";
           }
           await apiService.rejectFriendRequest(storedUserId, friendId);
           await fetchSentRequests();
+    
+          toast.success("Friend request declined.");
         } catch (err) {
           console.error("Error declining friend request:", err);
           setError("Failed to decline friend request");
+    
+          toast.error("Failed to decline the friend request.");
         } finally {
           setLoading(false);
         }
       };
     }
+    
       
     if (loading) {
       return (
@@ -118,52 +130,64 @@ import { ScrollArea } from "@/components/ui/scroll-area";
         </div>
       );
     }
-  
     return (
-      <div className="space-y-4 max-w-2xl mx-auto">
-        <Input
-          placeholder="Search pending requests..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full"
-        />
-        <ScrollArea className="h-80 w-full rounded-md border">
-          <table className="w-full">
-            <tbody>
-              {filteredSent.map((user) => (
-                <tr key={user.id} className="border-b border-gray-100">
-                  <td className="px-2 py-1 text-left w-1">
-                   
-                  </td>
-                  <td className="px-2 py-1 text-left w-1">
-                    <Avatar className="h-8 w-8 rounded-lg">
-                      <AvatarImage
-                        src={user.avatarUrl || `https://avatar.vercel.sh/${user.username}`}
-                      />
-                    </Avatar>
-                  </td>
-                  <td className="px-2 py-1 text-left w-full">
-                    {user.name || user.username}
-                  </td>
-                  <td className="px-2 py-1 space-x-2">
-                    <button
-                      onClick={handleAcceptRequest(user.id)}
-                      className="text-green-600 hover:underline text-sm"
-                    >
-                      Accept
-                    </button>
-                    <button
-                      onClick={handleDeclineRequest(user.id)}
-                      className="text-red-600 hover:underline text-sm"
-                    >
-                      Decline
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </ScrollArea>
-      </div>
-    );
+        <div className="flex flex-col min-h-screen px-4 py-6 space-y-4">
+          <Input
+            placeholder="Search pending requests..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full max-w-2xl mx-auto"
+          />
+          <div className="flex-1 max-w-2xl mx-auto w-full">
+          {filteredSent.length === 0 ? (
+  <div className="bg-gray-50 border border-gray-200 text-gray-600 p-4 rounded text-center space-y-4">
+    No pending friend requests
+  </div>
+) : (
+  <ScrollArea className="h-full w-full rounded-md border">
+    <table className="w-full">
+      <tbody>
+        {filteredSent.map((user) => (
+          <tr key={user.id} className="hover:bg-gray-50 transition-colors">
+            <td className="px-2 py-1 text-left w-1"></td>
+            <td className="px-2 py-1 text-left w-1">
+              <Avatar className="h-8 w-8 rounded-lg">
+                <AvatarImage
+                  src={
+                    user.avatarUrl ||
+                    `https://avatar.vercel.sh/${user.username}`
+                  }
+                />
+              </Avatar>
+            </td>
+            <td className="px-2 py-1 text-left w-full">
+              {user.name || user.username}
+            </td>
+            <td className="px-2 py-1">
+              <div className="flex space-x-2">
+                <button
+                  onClick={handleAcceptRequest(user.id)}
+                  className="p-2 rounded-full hover:bg-green-100 hover:cursor-pointer transition-colors"
+                  aria-label="Accept"
+                >
+                  <Check className="h-5 w-5 text-green-600" />
+                </button>
+                <button
+                  onClick={handleDeclineRequest(user.id)}
+                  className="p-2 rounded-full hover:bg-red-100 hover:cursor-pointer transition-colors"
+                  aria-label="Decline"
+                >
+                  <X className="h-5 w-5 text-red-600" />
+                </button>
+              </div>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </ScrollArea>
+)}
+          </div>
+        </div>
+      );
   }
