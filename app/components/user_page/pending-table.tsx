@@ -10,170 +10,184 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Check, X } from "lucide-react";
 import { toast } from "sonner";
 
-export default function SentRequestsTable() {
-  const apiService = new ApiService();
-  const router = useRouter();
-  const [sentRequests, setSentRequests] = useState<User[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  export default function PendingRequestsTable() {
+    const apiService = new ApiService();
+    const router = useRouter();
+    const [incomingRequests, setIncomingRequests] = useState<User[]>([]);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
 
-  useEffect(() => {
-    const storedUserId = sessionStorage.getItem("userId");
-
-    if (!storedUserId) {
-      router.push("/login");
-      return;
-    }
-
-    const fetchData = async () => {
+    const fetchSentRequests = async () => {
+      const storedUserId = sessionStorage.getItem("userId");
+      if (!storedUserId) {
+        router.push("/login");
+        return;
+      }
       try {
         setLoading(true);
-
-        const [currentUser, allUsers] = await Promise.all([
-          apiService.getUser<User>(storedUserId),
-          apiService.getUsers<User[]>(),
-        ]);
-
-        const sentRequestUsers = allUsers.filter((user) =>
-          currentUser.friendRequestsSentIds.includes(user.id)
+        const currentUser = await apiService.getUser<User>(storedUserId);
+        const ids = currentUser.friendRequestsIds;
+        const users = await Promise.all(
+          ids.map((id) => apiService.getUser<User>(id))
         );
-
-        setSentRequests(sentRequestUsers);
+        setIncomingRequests(users);
       } catch (err) {
-        console.error("Error fetching sent friend requests:", err);
+        console.error("Error fetching sent requests:", err);
         setError("Failed to load sent friend requests");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
-  }, [router]);
-
-  const filteredSent = useMemo(() => {
-    return sentRequests.filter((user) =>
-      (user.name || user.username)
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase())
-    );
-  }, [sentRequests, searchTerm]);
-
-  function handleCancelRequest(friendId: string) {
-    return async () => {
-      try {
-        setLoading(true);
-        const storedUserId = sessionStorage.getItem("userId");
-
-        if (!storedUserId) {
-          router.push("/login");
-          return;
-        }
-
-        await apiService.cancelFriendRequest(storedUserId, friendId);
-        setSentRequests((prev) =>
-          prev.filter((user) => user.id !== friendId)
-        );
-        toast.success("Friend request canceled successfully!");
-      } catch (err) {
-        console.error("Error canceling friend request:", err);
-        setError("Failed to cancel friend request");
-
-        toast.error("Failed to cancel the friend request.");
-      } finally {
-        setLoading(false);
-      }
+    useEffect(() => {
+      fetchSentRequests();
+    }, [router]);
+  
+    const filteredSent = useMemo(() => {
+      return incomingRequests.filter((user) =>
+        (user.name || user.username)
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase())
+      );
+    }, [incomingRequests, searchTerm]);
+  
+    const toggleUserSelection = (id: string) => {
+      setSelectedUsers((prev) => {
+        const newSet = new Set(prev);
+        newSet.has(id) ? newSet.delete(id) : newSet.add(id);
+        return newSet;
+      });
     };
-  }
 
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full w-full">
-        <div className="flex space-x-2">
-          <div className="h-4 w-4 bg-blue-700 rounded-full animate-bounce"></div>
-          <div className="h-4 w-4 bg-blue-800 rounded-full animate-bounce delay-200"></div>
-          <div className="h-4 w-4 bg-blue-900 rounded-full animate-bounce delay-400"></div>
-        </div>
-      </div>
-    );
-  }
+    function handleAcceptRequest(friendId: string) {
+      return async () => {
+        try {
+          setLoading(true);
+          const storedUserId = sessionStorage.getItem("userId");
+          if (!storedUserId) {
+            setError("User ID not found in session storage");
+            return;
+          }
+          await apiService.acceptFriendRequest(storedUserId, friendId);
+          await fetchSentRequests();
+    
+          toast.success("Friend request accepted!");
+        } catch (err) {
+          console.error("Error accepting friend request:", err);
+          setError("Failed to accept friend request");
+    
+          toast.error("Failed to accept the friend request.");
+        } finally {
+          setLoading(false);
+        }
+      };
+    }
+    
 
-  if (error) {
-    return (
-      <div className="bg-red-50 border border-red-200 text-red-600 p-4 rounded h-full w-full flex items-center justify-center">
-        {error}
-      </div>
-    );
-  }
-
-  if (filteredSent.length === 0) {
-    return (
-      <div className="flex flex-col h-full w-full items-center justify-center px-4">
-        <Input
-          placeholder="Search sent requests..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full max-w-md mb-4"
-        />
-        <div className="bg-gray-50 border border-gray-200 text-gray-600 p-4 rounded">
-          No sent friend requests
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex flex-col h-full w-full px-4 py-6 space-y-4">
-      <div className="flex flex-col flex-grow">
-        <Input
-          placeholder="Search sent requests..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full mb-4"
-        />
-        <ScrollArea className="flex-grow w-full rounded-md border">
-          <div className="min-w-full">
-            <table className="w-full table-auto">
-              <tbody>
-                {filteredSent.map((user) => (
-                  <tr key={user.id} className="last:border-b-0">
-                    <td className="px-2 py-1 text-left w-1">
-                      <Avatar className="h-8 w-8 rounded-lg">
-                        <AvatarImage
-                          src={
-                            user.avatarUrl ||
-                            `https://avatar.vercel.sh/${user.username}`
-                          }
-                        />
-                      </Avatar>
-                    </td>
-                    <td className="px-2 py-1 text-left whitespace-nowrap">
-                      {user.name || user.username}
-                    </td>
-                    <td className="px-2 py-1 text-right">
-                      <div className="flex items-center justify-end space-x-2">
-                        <span
-                          className={`h-3 w-3 rounded-full inline-block ${
-                            user.status === "ONLINE"
-                              ? "bg-green-500"
-                              : "bg-red-500"
-                          }`}
-                        ></span>
-                        <button
-                          onClick={handleCancelRequest(user.id)}
-                          className="text-gray-600 hover:cursor-pointer hover:underline text-sm"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+    function handleDeclineRequest(friendId: string) {
+      return async () => {
+        try {
+          setLoading(true);
+          const storedUserId = sessionStorage.getItem("userId");
+          if (!storedUserId) {
+            setError("User ID not found in session storage");
+            return;
+          }
+          await apiService.rejectFriendRequest(storedUserId, friendId);
+          await fetchSentRequests();
+    
+          toast.success("Friend request declined.");
+        } catch (err) {
+          console.error("Error declining friend request:", err);
+          setError("Failed to decline friend request");
+    
+          toast.error("Failed to decline the friend request.");
+        } finally {
+          setLoading(false);
+        }
+      };
+    }
+    
+      
+    if (loading) {
+      return (
+        <div className="flex flex-col items-start justify-center h-screen pt-10 px-4">
+          <div className="flex space-x-2">
+            <div className="h-4 w-4 bg-blue-700 rounded-full animate-bounce"></div>
+            <div className="h-4 w-4 bg-blue-800 rounded-full animate-bounce delay-200"></div>
+            <div className="h-4 w-4 bg-blue-900 rounded-full animate-bounce delay-400"></div>
           </div>
-        </ScrollArea>
-      </div>
-    </div>
-  );
-}
+        </div>
+      );
+    }
+  
+    if (error) {
+      return (
+        <div className="bg-red-50 border border-red-200 text-red-600 p-4 rounded">
+          {error}
+        </div>
+      );
+    }
+    return (
+        <div className="flex flex-col min-h-screen px-4 py-6 space-y-4">
+          <Input
+            placeholder="Search pending requests..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full max-w-2xl mx-auto"
+          />
+          <div className="flex-1 max-w-2xl mx-auto w-full">
+          {filteredSent.length === 0 ? (
+  <div className="bg-gray-50 border border-gray-200 text-gray-600 p-4 rounded text-center space-y-4">
+    No pending friend requests
+  </div>
+) : (
+  <ScrollArea className="h-full w-full rounded-md border">
+    <table className="w-full">
+      <tbody>
+        {filteredSent.map((user) => (
+          <tr key={user.id} className="hover:bg-gray-50 transition-colors">
+            <td className="px-2 py-1 text-left w-1"></td>
+            <td className="px-2 py-1 text-left w-1">
+              <Avatar className="h-8 w-8 rounded-lg">
+                <AvatarImage
+                  src={
+                    user.avatarUrl ||
+                    `https://avatar.vercel.sh/${user.username}`
+                  }
+                />
+              </Avatar>
+            </td>
+            <td className="px-2 py-1 text-left w-full">
+              {user.name || user.username}
+            </td>
+            <td className="px-2 py-1">
+              <div className="flex space-x-2">
+                <button
+                  onClick={handleAcceptRequest(user.id)}
+                  className="p-2 rounded-full hover:bg-green-100 hover:cursor-pointer transition-colors"
+                  aria-label="Accept"
+                >
+                  <Check className="h-5 w-5 text-green-600" />
+                </button>
+                <button
+                  onClick={handleDeclineRequest(user.id)}
+                  className="p-2 rounded-full hover:bg-red-100 hover:cursor-pointer transition-colors"
+                  aria-label="Decline"
+                >
+                  <X className="h-5 w-5 text-red-600" />
+                </button>
+              </div>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </ScrollArea>
+)}
+          </div>
+        </div>
+      );
+  }

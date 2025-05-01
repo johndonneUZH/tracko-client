@@ -76,18 +76,6 @@ export function FriendsTable() {
     );
   }, [allUsers, newFriendUsername, currentUsername, friends]);
 
-  function handleRequest() {
-    if (newFriendUsername.trim() === "") return;
-    const friend = filteredUsers[0];
-    const storedUserId = sessionStorage.getItem("userId");
-    if (friend && storedUserId) {
-      apiService.sendFriendRequest(storedUserId, friend.id).then(() => {
-        setNewFriendUsername("");
-        setIsDialogOpen(false);
-      });
-    }
-  }
-
   async function handleRemoveSelected() {
     const storedUserId = sessionStorage.getItem("userId");
     if (!storedUserId || selectedFriends.length === 0) return;
