@@ -421,26 +421,26 @@ export class ApiService {
 
  // AI ENDPOINTS
 
+  public async refineIdea(ideaContent: string): Promise<ApiResponse> {
+    return this.post<ApiResponse>("/api/ai/refine", { ideaContent });
+  }
 
-public async refineIdea(ideaContent: string): Promise<ApiResponse> {
-  return this.post<ApiResponse>("/api/ai/refine", { ideaContent });
-}
+  public async suggestWithTwist(
+    originalIdea: string,
+    twist: string
+  ): Promise<ApiResponse> {
+    return this.post<ApiResponse>("/api/ai/twist", { originalIdea, twist });
+  }
 
-public async suggestWithTwist(
-  originalIdea: string,
-  twist: string
-): Promise<ApiResponse> {
-  return this.post<ApiResponse>("/api/ai/twist", { originalIdea, twist });
-}
+  public async combineIdeas(
+    ideaOne: string,
+    ideaTwo: string
+  ): Promise<ApiResponse> {
+    return this.post<ApiResponse>("/api/ai/combine", { ideaOne, ideaTwo });
+  }
 
-public async combineIdeas(
-  ideaOne: string,
-  ideaTwo: string
-): Promise<ApiResponse> {
-  return this.post<ApiResponse>("/api/ai/combine", { ideaOne, ideaTwo });
-}
+  public async generateFromTemplate(template: string): Promise<ApiResponse> {
+    return this.post<ApiResponse>("/api/ai/template", { template });
+  }  
 
-public async generateFromTemplate(template: string): Promise<ApiResponse> {
-  return this.post<ApiResponse>("/api/ai/template", { template });
-}
 }

@@ -1,11 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { v4 as uuid } from "uuid";
 import { Idea } from "@/types/idea";
 import { ApiService } from "@/api/apiService";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import { connectWebSocket, disconnectWebSocket } from "../websocketService";
 
 type WebSocketMessage = {

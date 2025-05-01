@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client";
 
 import { Button } from "@components/commons/button";
@@ -6,66 +8,76 @@ import { ApiService } from "@/api/apiService";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Document, Page, View, Text, StyleSheet, pdf } from '@react-pdf/renderer';
+import { create } from "domain";
 
 // Enhanced professional styles
 const styles = StyleSheet.create({
   page: {
-    padding: 40,
+    padding: 30,  
     fontFamily: 'Helvetica',
     color: '#333',
-    lineHeight: 1.6,
+    lineHeight: 1.4,  
   },
   section: {
-    marginBottom: 24,
+    marginBottom: 12,  
+    padding: 10  
   },
   h2: {
-    fontSize: 20,
-    marginBottom: 16,
+    fontSize: 14,  
+    marginBottom: 8, 
     fontWeight: 'semibold',
     color: '#111827',
     borderBottom: '1px solid #e5e7eb',
-    paddingBottom: 8,
+    paddingBottom: 4,  
   },
   h3: {
-    fontSize: 18,
-    marginBottom: 12,
+    fontSize: 13,  
+    marginBottom: 6,  
     fontWeight: 'semibold',
     color: '#1f2937',
   },
   h4: {
-    fontSize: 16,
-    marginBottom: 10,
+    fontSize: 11, 
+    marginBottom: 4, 
     fontWeight: 'semibold',
     color: '#374151',
   },
   p: {
-    fontSize: 14,
-    marginBottom: 12,
-    lineHeight: 1.6,
+    fontSize: 10,
+    marginBottom: 8, 
+    lineHeight: 1.4,
   },
   ul: {
-    marginLeft: 24,
-    marginBottom: 12,
+    marginLeft: 12, 
+    marginBottom: 8,  
   },
   li: {
-    fontSize: 14,
-    marginBottom: 6,
-    lineHeight: 1.6,
+    fontSize: 10,
+    marginBottom: 4, 
+    lineHeight: 1.4, 
+    flexDirection: 'row',
+    alignItems: 'flex-start',  
+  },
+  bulletPoint: {
+    width: 8,
+    paddingRight: 4,  
+  },
+  liContent: {
+    flex: 1,
   },
   strong: {
     fontWeight: 'semibold',
   },
   prosConsContainer: {
-    marginLeft: 16,
-    marginBottom: 12,
+    marginLeft: 8,  
+    marginBottom: 8, 
   },
   prosConsTitle: {
-    fontSize: 14,
+    fontSize: 11, 
     fontWeight: 'semibold',
-    marginBottom: 4,
+    marginBottom: 2,  
   }
 });
-
 const parseHtmlToPdf = (html: string) => {
   const tempDiv = document.createElement('div');
   tempDiv.innerHTML = html;
@@ -95,10 +107,12 @@ const parseHtmlToPdf = (html: string) => {
         case 'ul':
           return <View key={key} style={styles.ul}>{children}</View>;
         case 'li':
-          return <View key={key} style={{flexDirection: 'row'}}>
-            <Text>• </Text>
-            <Text style={styles.li}>{children}</Text>
-          </View>;
+          return (
+            <View key={key} style={styles.li}>
+              <Text style={styles.bulletPoint}>•</Text>
+              <Text style={styles.liContent}>{children}</Text>
+            </View>
+          );
         case 'strong':
           return <Text key={key} style={styles.strong}>{children}</Text>;
         default:
@@ -120,6 +134,19 @@ const MyDocument = ({ content }: { content: string }) => (
   </Document>
 );
 
+export async function createPdf(content: string, projectId: string) {
+  const fileName = `Project_${projectId}_Report_${new Date().toISOString().split('T')[0]}_${new Date().toISOString().split('T')[1].slice(0, 5).replace(':', '-')}.pdf`;
+  const blob = await pdf(<MyDocument content={content} />).toBlob();
+
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = fileName;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(link.href);
+}
+
 export default function NewReportButton({ projectId }: { projectId: string }) {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -130,16 +157,7 @@ export default function NewReportButton({ projectId }: { projectId: string }) {
       const response = await apiService.get(`/projects/${projectId}/report`);
       if (!response?.text) throw new Error("Report content is empty");
 
-      const fileName = `Project_${projectId}_Report_${new Date().toISOString().split('T')[0]}.pdf`;
-      const blob = await pdf(<MyDocument content={response.text} />).toBlob();
-
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = fileName;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(link.href);
+      createPdf(response.text, projectId);
 
       toast.success("Report downloaded successfully");
     } catch (error: any) {
@@ -155,7 +173,7 @@ export default function NewReportButton({ projectId }: { projectId: string }) {
       <Button
         variant="default"
         size="default"
-        className="bg-gray-900 hover:bg-gray-800 text-white font-medium transition-colors shadow-sm"
+        className="bp-3 text-white rounded-lg shadow-lg"
         onClick={fetchReport}
         disabled={isLoading}
       >
@@ -174,9 +192,6 @@ export default function NewReportButton({ projectId }: { projectId: string }) {
           </span>
         )}
       </Button>
-      <p className="mt-2 text-sm text-gray-500">
-        PDF format with professional styling
-      </p>
     </div>
   );
 }
