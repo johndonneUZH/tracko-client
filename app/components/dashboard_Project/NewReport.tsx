@@ -133,8 +133,8 @@ const MyDocument = ({ content }: { content: string }) => (
   </Document>
 );
 
-export async function createPdf(content: string, projectId: string) {
-  const fileName = `Project_${projectId}_Report_${new Date().toISOString().split('T')[0]}_${new Date().toISOString().split('T')[1].slice(0, 5).replace(':', '-')}.pdf`;
+export async function createPdf(content: string, projectId: string, title?: string) {
+  const fileName = title || `Project_${projectId}_Report_${new Date().toISOString().split('T')[0]}_${new Date().toISOString().split('T')[1].slice(0, 5).replace(':', '-')}.pdf`;
   const blob = await pdf(<MyDocument content={content} />).toBlob();
 
   const link = document.createElement("a");

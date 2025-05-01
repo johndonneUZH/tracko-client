@@ -10,7 +10,9 @@ import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/sidebar/sidebar";
 import { Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { createPdf } from "@components/dashboard_Project/NewReport";
 import { useState, useEffect, useMemo } from "react";
+import { toast } from "sonner";
 
 export interface Report {
     reportId: string;
@@ -32,6 +34,19 @@ export default function ReportsPage() {
     
     // Create apiService instance with useMemo to prevent recreation on every render
     const apiService = useMemo(() => new ApiService(), []);
+
+    const handleDownload = async (reportId: string) => {   
+        try {
+            const response = await apiService.get<Report>(`/users/${userId}/reports/${reportId}`)
+            const content = response.reportContent;
+            createPdf(content, reportId, response.reportName); 
+            setError(null);
+            toast.success("Report downloaded successfully!");
+        } catch (err: any) {
+            console.error("Failed to download report:", err);
+            setError(err.message || "Failed to download report.");
+        }
+    }
 
     const handleEdit = async (reportId: string) => {
       console.log(`Editing report ${reportId} with new name: ${editedName}`);
@@ -129,34 +144,43 @@ export default function ReportsPage() {
                     <div className="flex-1 p-4">
    
                     {!loading && !error && reports.length > 0 && (
-                        <ul className="space-y-4">
-                            {reports.map((report) => (
-                                <li key={report.reportId} className="border p-4 rounded-md shadow-sm">
-                                    {editingReportId === report.reportId ? (
-                                        <div className="flex items-center gap-2">
-                                            <Input
-                                                value={editedName}
-                                                onChange={(e) => setEditedName(e.target.value)}
-                                                className="flex-1"
-                                            />
-                                            <Button 
-                                                variant="outline" 
-                                                size="sm" 
-                                                onClick={() => handleEdit(report.reportId)}
-                                            >
-                                                Save
-                                            </Button>
+                    <ul className="space-y-4">
+                        {reports.map((report) => (
+                            <li key={report.reportId} className="border p-4 rounded-md shadow-sm">
+                                {editingReportId === report.reportId ? (
+                                    <div className="flex items-center gap-2">
+                                        <Input
+                                            value={editedName}
+                                            onChange={(e) => setEditedName(e.target.value)}
+                                            className="flex-1"
+                                        />
+                                        <Button 
+                                            variant="outline" 
+                                            size="sm" 
+                                            onClick={() => handleEdit(report.reportId)}
+                                        >
+                                            Save
+                                        </Button>
+                                        <Button 
+                                            variant="ghost" 
+                                            size="sm" 
+                                            onClick={cancelEditing}
+                                        >
+                                            Cancel
+                                        </Button>
+                                    </div>
+                                ) : (
+                                    <div className="flex justify-between items-center">
+                                        <h2 className="text-lg font-semibold">{report.reportName}</h2>
+                                        <div className="flex gap-2">
                                             <Button 
                                                 variant="ghost" 
                                                 size="sm" 
-                                                onClick={cancelEditing}
+                                                onClick={() => handleDownload(report.reportId)}
+                                                className="text-muted-foreground hover:text-primary"
                                             >
-                                                Cancel
+                                                Download
                                             </Button>
-                                        </div>
-                                    ) : (
-                                        <div className="flex justify-between items-center">
-                                            <h2 className="text-lg font-semibold">{report.reportName}</h2>
                                             <Button 
                                                 variant="ghost" 
                                                 size="sm" 
@@ -167,11 +191,12 @@ export default function ReportsPage() {
                                                 Edit
                                             </Button>
                                         </div>
-                                    )}
-                                </li>
-                            ))}
-                        </ul>
-                    )}
+                                    </div>
+                                )}
+                            </li>
+                        ))}
+                    </ul>
+                )}
                     </div>
                 </div>
             </div>
