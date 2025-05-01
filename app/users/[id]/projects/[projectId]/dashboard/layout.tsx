@@ -12,6 +12,9 @@ import { isIdeaEmpty } from "@/lib/dashboard_utils/ideaHelpers";
 import { useIdeas } from "@/lib/dashboard_utils/useIdeaStorage";
 import ProjectDashboard from "@/components/dashboard_Project/ProjectDashboard";
 import NewIdeaButton from "@/components/dashboard_Project/NewIdeaButton";
+import AiIdeaButton from "@/components/dashboard_Project/AIIdeabutton";
+import { AiDialog } from "@/components/dashboard_Project/AIDialog"; 
+
 import IdeaModal from "@/components/dashboard_Project/IdeaModal";
 import { useEffect, useState, useMemo } from "react";
 import { ApiService } from "@/api/apiService";
@@ -30,6 +33,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/commons/breadcrumb";
 import { User } from '@/types/user';
+import NewReport from "@/components/dashboard_Project/NewReport";
 
 export default function ProjectLayout({
   children,
@@ -219,8 +223,12 @@ export default function ProjectLayout({
               <div className="flex flex-col flex-1 p-4">
                 <div className="flex justify-between mb-10">
                   <h1 className="text-xl font-bold">Dashboard Project {projectName}</h1>
-                  <NewIdeaButton onClick={handleCreate}/>
+                  <div className="flex gap-2">
+                  <NewReport projectId={sessionStorage.getItem("projectId") || ""} />
+                  <NewIdeaButton onClick={handleCreate} />
+                  <AiDialog ideas={ideas} createIdea={createIdea} updateIdea={updateIdea} />
                 </div>
+              </div>
                 
                 <ProjectDashboard 
                   ideas={ideas}

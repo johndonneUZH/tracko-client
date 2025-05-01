@@ -18,6 +18,8 @@ import { InteractiveHoverButton } from "@/components/commons/interactive-hover-b
 import { useState } from "react";
 import { ApiService } from "@/api/apiService";
 import { generateUUID } from '@/utils/uuid';
+import { User } from "@/types/user";
+
 
 export function ForgotPasswordForm({
   className,
@@ -53,43 +55,45 @@ export function ForgotPasswordForm({
       setError("Please enter your email address.");
       return;
     }
-    // Placeholder for API request to check if the email exists
-    /*
+  
     try {
-      const response = await apiService.get(`/auth/check-email/${email}`); //or get all users and just for loop and check if entered email exists
-      if (response.data.exists) { 
+      const response = await apiService.getUsers();
+      const users = response as User[];
+  
+      const existingUser = users.find(
+        (user) => user.email.toLowerCase() === email.toLowerCase()
+      );
+  
+      if (existingUser) {
+        console.log("User found:", existingUser);
+  
         const now = new Date();
-        const expiryTime = new Date(now.getTime() + 15 * 60000); // add 15 minutes
+        const expiryTime = new Date(now.getTime() + 15 * 60000); // 15 minutes
         const time = expiryTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         const otp = generateUUID().trim().substring(0, 6); // 6-digit OTP
-
-        sendOTPEmail(email, otp, time); 
-        
-       sessionStorage.setItem("email", email);  //personalised message
-       router.push("/otp");
+        console.log("Generated OTP:", otp);
+  
+        await apiService.updateUser(existingUser.id, {
+          ...existingUser,
+          password: otp,
+        });
+  
+        // sendOTPEmail(otp, time, email);
+  
+        sessionStorage.setItem("email", existingUser.email);
+        sessionStorage.setItem("username", existingUser.username);
+  
+        router.push("/otp");
       } else {
         setError("This email address is not associated with any account.");
       }
     } catch (error) {
-      setError("An error occurred while checking the email. Please try again later.");
+      console.error("Error checking email or updating password:", error);
+      setError("An error occurred while processing your request. Please try again later.");
     }
-    */
-    
-    // Testing without API call delete after connecting to backend
-    const now = new Date();
-    const expiryTime = new Date(now.getTime() + 15 * 60000); // add 15 minutes
-    const time = expiryTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    const otp = generateUUID().trim().substring(0, 6); // 6-digit OTP
-
-    console.log("Generated OTP:", otp);
-
-    //sendOTPEmail(otp, time, email);
-    sessionStorage.setItem("email", email);
-    router.push("/otp");
-
-
   };
-
+  
+  
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="relative rounded-lg">

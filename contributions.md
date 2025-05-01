@@ -125,6 +125,21 @@ reason).
 
 ---
 
+## Contributions Week 11 - 18.04 to 2.05
+
+| **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
+| ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
+| **fabiotilor** | 30.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/pull/96/commits/c10da95a2793cc09727cb682a089183cfcf7a55f | Cleaning up the friends page and adding deleting friends | Friends are used to add to projects. |
+|                    | 01.05   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/c10da95a2793cc09727cb682a089183cfcf7a55f | Reworking UI and flow of one-time-password | To reduce number of pages |
+| **[@githubUser2]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+
+---
+
 
 ## Template
 ---

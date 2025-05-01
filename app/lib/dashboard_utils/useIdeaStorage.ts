@@ -25,7 +25,7 @@ export function useIdeas(projectId: string) {
   const router = useRouter();
 
   /* --------- handler WS  --------- */
-  const handleMessage = useCallback((payload: WebSocketMessage) => {
+  const handleIdeaMessage = useCallback((payload: WebSocketMessage) => {
     if (payload.deletedId) {
       setIdeas(prev => prev.filter(i => i.ideaId !== payload.deletedId));
       toast.success("Idea deleted");
@@ -48,6 +48,14 @@ export function useIdeas(projectId: string) {
     }
   }, []);
 
+  const handleChangeMessage = useCallback((payload: WebSocketMessage) => {
+      console.log("Change WebSocket message received:", payload);
+  }, []);
+
+  const handleUserMessage = useCallback((payload: WebSocketMessage) => {
+      console.log("User WebSocket message received:", payload);
+  }, []);
+
   /* --------- fetch WS --------- */
   useEffect(() => {
     if (!projectId) return;
@@ -59,7 +67,10 @@ export function useIdeas(projectId: string) {
         setLoading(true);
         const data = await api.get<Idea[]>(`/projects/${projectId}/ideas`);
         console.log("Ideas: ", data)
-        if (alive) setIdeas(data);
+        if (alive) {
+  const uniqueIdeas = Array.from(new Map(data.map(idea => [idea.ideaId, idea])).values());
+  setIdeas(uniqueIdeas);
+}
       } catch (err) {
         if (alive) {
           console.error(err);
@@ -79,13 +90,19 @@ export function useIdeas(projectId: string) {
       return;
     }
 
-    connectWebSocket(userId, projectId, handleMessage);
+    connectWebSocket(
+      userId, 
+      projectId, 
+      handleIdeaMessage,
+      handleChangeMessage,
+      handleUserMessage
+  );
 
     return () => {
       alive = false;
       disconnectWebSocket();
     };
-  }, [projectId, api, router, handleMessage]);
+  }, [projectId, api, router, handleIdeaMessage]);
 
   /* --------- optimistic create --------- */
   const createIdea = async (
@@ -93,7 +110,10 @@ export function useIdeas(projectId: string) {
     body: string | null,
     coords?: { x: number; y: number }
   ) => {
-    const tmpId = uuid();
+    let tmpId = uuid();
+    if (ideas.some(i => i.ideaId === tmpId)) {
+      tmpId = uuid(); // Generate a new one
+    }
     const ownerId = sessionStorage.getItem("userId") ?? "temp-user";
     const { x, y } = coords ?? { x: 100, y: 100 };
 

@@ -9,7 +9,8 @@ import {
   Users,
   Calendar,
   Bell,
-  PlusCircle
+  PlusCircle,
+  Download
 } from "lucide-react";
 
 import { NavMain } from "@/components/sidebar/nav-main";
@@ -67,11 +68,6 @@ export function AppSidebar({ triggerReload = null, ...props }: AppSidebarProps) 
           icon: FileClock,
         },
         {
-          title: "Calendar",
-          url: `/users/${userId}/projects/${projectId}/calendar`,
-          icon: Calendar,
-        },
-        {
           title: "Settings",
           url: `/users/${userId}/projects/${projectId}/settings`,
           icon: Settings2,
@@ -79,15 +75,15 @@ export function AppSidebar({ triggerReload = null, ...props }: AppSidebarProps) 
       ],
       navSecondary: [
         {
-          title: "Notifications",
-          url: `/users/${userId}/notifications`,
-          icon: Bell,
-        },
-        {
           title: "Friends",
           url: `/users/${userId}/friends`,
           icon: Users,
         },
+        {
+          title: "Reports",
+          url: `/users/${userId}/reports`,
+          icon: Download,
+        }
       ],
     };
   }, []);
