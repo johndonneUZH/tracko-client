@@ -70,35 +70,31 @@ export default function SentRequestsTable() {
       try {
         setLoading(true);
         const storedUserId = sessionStorage.getItem("userId");
-  
+
         if (!storedUserId) {
           router.push("/login");
           return;
         }
-  
+
         await apiService.cancelFriendRequest(storedUserId, friendId);
         setSentRequests((prev) =>
           prev.filter((user) => user.id !== friendId)
         );
-        
-        // Show a success notification
         toast.success("Friend request canceled successfully!");
       } catch (err) {
         console.error("Error canceling friend request:", err);
         setError("Failed to cancel friend request");
-  
-        // Show an error notification
+
         toast.error("Failed to cancel the friend request.");
       } finally {
         setLoading(false);
       }
     };
   }
-  
 
   if (loading) {
     return (
-      <div className="flex flex-col items-start justify-center h-screen pt-10 px-4">
+      <div className="flex flex-col items-center justify-center h-full w-full">
         <div className="flex space-x-2">
           <div className="h-4 w-4 bg-blue-700 rounded-full animate-bounce"></div>
           <div className="h-4 w-4 bg-blue-800 rounded-full animate-bounce delay-200"></div>
@@ -110,7 +106,7 @@ export default function SentRequestsTable() {
 
   if (error) {
     return (
-      <div className="bg-red-50 border border-red-200 text-red-600 p-4 rounded">
+      <div className="bg-red-50 border border-red-200 text-red-600 p-4 rounded h-full w-full flex items-center justify-center">
         {error}
       </div>
     );
@@ -118,12 +114,12 @@ export default function SentRequestsTable() {
 
   if (filteredSent.length === 0) {
     return (
-      <div className="space-y-4 max-w-2xl mx-auto">
+      <div className="flex flex-col h-full w-full items-center justify-center px-4">
         <Input
           placeholder="Search sent requests..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full"
+          className="w-full max-w-md mb-4"
         />
         <div className="bg-gray-50 border border-gray-200 text-gray-600 p-4 rounded">
           No sent friend requests
@@ -133,57 +129,57 @@ export default function SentRequestsTable() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen px-4 py-6 space-y-4">
-      <div className="w-full max-w-2xl mx-auto flex-1 flex flex-col space-y-4">
-  
-      <Input
-        placeholder="Search sent requests..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        className="w-full"
-      />
-      <ScrollArea className="max-w-full overflow-x-auto rounded-md border">
-  <div className="min-w-full">
-    <table className="w-full table-auto">
-    <tbody>
-  {filteredSent.map((user) => (
-    <tr key={user.id} className="last:border-b-0">
-      <td className="px-2 py-1 text-left w-1">
-        <Avatar className="h-8 w-8 rounded-lg">
-          <AvatarImage
-            src={user.avatarUrl || `https://avatar.vercel.sh/${user.username}`}
-          />
-        </Avatar>
-      </td>
-      <td className="px-2 py-1 text-left whitespace-nowrap">
-        {user.name || user.username}
-      </td>
-      <td className="px-2 py-1 text-right">
-        <div className="flex items-center justify-end space-x-2">
-          <span
-            className={`h-3 w-3 rounded-full inline-block ${
-              user.status === "ONLINE" ? "bg-green-500" : "bg-red-500"
-            }`}
-          ></span>
-          <button
-            onClick={handleCancelRequest(user.id)}
-            className="text-gray-600 hover:cursor-pointer hover:underline text-sm"
-          >
-            Cancel
-          </button>
-        </div>
-      </td>
-    </tr>
-  ))}
-</tbody>
-
-
-
-    </table>
-  </div>
-</ScrollArea>
-
-    </div>
+    <div className="flex flex-col h-full w-full px-4 py-6 space-y-4">
+      <div className="flex flex-col flex-grow">
+        <Input
+          placeholder="Search sent requests..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full mb-4"
+        />
+        <ScrollArea className="flex-grow w-full rounded-md border">
+          <div className="min-w-full">
+            <table className="w-full table-auto">
+              <tbody>
+                {filteredSent.map((user) => (
+                  <tr key={user.id} className="last:border-b-0">
+                    <td className="px-2 py-1 text-left w-1">
+                      <Avatar className="h-8 w-8 rounded-lg">
+                        <AvatarImage
+                          src={
+                            user.avatarUrl ||
+                            `https://avatar.vercel.sh/${user.username}`
+                          }
+                        />
+                      </Avatar>
+                    </td>
+                    <td className="px-2 py-1 text-left whitespace-nowrap">
+                      {user.name || user.username}
+                    </td>
+                    <td className="px-2 py-1 text-right">
+                      <div className="flex items-center justify-end space-x-2">
+                        <span
+                          className={`h-3 w-3 rounded-full inline-block ${
+                            user.status === "ONLINE"
+                              ? "bg-green-500"
+                              : "bg-red-500"
+                          }`}
+                        ></span>
+                        <button
+                          onClick={handleCancelRequest(user.id)}
+                          className="text-gray-600 hover:cursor-pointer hover:underline text-sm"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </ScrollArea>
+      </div>
     </div>
   );
 }

@@ -23,7 +23,7 @@ import {
   AvatarImage,
 } from "@/components/commons/avatar";
 
-type AllUsersDialogProps = {
+ type AllUsersDialogProps = {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   users?: User[];
@@ -32,40 +32,56 @@ type AllUsersDialogProps = {
 };
 
 export function AllUsersDialog({
-  open,
-  onOpenChange,
-  users: externalUsers,
-  onSelect,
-  children,
-}: AllUsersDialogProps) {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedUserIds, setSelectedUserIds] = useState<Set<string>>(new Set());
-  const [allUsers, setAllUsers] = useState<User[]>([]);
-  const [friends, setFriends] = useState<User[]>([]);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const apiService = new ApiService();
-  const [parent] = useAutoAnimate();
+    open,
+    onOpenChange,
+    users: externalUsers,
+    onSelect,
+    children,
+  }: AllUsersDialogProps) {
+    const [searchTerm, setSearchTerm] = useState("");
+    const [selectedUserIds, setSelectedUserIds] = useState<Set<string>>(new Set());
+    const [allUsers, setAllUsers] = useState<User[]>([]);
+    const [friends, setFriends] = useState<User[]>([]);
+    const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+    const apiService = new ApiService();
+    const [parent] = useAutoAnimate();
+  
+    useEffect(() => {
+      const userId = sessionStorage.getItem("userId");
+      setCurrentUserId(userId);
+    
+      if (!userId) return;
+    
+      const fetchFriends = async () => {
+        try {
+          const fr = await apiService.getFriends<User[]>(userId);
+          setFriends(fr);
+        } catch (err) {
+          toast.error("Failed to fetch friends.");
+          console.error(err);
+        }
+      };
+    
+      fetchFriends();
+    }, []);
+  
 
-  const usingExternalUsers = !!externalUsers;
-
-  useEffect(() => {
-    const userId = sessionStorage.getItem("userId");
-    setCurrentUserId(userId);
-  
-    if (!userId) return;
-  
-    const fetchFriends = async () => {
-      try {
-        const fr = await apiService.getFriends<User[]>(userId);
-        setFriends(fr);
-      } catch (err) {
-        toast.error("Failed to fetch friends.");
-        console.error(err);
-      }
-    };
-  
-    fetchFriends();
-  }, []);
+    useEffect(() => {
+        const fetchAllUsers = async () => {
+          try {
+            const users = await apiService.getUsers<User[]>();
+            console.log("Fetched users:", users);
+            setAllUsers(users);
+          } catch (error) {
+            toast.error("Failed to fetch users.");
+            console.error(error);
+          }
+        };
+      
+        fetchAllUsers();
+      }, []);
+      
+      
   
 
   const toggleUser = (id: string) => {
@@ -77,18 +93,16 @@ export function AllUsersDialog({
   };
 
   const handleAddUsers = async () => {
-    if (onSelect && externalUsers) {
-      const selected = externalUsers.find((u) => selectedUserIds.has(u.id));
-      if (selected) {
-        onSelect(selected);
-      }
-      return;
-    }
-
     if (!currentUserId) return;
+  
+    const ids = Array.from(selectedUserIds);
+    const newSentUsers = filteredUsers.filter((user) => selectedUserIds.has(user.id));
+  
     try {
-      const ids = Array.from(selectedUserIds);
-      await Promise.all(ids.map(id => apiService.sendFriendRequest(currentUserId, id)));
+      await Promise.all(
+        ids.map((id) => apiService.sendFriendRequest(currentUserId, id))
+      );
+  
       toast.success("Friend requests sent.");
       setSelectedUserIds(new Set());
     } catch (error) {
@@ -96,17 +110,21 @@ export function AllUsersDialog({
       console.error(error);
     }
   };
+  
 
-  const usersToRender = externalUsers ?? allUsers;
+  const usersToRender = allUsers;
 
-  const filteredUsers = usersToRender.filter((user) => {
-    const name = user.name || user.username;
-    return (
-      name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      user.id !== currentUserId &&
-      !friends.find((f) => f.id === user.id)
-    );
-  });
+  const filteredUsers =
+  searchTerm.trim() === ""
+    ? []
+    : usersToRender.filter((user) => {
+        const name = user.name || user.username;
+        return (
+          name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+          user.id !== currentUserId &&
+          !friends.find((f) => f.id === user.id)
+        );
+      });
 
   const selectedUsers = filteredUsers.filter((user) => selectedUserIds.has(user.id));
 

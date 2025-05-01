@@ -47,7 +47,7 @@ export default function FriendsPage() {
       <div className="flex h-screen w-full">
         {/* Sidebar */}
         <AppSidebar className="w-64 shrink-0" />
-
+  
         <div className="flex flex-col flex-1">
           <header className="flex h-16 items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1 mr-2" />
@@ -63,34 +63,35 @@ export default function FriendsPage() {
               </BreadcrumbList>
             </Breadcrumb>
           </header>
-
-          <div className="flex flex-col items-center justify-center px-4 pb-6 flex-grow w-full mt-32">
-  <Tabs
-    value={tabValue}
-    onValueChange={(newValue) => {
-      const newIndex = tabOrder.indexOf(newValue);
-      const currentIndex = tabOrder.indexOf(tabValue);
-      setPrevTabIndex(currentIndex);
-      setDirection(newIndex > currentIndex ? 1 : -1);
-      setTabValue(newValue);
-    }}
-    className="w-full flex flex-col items-center"
-  >
-    <div className="max-w-2xl mx-auto w-full">
-      <TabsList className="flex w-full">
-        <TabsTrigger value="friends" className="flex-1 text-center cursor-pointer">
-          Friends
-        </TabsTrigger>
-        <TabsTrigger value="pending" className="flex-1 text-center cursor-pointer">
-          Pending
-        </TabsTrigger>
-        <TabsTrigger value="sent" className="flex-1 text-center cursor-pointer">
-          Sent
-        </TabsTrigger>
-      </TabsList>
-    </div>
-
-            <div className="relative w-full">
+  
+          {/* Full-screen Tabs and Table */}
+          <div className="flex flex-col flex-grow w-full h-full">
+            <Tabs
+              value={tabValue}
+              onValueChange={(newValue) => {
+                const newIndex = tabOrder.indexOf(newValue);
+                const currentIndex = tabOrder.indexOf(tabValue);
+                setPrevTabIndex(currentIndex);
+                setDirection(newIndex > currentIndex ? 1 : -1);
+                setTabValue(newValue);
+              }}
+              className="w-full h-full flex flex-col"
+            >
+              <div className="w-full">
+                <TabsList className="flex w-full">
+                  <TabsTrigger value="friends" className="flex-1 text-center cursor-pointer">
+                    Friends
+                  </TabsTrigger>
+                  <TabsTrigger value="pending" className="flex-1 text-center cursor-pointer">
+                    Pending
+                  </TabsTrigger>
+                  <TabsTrigger value="sent" className="flex-1 text-center cursor-pointer">
+                    Sent
+                  </TabsTrigger>
+                </TabsList>
+              </div>
+  
+              <div className="relative w-full flex-grow h-full">
                 <AnimatePresence mode="wait">
                   {tabValue === "friends" && (
                     <motion.div
@@ -99,12 +100,14 @@ export default function FriendsPage() {
                       animate={{ x: 0, opacity: 1 }}
                       exit={{ x: -direction * 100, opacity: 0 }}
                       transition={{ duration: 0.3 }}
-                      className="w-full"
+                      className="w-full h-full"
                     >
-                      <FriendsTable />
+                      <div className="w-full h-full">
+                        <FriendsTable />
+                      </div>
                     </motion.div>
                   )}
-
+  
                   {tabValue === "pending" && (
                     <motion.div
                       key="pending"
@@ -112,12 +115,14 @@ export default function FriendsPage() {
                       animate={{ x: 0, opacity: 1 }}
                       exit={{ x: -direction * 100, opacity: 0 }}
                       transition={{ duration: 0.3 }}
-                      className="w-full"
+                      className="w-full h-full"
                     >
-                      <PendingRequestsTable />
+                      <div className="w-full h-full">
+                        <PendingRequestsTable />
+                      </div>
                     </motion.div>
                   )}
-
+  
                   {tabValue === "sent" && (
                     <motion.div
                       key="sent"
@@ -125,9 +130,11 @@ export default function FriendsPage() {
                       animate={{ x: 0, opacity: 1 }}
                       exit={{ x: -direction * 100, opacity: 0 }}
                       transition={{ duration: 0.3 }}
-                      className="w-full"
+                      className="w-full h-full"
                     >
-                      <SentRequestsTable />
+                      <div className="w-full h-full">
+                        <SentRequestsTable />
+                      </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -138,5 +145,4 @@ export default function FriendsPage() {
       </div>
     </SidebarProvider>
   );
-}
-
+}  
