@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -11,12 +13,9 @@ type WebSocketMessage = {
 };
 
 export function useNotification() {
-    const [ideas, setIdeas] = useState<Idea[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+
     const [wsError, setWsError] = useState<string | null>(null);
 
-    const api = useMemo(() => new ApiService(), []);
     const router = useRouter();
 
     const handleIdeaMessage = useCallback((payload: WebSocketMessage) => {

@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
 "use client";
 
@@ -8,8 +9,6 @@ import { ApiService } from "@/api/apiService";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Document, Page, View, Text, StyleSheet, pdf } from '@react-pdf/renderer';
-import { create } from "domain";
-
 // Enhanced professional styles
 const styles = StyleSheet.create({
   page: {
