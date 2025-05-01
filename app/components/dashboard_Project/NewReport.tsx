@@ -153,7 +153,7 @@ export default function NewReportButton({ projectId }: { projectId: string }) {
     setIsLoading(true);
     try {
       const apiService = new ApiService();
-      const response = await apiService.get(`/projects/${projectId}/report`);
+      const response = await apiService.get<{ text: string }>(`/projects/${projectId}/report`);
       if (!response?.text) throw new Error("Report content is empty");
 
       createPdf(response.text, projectId);
