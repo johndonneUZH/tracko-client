@@ -217,13 +217,10 @@ export default function ProjectLayout({
               </Breadcrumb>
             </header>
             
-            {!currentProjectId ? (
-              <NewProject/>
-            ) : (
               <div className="flex flex-col flex-1 p-4">
-                <div className="flex justify-between mb-10">
-                  <h1 className="text-xl font-bold">Dashboard Project {projectName}</h1>
-                  <div className="flex gap-2">
+                <div className="flex flex-col items-center mb-10">
+                <h1 className="text-xl font-bold mb-4">Dashboard Project {projectName}</h1>
+                <div className="flex gap-2">
                   <NewReport projectId={sessionStorage.getItem("projectId") || ""} />
                   <NewIdeaButton onClick={handleCreate} />
                   <AiDialog ideas={ideas} createIdea={createIdea} updateIdea={updateIdea} />
@@ -268,7 +265,6 @@ export default function ProjectLayout({
                   />
                 )}
               </div>
-            )}
           </div>
 
          

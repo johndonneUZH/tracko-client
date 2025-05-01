@@ -58,39 +58,49 @@ export default function IdeaBox({
   };
 
   return (
-    <Card
-      ref={setNodeRef}
-      style={style}
-      className={`absolute w-[200px] h-[140px] p-4 rounded-2xl select-none ${
-        isDragging ? "" : "hover:scale-105"
-      } cursor-grab`}
-      onClick={() => !isDragging && onClick(idea.ideaId)}
-      {...listeners}
-      {...attributes}
-    >
-      <CardContent className="flex flex-col justify-between h-full p-0">
-        <div className="mb-2">
-          <div className="flex flex-row gap-2 items-center">
-            <Avatar className="h-4 w-4 rounded-sm">
-              <AvatarImage src={members.find((m) => m.id === idea.ownerId)?.avatarUrl ?? "https://avatar.vercel.sh/john"} />
-            </Avatar>
-            <strong>{members.find((m) => m.id === idea.ownerId)?.username ?? "Unknown"}</strong>
-          </div>
-          <strong className="block text-sm font-semibold text-gray-900 truncate">
-            {idea.ideaName || "Untitled Idea"}
+  <Card
+    ref={setNodeRef}
+    style={style}
+    className={`absolute w-[200px] h-[160px] p-4 rounded-2xl select-none ${
+      isDragging ? "" : "hover:scale-105"
+    } cursor-grab`}
+    onClick={() => !isDragging && onClick(idea.ideaId)}
+    {...listeners}
+    {...attributes}
+  >
+    <CardContent className="flex flex-col h-full p-0 overflow-hidden">
+      <div className="flex-grow overflow-hidden">
+        <div className="flex items-center gap-2 mb-1">
+          <Avatar className="h-4 w-4 rounded-sm">
+            <AvatarImage
+              src={
+                members.find((m) => m.id === idea.ownerId)?.avatarUrl ??
+                "https://avatar.vercel.sh/john"
+              }
+            />
+          </Avatar>
+          <strong className="truncate">
+            {members.find((m) => m.id === idea.ownerId)?.username ?? "Unknown"}
           </strong>
-          <p className="text-sm text-gray-700 line-clamp-3">
-            {idea.ideaDescription}
-          </p>
         </div>
-        <div className="self-end">
-          <Votes
-            idea={idea}
-            currentUserId={currentUserId}
-            onToggleVote={onToggleVote}
-          />
-        </div>
-      </CardContent>
-    </Card>
+
+        <strong className="block text-sm font-semibold text-gray-900 truncate">
+          {idea.ideaName || "Untitled Idea"}
+        </strong>
+
+        <p className="text-sm text-gray-700 line-clamp-2 overflow-hidden">
+          {idea.ideaDescription}
+        </p>
+      </div>
+
+      <div className="mt-auto flex justify-end pt-1">
+        <Votes
+          idea={idea}
+          currentUserId={currentUserId}
+          onToggleVote={onToggleVote}
+        />
+      </div>
+    </CardContent>
+  </Card>
   );
 }
