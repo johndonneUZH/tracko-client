@@ -13,14 +13,16 @@ let stompClient: Client | null = null;
 export const connectWebSocket = (
   userId: string,
   projectId: string,
-  onMessage: (message: WebSocketMessage) => void
+  onIdeaMessage: (message: WebSocketMessage) => void,
+  onChangeMessage: (message: WebSocketMessage) => void,
+  onUserMessage: (message: WebSocketMessage) => void
 ): Client => {
   if (stompClient) {
     disconnectWebSocket();
   }
   const apiDomain = getApiDomain().endsWith('/') 
-  ? getApiDomain().slice(0, -1) 
-  : getApiDomain();
+    ? getApiDomain().slice(0, -1) 
+    : getApiDomain();
   const socket = new SockJS(`${apiDomain}/ws`);
   const token = sessionStorage.getItem('token') || '';
 
@@ -37,13 +39,33 @@ export const connectWebSocket = (
   stompClient.onConnect = () => {
     console.log('Connected to WebSocket');
     
-    // Subscribe to notifications channel
+    // Subscribe to ideas channel
     stompClient?.subscribe(`/topic/projects/${projectId}/ideas`, (message: IMessage) => {
       try {
         const parsed = JSON.parse(message.body) as WebSocketMessage;
-        onMessage(parsed);
+        onIdeaMessage(parsed);
       } catch (error) {
-        console.error('Error parsing notification:', error);
+        console.error('Error parsing idea notification:', error);
+      }
+    });
+
+    // Subscribe to project changes channel
+    stompClient?.subscribe(`/topic/projects/${projectId}/changes`, (message: IMessage) => {
+      try {
+        const parsed = JSON.parse(message.body) as WebSocketMessage;
+        onChangeMessage(parsed);
+      } catch (error) {
+        console.error('Error parsing change notification:', error);
+      }
+    });
+
+    // Subscribe to user-specific channel
+    stompClient?.subscribe(`/queue/user-${userId}-notifications`, (message) => {
+      try {
+        const parsed = JSON.parse(message.body) as WebSocketMessage;
+        onUserMessage(parsed);
+      } catch (error) {
+        console.error('Error parsing user message:', error);
       }
     });
   };

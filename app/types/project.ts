@@ -8,7 +8,7 @@ export type Project = {
   projectId: string;
   projectName: string;
   projectDescription: string;
-  projectMembers: ProjectMember[];
+  projectMembers: string[];
   ownerId: string;
   createdAt: Date;
   updatedAt: Date;

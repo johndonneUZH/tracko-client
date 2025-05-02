@@ -113,9 +113,7 @@ export function ContributionsChart() {
       color: getBlueShade(i, projectNames.length),
     }
   ]));
-
-  console.log("Chart Data:", chartData);
-  console.log("Filtered Data:", filteredData);
+  
   return (
     <Card className="border-none">
       <CardHeader className="flex items-center gap-2 space-y-0 py-5 sm:flex-row">

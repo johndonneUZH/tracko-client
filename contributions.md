@@ -120,9 +120,25 @@ reason).
 | **manueltuor** | 14.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/128ab9f4a23433885db13efae6667b91a347979f | moved create project into project switcher for better UI | improved user experience |
 |                    | 15.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/6894baea298250099d795ee9485f8885a46b2ae8 | Created settings page UI and corresponding dialogs | enables users to manage their projects |
 |                    | 16.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/63ac1018d3c5edd5ee603d291cf25c7a832b1763 | Created dialog for edit profile | users should be able to edit their profiles |
-| **[@githubUser5]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **RonaldDomi** | 18.04   |https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/b7c4cdc205570b0d10f1005add373bee45232756 | UI button example for LLM calls | Adding AI usa case example |
+|                    | 14.04   |  https://github.com/johndonneUZH/sopra-fs25-group-46-server/commit/01f3318aa1e057c1a3bd997027c7b8143162bdea | Fully functional AI controller endpoints | users should be able to interact with LLM |
 
+---
+
+## Contributions Week 11 - 18.04 to 2.05
+
+| **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
+| ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
+| **fabiotilor** | 30.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/pull/96/commits/c10da95a2793cc09727cb682a089183cfcf7a55f | Cleaning up the friends page and adding deleting friends | Friends are used to add to projects. |
+|                    | 01.05   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/c10da95a2793cc09727cb682a089183cfcf7a55f | Reworking UI and flow of one-time-password | To reduce number of pages |
+| **[@githubUser2]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **RonaldDomi** | 01.05   | https://github.com/johndonneUZH/sopra-fs25-group-46-server/commit/11c1495a3a5680c9846ccf4b7d771e078898bb1f | SonarQube improvements | Make the code to standard |
+|                    | 01.05   | https://github.com/johndonneUZH/sopra-fs25-group-46-server/commit/3abce8219293e244fd004c922b7262c10741b95c | 68.5% test coverage | Sonarqube stuff |
 ---
 
 
