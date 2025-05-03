@@ -116,7 +116,56 @@ Ensure that [Docker](https://www.docker.com/) is installed on your machine.
 ```docker run -p 3000:3000 johndonneuzh/sopra-group-46-client```
 
 ---
+## High-level Components
 
+Tracko's architecture is built around these core components:
+
+1. **User Authentication System**  
+   - Handles login, registration, password recovery, and session management  
+   - Main files:  
+     - [`/components/login`](/components/login)  
+     - [`/components/register`](/components/register)  
+     - [`/components/forgotpassword`](/components/forgotpassword)  
+
+2. **Project Dashboard**  
+   - Central hub for project management and idea collaboration  
+   - Coordinates between different project views and components  
+   - Main files:  
+     - [`/components/dashboard_Project`](/components/dashboard_Project)  
+     - [`/lib/dashboard_utils`](/lib/dashboard_utils)  
+     - [`/users/[id]/projects/[projectId]/dashboard`](/users/[id]/projects/[projectId]/dashboard)
+
+3. **Sidebar**  
+   - Manages communication with Claude AI for idea generation and summarization  
+   - Main files:  
+     - [`/components/magicui`](/components/sidebar) 
+
+4. **Changelog System**  
+   - Tracks project history and team activities  
+   - Main files:  
+     - [`/components/changelog`](/components/changelog)  
+     - [`/users/[id]/projects/[projectId]/changelog`](/users/[id]/projects/[projectId]/changelog)
+
+---
+## Roadmap
+
+Potential areas for contribution:
+
+1. **Enhanced AI Features**  
+   - Implement more sophisticated AI prompt engineering for idea refinement  
+   - Add AI-powered project risk detection and suggestions  
+   - Location: [`/api`](/api) and [`/components/magicui`](/components/magicui)
+
+2. **Advanced Collaboration Tools**  
+   - Real-time collaborative editing for project documents  
+   - Threaded comments with @mentions and notifications  
+   - Location: [`/components/project_browser`](/components/project_browser) and [`/lib/dashboard_utils`](/lib/dashboard_utils)
+
+3. **Mobile Optimization**  
+   - Improve touch interactions and mobile-first UI components  
+   - Implement offline capability with sync functionality  
+   - Location: [`/components/ui`](/components/ui) and [`/hooks`](/hooks)
+---
 ## Authors and acknowledgment
 
 -   [Matteo Adam](https://github.com/johndonneUZH)
