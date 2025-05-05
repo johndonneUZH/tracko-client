@@ -112,21 +112,19 @@ export default function SentRequestsTable() {
     );
   }
 
-  if (filteredSent.length === 0) {
-    return (
-      <div className="flex flex-col h-full w-full items-center justify-center px-4">
-        <Input
-          placeholder="Search sent requests..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full max-w-md mb-4"
-        />
-        <div className="bg-gray-50 border border-gray-200 text-gray-600 p-4 rounded">
-          No sent friend requests
-        </div>
+  {filteredSent.length === 0 ? (
+    <div className="flex flex-col h-full w-full items-center justify-center px-4">
+      <Input
+        placeholder="Search sent requests..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="w-full max-w-md mb-4"
+      />
+      <div className="bg-gray-50 border border-gray-200 text-gray-600 p-4 rounded">
+        You haven't sent any friend requests.
       </div>
-    );
-  }
+    </div>
+  ) : null}
 
   return (
     <div className="flex flex-col h-full w-full px-4 py-6 space-y-4">
@@ -137,49 +135,56 @@ export default function SentRequestsTable() {
           onChange={(e) => setSearchTerm(e.target.value)}
           className="w-full mb-4"
         />
-        <ScrollArea className="flex-grow w-full rounded-md border">
-          <div className="min-w-full">
-            <table className="w-full table-auto">
-              <tbody>
-                {filteredSent.map((user) => (
-                  <tr key={user.id} className="last:border-b-0">
-                    <td className="px-2 py-1 text-left w-1">
-                      <Avatar className="h-8 w-8 rounded-lg">
-                        <AvatarImage
-                          src={
-                            user.avatarUrl ||
-                            `https://avatar.vercel.sh/${user.username}`
-                          }
-                        />
-                      </Avatar>
-                    </td>
-                    <td className="px-2 py-1 text-left whitespace-nowrap">
-                      {user.name || user.username}
-                    </td>
-                    <td className="px-2 py-1 text-right">
-                      <div className="flex items-center justify-end space-x-2">
-                        <span
-                          className={`h-3 w-3 rounded-full inline-block ${
-                            user.status === "ONLINE"
-                              ? "bg-green-500"
-                              : "bg-red-500"
-                          }`}
-                        ></span>
-                        <button
-                          onClick={handleCancelRequest(user.id)}
-                          className="text-gray-600 hover:cursor-pointer hover:underline text-sm"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+  
+        {filteredSent.length === 0 ? (
+          <div className="bg-gray-50 border border-gray-200 text-gray-600 p-4 rounded flex-grow flex items-center justify-center">
+            No sent friend requests
           </div>
-        </ScrollArea>
+        ) : (
+          <ScrollArea className="flex-grow w-full rounded-md border">
+            <div className="min-w-full">
+              <table className="w-full table-auto">
+                <tbody>
+                  {filteredSent.map((user) => (
+                    <tr key={user.id} className="last:border-b-0">
+                      <td className="px-2 py-1 text-left w-1">
+                        <Avatar className="h-8 w-8 rounded-lg">
+                          <AvatarImage
+                            src={
+                              user.avatarUrl ||
+                              `https://avatar.vercel.sh/${user.username}`
+                            }
+                          />
+                        </Avatar>
+                      </td>
+                      <td className="px-2 py-1 text-left whitespace-nowrap">
+                        {user.name || user.username}
+                      </td>
+                      <td className="px-2 py-1 text-right">
+                        <div className="flex items-center justify-end space-x-2">
+                          <span
+                            className={`h-3 w-3 rounded-full inline-block ${
+                              user.status === "ONLINE"
+                                ? "bg-green-500"
+                                : "bg-red-500"
+                            }`}
+                          ></span>
+                          <button
+                            onClick={handleCancelRequest(user.id)}
+                            className="text-gray-600 hover:cursor-pointer hover:underline text-sm"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </ScrollArea>
+        )}
       </div>
     </div>
   );
-}
+} 
