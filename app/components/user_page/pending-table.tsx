@@ -138,7 +138,6 @@ import { toast } from "sonner";
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full mb-4"
           />
-        <div className="flex justify-between items-center mb-2">
           {filteredSent.length === 0 ? (
           <div className="bg-gray-50 border border-gray-200 text-gray-600 p-4 rounded flex-grow flex items-center justify-center">
     No pending friend requests
@@ -188,6 +187,5 @@ import { toast } from "sonner";
   </ScrollArea>
 )}
           </div>
-        </div>
       );
   }
