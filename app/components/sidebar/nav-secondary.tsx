@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from "react"
 import { ChevronRight, type LucideIcon } from "lucide-react"
+import { useWebSocket } from "@/hooks/WebSocketContext"
 
 import {
   Collapsible,
@@ -36,7 +37,7 @@ export function NavSecondary({
   }[]
 }) {
 
-  const [pendingRequests, setPendingRequests] = useState(true)
+  const { pendingRequests, setPendingRequests } = useWebSocket();
 
   return (
     <SidebarGroup>
@@ -46,7 +47,7 @@ export function NavSecondary({
           <Collapsible key={item.title} asChild defaultOpen={item.isActive}>
             <SidebarMenuItem>
             <SidebarMenuButton asChild tooltip={item.title}>
-              <div className="relative flex items-center justify-between w-full">
+              <div className="relative flex items-center justify-between w-full" onAbort={() => setPendingRequests(false)}>
                 <a href={item.url} className="flex items-center gap-2">
                   <item.icon className="h-4 w-4" />
                   <span>{item.title}</span>

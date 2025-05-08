@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 import React, { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { User } from "@/types/user";
@@ -9,13 +7,6 @@ import { Input } from "@/components/commons/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
 
-
-interface UserData {
-  id: string;
-  friendRequestsSentIds: string[];
-  username: string;
-}
-
 export default function SentRequestsTable() {
   const apiService = new ApiService();
   const router = useRouter();
@@ -23,39 +14,51 @@ export default function SentRequestsTable() {
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   useEffect(() => {
     const storedUserId = sessionStorage.getItem("userId");
+    setCurrentUserId(storedUserId);
 
     if (!storedUserId) {
       router.push("/login");
       return;
     }
+  }, [router]);
+
+  useEffect(() => {
+    if (!currentUserId) return;
 
     const fetchData = async () => {
       try {
         setLoading(true);
-
+        
+        // Fetch both sent requests and all users in parallel
         const [currentUser, allUsers] = await Promise.all([
-          apiService.getUser<User>(storedUserId),
+          apiService.getUser<User>(currentUserId),
           apiService.getUsers<User[]>(),
         ]);
 
-        const sentRequestUsers = allUsers.filter((user) =>
-          currentUser.friendRequestsSentIds.includes(user.id)
+        // Create a Set for faster lookups
+        const sentRequestIds = new Set(currentUser.friendRequestsSentIds || []);
+        
+        // Filter users who are in the sent requests list
+        const sentRequestUsers = allUsers.filter(user => 
+          sentRequestIds.has(user.id)
         );
 
         setSentRequests(sentRequestUsers);
       } catch (err) {
         console.error("Error fetching sent friend requests:", err);
         setError("Failed to load sent friend requests");
+        toast.error("Failed to load sent requests");
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [router]);
+  }, [currentUserId]);
 
   const filteredSent = useMemo(() => {
     return sentRequests.filter((user) =>
@@ -65,31 +68,26 @@ export default function SentRequestsTable() {
     );
   }, [sentRequests, searchTerm]);
 
-  function handleCancelRequest(friendId: string) {
-    return async () => {
-      try {
-        setLoading(true);
-        const storedUserId = sessionStorage.getItem("userId");
+  async function handleCancelRequest(friendId: string) {
+    if (!currentUserId) {
+      router.push("/login");
+      return;
+    }
 
-        if (!storedUserId) {
-          router.push("/login");
-          return;
-        }
-
-        await apiService.cancelFriendRequest(storedUserId, friendId);
-        setSentRequests((prev) =>
-          prev.filter((user) => user.id !== friendId)
-        );
-        toast.success("Friend request canceled successfully!");
-      } catch (err) {
-        console.error("Error canceling friend request:", err);
-        setError("Failed to cancel friend request");
-
-        toast.error("Failed to cancel the friend request.");
-      } finally {
-        setLoading(false);
-      }
-    };
+    try {
+      setLoading(true);
+      await apiService.cancelFriendRequest(currentUserId, friendId);
+      
+      // Optimistically update the UI
+      setSentRequests(prev => prev.filter(user => user.id !== friendId));
+      
+      toast.success("Friend request canceled successfully!");
+    } catch (err) {
+      console.error("Error canceling friend request:", err);
+      toast.error("Failed to cancel friend request");
+    } finally {
+      setLoading(false);
+    }
   }
 
   if (loading) {
@@ -112,20 +110,6 @@ export default function SentRequestsTable() {
     );
   }
 
-  {filteredSent.length === 0 ? (
-    <div className="flex flex-col h-full w-full items-center justify-center px-4">
-      <Input
-        placeholder="Search sent requests..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        className="w-full max-w-md mb-4"
-      />
-      <div className="bg-gray-50 border border-gray-200 text-gray-600 p-4 rounded">
-        You haven't sent any friend requests.
-      </div>
-    </div>
-  ) : null}
-
   return (
     <div className="flex flex-col h-full w-full px-4 py-6 space-y-4">
       <div className="flex flex-col flex-grow">
@@ -135,10 +119,10 @@ export default function SentRequestsTable() {
           onChange={(e) => setSearchTerm(e.target.value)}
           className="w-full mb-4"
         />
-  
+
         {filteredSent.length === 0 ? (
           <div className="bg-gray-50 border border-gray-200 text-gray-600 p-4 rounded flex-grow flex items-center justify-center">
-            No sent friend requests
+            {searchTerm ? "No matching requests found" : "You haven't sent any friend requests"}
           </div>
         ) : (
           <ScrollArea className="flex-grow w-full rounded-md border">
@@ -146,34 +130,40 @@ export default function SentRequestsTable() {
               <table className="w-full table-auto">
                 <tbody>
                   {filteredSent.map((user) => (
-                    <tr key={user.id} className="last:border-b-0">
-                      <td className="px-2 py-1 text-left w-1">
-                        <Avatar className="h-8 w-8 rounded-lg">
-                          <AvatarImage
-                            src={
-                              user.avatarUrl ||
-                              `https://avatar.vercel.sh/${user.username}`
-                            }
-                          />
-                        </Avatar>
+                    <tr key={user.id} className="hover:bg-gray-50 last:border-b-0">
+                      <td className="px-4 py-3">
+                        <div className="flex items-center space-x-3">
+                          <Avatar className="h-9 w-9">
+                            <AvatarImage
+                              src={
+                                user.avatarUrl ||
+                                `https://avatar.vercel.sh/${user.username}`
+                              }
+                            />
+                          </Avatar>
+                          <div>
+                            <p className="font-medium">{user.name || user.username}</p>
+                            <p className="text-sm text-gray-500">
+                              {user.status === "ONLINE" ? "Online" : "Offline"}
+                            </p>
+                          </div>
+                        </div>
                       </td>
-                      <td className="px-2 py-1 text-left whitespace-nowrap">
-                        {user.name || user.username}
-                      </td>
-                      <td className="px-2 py-1 text-right">
-                        <div className="flex items-center justify-end space-x-2">
+                      <td className="px-4 py-3 text-right">
+                        <div className="flex items-center justify-end space-x-4">
                           <span
-                            className={`h-3 w-3 rounded-full inline-block ${
+                            className={`h-3 w-3 rounded-full ${
                               user.status === "ONLINE"
                                 ? "bg-green-500"
                                 : "bg-red-500"
                             }`}
-                          ></span>
+                          />
                           <button
-                            onClick={handleCancelRequest(user.id)}
-                            className="text-gray-600 hover:cursor-pointer hover:underline text-sm"
+                            onClick={() => handleCancelRequest(user.id)}
+                            className="text-sm text-red-600 hover:text-red-800 hover:underline"
+                            disabled={loading}
                           >
-                            Cancel
+                            {loading ? "Canceling..." : "Cancel"}
                           </button>
                         </div>
                       </td>
@@ -187,4 +177,4 @@ export default function SentRequestsTable() {
       </div>
     </div>
   );
-} 
+}

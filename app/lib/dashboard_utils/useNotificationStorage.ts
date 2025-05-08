@@ -7,6 +7,7 @@ import { Idea } from "@/types/idea";
 import { ApiService } from "@/api/apiService";
 import { useRouter } from "next/navigation";
 import { connectWebSocket, disconnectWebSocket } from "../websocketService";
+import { useWebSocket } from "@/hooks/WebSocketContext";
 
 type WebSocketMessage = {
     [key: string]: unknown;
@@ -15,20 +16,24 @@ type WebSocketMessage = {
 export function useNotification() {
 
     const [wsError, setWsError] = useState<string | null>(null);
+    const { pendingRequests, setPendingRequests } = useWebSocket();
 
     const router = useRouter();
 
     const handleIdeaMessage = useCallback((payload: WebSocketMessage) => {
         console.log("Idea WebSocket message received:", payload);
-    }, []);
+        setPendingRequests(true);
+    }, [setPendingRequests]); 
 
     const handleChangeMessage = useCallback((payload: WebSocketMessage) => {
         console.log("Change WebSocket message received:", payload);
-    }, []);
-
+        setPendingRequests(true);
+    }, [setPendingRequests]); 
+    
     const handleUserMessage = useCallback((payload: WebSocketMessage) => {
         console.log("User WebSocket message received:", payload);
-    }, []);
+        setPendingRequests(true);
+    }, [setPendingRequests]);
 
     useEffect(() => {
         const projectId = sessionStorage.getItem("projectId");
