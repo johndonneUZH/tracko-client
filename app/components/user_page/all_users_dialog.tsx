@@ -1,5 +1,4 @@
-/* eslint-disable*/
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { User } from "@/types/user";
 import { Button } from "@/components/commons/button";
 import { Checkbox } from "@/components/project_browser/checkbox";
@@ -23,7 +22,7 @@ import {
   AvatarImage,
 } from "@/components/commons/avatar";
 
- type AllUsersDialogProps = {
+type AllUsersDialogProps = {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   users?: User[];
@@ -32,57 +31,53 @@ import {
 };
 
 export function AllUsersDialog({
-    open,
-    onOpenChange,
-    users: externalUsers,
-    onSelect,
-    children,
-  }: AllUsersDialogProps) {
-    const [searchTerm, setSearchTerm] = useState("");
-    const [selectedUserIds, setSelectedUserIds] = useState<Set<string>>(new Set());
-    const [allUsers, setAllUsers] = useState<User[]>([]);
-    const [friends, setFriends] = useState<User[]>([]);
-    const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-    const apiService = new ApiService();
-    const [parent] = useAutoAnimate();
-  
-    useEffect(() => {
-      const userId = sessionStorage.getItem("userId");
-      setCurrentUserId(userId);
-    
-      if (!userId) return;
-    
-      const fetchFriends = async () => {
-        try {
-          const fr = await apiService.getFriends<User[]>(userId);
-          setFriends(fr);
-        } catch (err) {
-          toast.error("Failed to fetch friends.");
-          console.error(err);
-        }
-      };
-    
-      fetchFriends();
-    }, []);
-  
+  open,
+  onOpenChange,
+  users: externalUsers,
+  onSelect,
+  children,
+}: AllUsersDialogProps) {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedUserIds, setSelectedUserIds] = useState<Set<string>>(new Set());
+  const [allUsers, setAllUsers] = useState<User[]>([]);
+  const [friends, setFriends] = useState<User[]>([]);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [isSendingRequests, setIsSendingRequests] = useState(false);
+  const apiService = new ApiService();
+  const [parent] = useAutoAnimate();
 
-    useEffect(() => {
-        const fetchAllUsers = async () => {
-          try {
-            const users = await apiService.getUsers<User[]>();
-            console.log("Fetched users:", users);
-            setAllUsers(users);
-          } catch (error) {
-            toast.error("Failed to fetch users.");
-            console.error(error);
-          }
-        };
-      
-        fetchAllUsers();
-      }, []);
-      
-      
+  useEffect(() => {
+    const userId = sessionStorage.getItem("userId");
+    setCurrentUserId(userId);
   
+    if (!userId) return;
+  
+    const fetchFriends = async () => {
+      try {
+        const fr = await apiService.getFriends<User[]>(userId);
+        setFriends(fr);
+      } catch (err) {
+        toast.error("Failed to fetch friends.");
+        console.error(err);
+      }
+    };
+  
+    fetchFriends();
+  }, []);
+
+  useEffect(() => {
+    const fetchAllUsers = async () => {
+      try {
+        const users = await apiService.getUsers<User[]>();
+        setAllUsers(users);
+      } catch (error) {
+        toast.error("Failed to fetch users.");
+        console.error(error);
+      }
+    };
+    
+    fetchAllUsers();
+  }, []);
 
   const toggleUser = (id: string) => {
     setSelectedUserIds((prev) => {
@@ -93,121 +88,167 @@ export function AllUsersDialog({
   };
 
   const handleAddUsers = async () => {
-    if (!currentUserId) return;
+    if (!currentUserId || selectedUserIds.size === 0) return;
   
-    const ids = Array.from(selectedUserIds);
-    const newSentUsers = filteredUsers.filter((user) => selectedUserIds.has(user.id));
+    setIsSendingRequests(true);
+    const userIds = Array.from(selectedUserIds);
+    const successfulRequests: string[] = [];
+    const failedRequests: {userId: string, error: string}[] = [];
   
     try {
-      await Promise.all(
-        ids.map((id) => apiService.sendFriendRequest(currentUserId, id))
-      );
+      // Process requests sequentially to avoid race conditions
+      for (const userId of userIds) {
+        try {
+          await apiService.sendFriendRequest(currentUserId, userId);
+          successfulRequests.push(userId);
+        } catch (error) {
+          failedRequests.push({
+            userId,
+            error: error instanceof Error ? error.message : 'Unknown error'
+          });
+          console.error(`Failed to send request to ${userId}:`, error);
+        }
+      }
   
-      toast.success("Friend requests sent.");
+      if (successfulRequests.length > 0) {
+        toast.success(`Sent ${successfulRequests.length} friend request(s)`);
+      }
+  
+      if (failedRequests.length > 0) {
+        toast.error(`Failed to send ${failedRequests.length} request(s)`);
+        failedRequests.forEach(f => {
+          console.error(`Request to ${f.userId} failed:`, f.error);
+        });
+      }
+  
       setSelectedUserIds(new Set());
+      if (onOpenChange) onOpenChange(false);
+      
     } catch (error) {
-      toast.error("Failed to send friend requests.");
+      toast.error("Unexpected error occurred");
       console.error(error);
+    } finally {
+      setIsSendingRequests(false);
     }
   };
-  
 
-  const usersToRender = allUsers;
-
-  const filteredUsers =
-  searchTerm.trim() === ""
+  const filteredUsers = searchTerm.trim() === ""
     ? []
-    : usersToRender.filter((user) => {
+    : allUsers.filter((user) => {
         const name = user.name || user.username;
         return (
           name.toLowerCase().includes(searchTerm.toLowerCase()) &&
           user.id !== currentUserId &&
-          !friends.find((f) => f.id === user.id)
+          !friends.some(f => f.id === user.id)
         );
       });
 
-  const selectedUsers = filteredUsers.filter((user) => selectedUserIds.has(user.id));
+  const selectedUsers = filteredUsers.filter(user => selectedUserIds.has(user.id));
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Add Users</DialogTitle>
-          <DialogDescription>Search and send friend requests to new users.</DialogDescription>
+          <DialogTitle>Add Friends</DialogTitle>
+          <DialogDescription>
+            Search users and send friend requests
+          </DialogDescription>
         </DialogHeader>
 
-        <Input
-          type="text"
-          placeholder="Search users..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full"
-        />
+        <div className="space-y-4">
+          <Input
+            type="text"
+            placeholder="Search users..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full"
+          />
 
-        {selectedUsers.length > 0 && (
-          <div className="flex flex-wrap gap-2 my-2" ref={parent}>
-            {selectedUsers.map((user) => (
-              <div
-                key={user.id}
-                className="flex items-center space-x-2 px-3 py-1 rounded-full bg-gray-100 text-sm"
-              >
-                <Avatar className="h-5 w-5">
-                  <AvatarImage src={user.avatarUrl || `https://avatar.vercel.sh/${user.username}`} />
-                </Avatar>
-                <span>{user.name || user.username}</span>
-                <button
-                  onClick={() => toggleUser(user.id)}
-                  className="hover:text-red-500"
-                >
-                  <X size={14} />
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-
-        <div className="relative max-h-64 overflow-y-auto pr-1">
-          <table className="w-full">
-            <tbody>
-              {filteredUsers.map((user) => (
-                <tr
+          {selectedUsers.length > 0 && (
+            <div className="flex flex-wrap gap-2" ref={parent}>
+              {selectedUsers.map((user) => (
+                <div
                   key={user.id}
-                  onClick={() => toggleUser(user.id)}
-                  className="cursor-pointer hover:bg-gray-50"
+                  className="flex items-center space-x-2 px-3 py-1 rounded-full bg-gray-100 text-sm"
                 >
-                  <td className="px-2 py-1 text-left w-1">
-                    <Avatar className="h-8 w-8 rounded-lg">
-                      <AvatarImage
-                        src={user.avatarUrl || `https://avatar.vercel.sh/${user.username}`}
-                      />
-                    </Avatar>
-                  </td>
-                  <td className="px-2 py-1 text-left w-full">
-                    {user.name || user.username}
-                  </td>
-                  <td className="px-2 py-1 text-right w-1">
-                    <Checkbox checked={selectedUserIds.has(user.id)} />
-                  </td>
-                </tr>
+                  <Avatar className="h-5 w-5">
+                    <AvatarImage src={user.avatarUrl || `https://avatar.vercel.sh/${user.username}`} />
+                  </Avatar>
+                  <span>{user.name || user.username}</span>
+                  <button
+                    onClick={() => toggleUser(user.id)}
+                    className="hover:text-red-500"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
               ))}
-              {filteredUsers.length === 0 && (
-                <tr>
-                  <td colSpan={3} className="text-center text-sm py-2 text-gray-500">
-                    No users found.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+            </div>
+          )}
+
+          <div className="border rounded-md max-h-64 overflow-y-auto">
+            {filteredUsers.length > 0 ? (
+              <table className="w-full">
+                <tbody>
+                  {filteredUsers.map((user) => (
+                    <tr
+                      key={user.id}
+                      onClick={() => toggleUser(user.id)}
+                      className="cursor-pointer hover:bg-gray-50"
+                    >
+                      <td className="px-4 py-3 flex items-center space-x-3">
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage
+                            src={user.avatarUrl || `https://avatar.vercel.sh/${user.username}`}
+                          />
+                        </Avatar>
+                        <div>
+                          <div className="font-medium">{user.name || user.username}</div>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <Checkbox 
+                          checked={selectedUserIds.has(user.id)} 
+                          onChange={() => toggleUser(user.id)}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <div className="p-4 text-center text-sm text-gray-500">
+                {searchTerm ? "No users found" : "Start typing to search for users"}
+              </div>
+            )}
+          </div>
         </div>
 
         <DialogFooter>
-          <DialogClose asChild>
-            <Button type="button" onClick={handleAddUsers}>
-              Send Requests
-            </Button>
-          </DialogClose>
+          <div className="flex justify-between w-full items-center">
+            <span className="text-sm text-gray-500">
+              {selectedUserIds.size} selected
+            </span>
+            <div className="space-x-2">
+              <DialogClose asChild>
+                <Button variant="outline">Cancel</Button>
+              </DialogClose>
+              <Button 
+                onClick={handleAddUsers}
+                disabled={selectedUserIds.size === 0 || isSendingRequests}
+              >
+                {isSendingRequests ? (
+                  "Sending..."
+                ) : (
+                  <>
+                    <UserPlus className="w-4 h-4 mr-2" />
+                    Send Requests
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>
