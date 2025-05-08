@@ -113,7 +113,7 @@ import { toast } from "sonner";
       
     if (loading) {
       return (
-        <div className="flex flex-col items-start justify-center h-screen pt-10 px-4">
+        <div className="flex flex-col items-center justify-center h-full w-full">
           <div className="flex space-x-2">
             <div className="h-4 w-4 bg-blue-700 rounded-full animate-bounce"></div>
             <div className="h-4 w-4 bg-blue-800 rounded-full animate-bounce delay-200"></div>
@@ -131,16 +131,15 @@ import { toast } from "sonner";
       );
     }
     return (
-        <div className="flex flex-col min-h-screen px-4 py-6 space-y-4">
+      <div className="flex flex-col h-full w-full px-4 py-6 space-y-4">
           <Input
             placeholder="Search pending requests..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full max-w-2xl mx-auto"
+            className="w-full mb-4"
           />
-          <div className="flex-1 max-w-2xl mx-auto w-full">
           {filteredSent.length === 0 ? (
-  <div className="bg-gray-50 border border-gray-200 text-gray-600 p-4 rounded text-center space-y-4">
+          <div className="bg-gray-50 border border-gray-200 text-gray-600 p-4 rounded flex-grow flex items-center justify-center">
     No pending friend requests
   </div>
 ) : (
@@ -188,6 +187,5 @@ import { toast } from "sonner";
   </ScrollArea>
 )}
           </div>
-        </div>
       );
   }

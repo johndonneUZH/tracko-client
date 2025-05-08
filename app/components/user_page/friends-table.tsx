@@ -67,7 +67,6 @@ export function FriendsTable() {
     if (!newFriendUsername.trim()) {
       return [];
     }
-
     return allUsers.filter(
       (user) =>
         user.username.toLowerCase().includes(newFriendUsername.toLowerCase()) &&
@@ -149,9 +148,8 @@ export function FriendsTable() {
             <div></div>
           )}
         </div>
-
         {filteredFriends.length === 0 ? (
-          <div className="bg-gray-50 border border-gray-200 text-gray-600 p-4 rounded flex-grow flex items-center justify-center">
+         <div className="bg-gray-50 border border-gray-200 text-gray-600 p-4 rounded flex-grow flex items-center justify-center">
             Go touch some grass, you have no friends
           </div>
         ) : (
@@ -166,8 +164,7 @@ export function FriendsTable() {
                       onChange={toggleSelectAll}
                     />
                   </th>
-                  <th className="text-left px-2 py-1">Name</th>
-                  <th className="text-right px-2 py-1 w-1">Status</th>
+                  <th className="text-left px-2 py-1">Select all</th>
                 </tr>
               </thead>
               <tbody>
