@@ -8,6 +8,7 @@ import { Avatar, AvatarImage } from "@/components/commons/avatar";
 import { Input } from "@/components/commons/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
+import { X } from "lucide-react";
 
 
 interface UserData {
@@ -129,7 +130,7 @@ export default function SentRequestsTable() {
   }
 
   return (
-    <div className="flex flex-col h-full w-full px-4 py-6 space-y-4">
+    <div className="flex flex-col h-full w-full px-4">
       <div className="flex flex-col flex-grow">
         <Input
           placeholder="Search sent requests..."
@@ -143,8 +144,8 @@ export default function SentRequestsTable() {
               <tbody>
                 {filteredSent.map((user) => (
                   <tr key={user.id} className="last:border-b-0">
-                    <td className="px-2 py-1 text-left w-1">
-                      <Avatar className="h-8 w-8 rounded-lg">
+                    <td className="px-2 py-2 text-left w-1">
+                      <Avatar className="h-6 w-6 rounded-md">
                         <AvatarImage
                           src={
                             user.avatarUrl ||
@@ -153,23 +154,16 @@ export default function SentRequestsTable() {
                         />
                       </Avatar>
                     </td>
-                    <td className="px-2 py-1 text-left whitespace-nowrap">
+                    <td className="text-left whitespace-nowrap">
                       {user.name || user.username}
                     </td>
                     <td className="px-2 py-1 text-right">
                       <div className="flex items-center justify-end space-x-2">
-                        <span
-                          className={`h-3 w-3 rounded-full inline-block ${
-                            user.status === "ONLINE"
-                              ? "bg-green-500"
-                              : "bg-red-500"
-                          }`}
-                        ></span>
                         <button
                           onClick={handleCancelRequest(user.id)}
                           className="text-gray-600 hover:cursor-pointer hover:underline text-sm"
                         >
-                          Cancel
+                          <X className="h-4 w-4 text-red-600" />
                         </button>
                       </div>
                     </td>

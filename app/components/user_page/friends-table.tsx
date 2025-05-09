@@ -9,7 +9,7 @@ import {
   AvatarImage,
 } from "@/components/commons/avatar";
 import { Input } from "@/components/commons/input";
-import { CirclePlus, Trash } from "lucide-react";
+import { UserPlus, Trash, X } from "lucide-react";
 import { Button } from "@/components/commons/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
@@ -110,6 +110,20 @@ export function FriendsTable() {
     }
   }
 
+  function removeFriend(friendId: string) {
+    return async () => {
+      const storedUserId = sessionStorage.getItem("userId");
+      if (!storedUserId) return;
+  
+      try {
+        await apiService.removeFriend(storedUserId, friendId);
+        await fetchData();
+      } catch (err) {
+        console.error(`Error removing friend ${friendId}:`, err);
+      }
+    };
+  }
+
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center h-full w-full">
@@ -131,23 +145,38 @@ export function FriendsTable() {
   }
 
   return (
-    <div className="flex flex-col h-full w-full px-4 py-6 space-y-4">
+    <div className="flex flex-col h-full w-full px-4">
       <div className="flex flex-col flex-grow">
-        <Input
-          placeholder="Search friends..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full mb-4"
-        />
-
-        <div className="flex justify-between items-center mb-2">
-          {selectedFriends.length > 0 ? (
-            <div className="text-sm text-blue-600">
-              {selectedFriends.length} friend(s) selected
-            </div>
-          ) : (
-            <div></div>
-          )}
+        <div className="flex flex-row space-x-4 justify-center"> 
+          <Input
+            placeholder="Search friends..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full mb-4"
+          />
+          <div className="flex gap-4 justify-center">
+            <AllUsersDialog
+              open={isDialogOpen}
+              onOpenChange={setIsDialogOpen}
+              users={filteredUsers}
+              onSelect={(user: User) => {
+                const storedUserId = sessionStorage.getItem("userId");
+                if (storedUserId && user) {
+                  apiService.sendFriendRequest(storedUserId, user.id).then(() => {
+                    setNewFriendUsername("");
+                    setIsDialogOpen(false);
+                  });
+                }
+              }}
+            >
+              <Button
+                className="h-9 w-9 flex gap-2"
+                onClick={() => setIsDialogOpen(true)}
+              >
+                <UserPlus className="w-4 h-4" />
+              </Button>
+            </AllUsersDialog>
+          </div>
         </div>
 
         {filteredFriends.length === 0 ? (
@@ -157,32 +186,11 @@ export function FriendsTable() {
         ) : (
           <ScrollArea className="flex-grow w-full rounded-md border">
             <table className="w-full table-auto">
-              <thead>
-                <tr>
-                  <th className="text-left px-2 py-1 w-1">
-                    <input
-                      type="checkbox"
-                      checked={selectedFriends.length === filteredFriends.length}
-                      onChange={toggleSelectAll}
-                    />
-                  </th>
-                  <th className="text-left px-2 py-1">Name</th>
-                  <th className="text-right px-2 py-1 w-1">Status</th>
-                </tr>
-              </thead>
               <tbody>
                 {filteredFriends.map((friend) => (
                   <tr key={friend.id}>
-                    <td className="px-2 py-1 text-left w-1">
-                      <input
-                        type="checkbox"
-                        checked={selectedFriends.includes(friend.id)}
-                        onChange={() => toggleSelectFriend(friend.id)}
-                        className="form-checkbox rounded"
-                      />
-                    </td>
-                    <td className="px-2 py-1 text-left flex items-center gap-2">
-                      <Avatar className="h-8 w-8 rounded-lg">
+                    <td className="px-1 py-2 text-left flex items-center gap-2">
+                      <Avatar className="h-6 w-6 rounded-md">
                         <AvatarImage
                           src={
                             friend.avatarUrl ||
@@ -192,14 +200,16 @@ export function FriendsTable() {
                       </Avatar>
                       <span>{friend.name || friend.username}</span>
                     </td>
-                    <td className="px-2 py-1 text-right w-1">
-                      <span
-                        className={`h-3 w-3 rounded-full inline-block ${
-                          friend.status === "ONLINE"
-                            ? "bg-green-500"
-                            : "bg-red-500"
-                        }`}
-                      ></span>
+                    <td className="align-middle px-2 py-1 w-1">
+                      <div className="flex items-center justify-center">
+                        <button
+                          onClick={removeFriend(friend.id)}
+                          aria-label="Close"
+                          className="hover:cursor-pointer"
+                        >
+                          <X className="h-4 w-4 text-red-600" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -207,42 +217,6 @@ export function FriendsTable() {
             </table>
           </ScrollArea>
         )}
-
-        <div className="flex justify-end pt-2 gap-4">
-          <AllUsersDialog
-            open={isDialogOpen}
-            onOpenChange={setIsDialogOpen}
-            users={filteredUsers}
-            onSelect={(user: User) => {
-              const storedUserId = sessionStorage.getItem("userId");
-              if (storedUserId && user) {
-                apiService.sendFriendRequest(storedUserId, user.id).then(() => {
-                  setNewFriendUsername("");
-                  setIsDialogOpen(false);
-                });
-              }
-            }}
-          >
-            <Button
-              className="h-10 flex items-center gap-2"
-              onClick={() => setIsDialogOpen(true)}
-            >
-              <CirclePlus className="w-5 h-5" />
-              Add Friends
-            </Button>
-          </AllUsersDialog>
-
-          <Button
-            variant="destructive"
-            size="sm"
-            onClick={handleRemoveSelected}
-            disabled={selectedFriends.length === 0 || removing}
-            className="h-10 flex items-center gap-2"
-          >
-            <Trash className="w-4 h-4" />
-            {removing ? "Removing..." : "Remove Selected"}
-          </Button>
-        </div>
       </div>
     </div>
   );

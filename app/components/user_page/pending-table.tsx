@@ -131,12 +131,12 @@ import { toast } from "sonner";
       );
     }
     return (
-        <div className="flex flex-col min-h-screen px-4 py-6 space-y-4">
+        <div className="flex flex-col px-4 h-full">
           <Input
             placeholder="Search pending requests..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full max-w-2xl mx-auto"
+            className="w-full max-w-2xl mx-auto mb-4"
           />
           <div className="flex-1 max-w-2xl mx-auto w-full">
           {filteredSent.length === 0 ? (
@@ -144,14 +144,14 @@ import { toast } from "sonner";
     No pending friend requests
   </div>
 ) : (
-  <ScrollArea className="h-full w-full rounded-md border">
-    <table className="w-full">
+  <div className="flex flex-col flex-grow h-full">
+  <ScrollArea className="h-full w-full rounded-md flex-grow border">
+    <table className="w-full table-auto">
       <tbody>
         {filteredSent.map((user) => (
-          <tr key={user.id} className="hover:bg-gray-50 transition-colors">
-            <td className="px-2 py-1 text-left w-1"></td>
-            <td className="px-2 py-1 text-left w-1">
-              <Avatar className="h-8 w-8 rounded-lg">
+          <tr key={user.id} className="transition-colors">
+            <td className="px-1 py-2 text-left w-1">
+              <Avatar className="h-6 w-6 rounded-md">
                 <AvatarImage
                   src={
                     user.avatarUrl ||
@@ -160,24 +160,24 @@ import { toast } from "sonner";
                 />
               </Avatar>
             </td>
-            <td className="px-2 py-1 text-left w-full">
+            <td className="text-left w-full px-1">
               {user.name || user.username}
             </td>
-            <td className="px-2 py-1">
+            <td className="px-1 py-2 align-middle">
               <div className="flex space-x-2">
                 <button
                   onClick={handleAcceptRequest(user.id)}
-                  className="p-2 rounded-full hover:bg-green-100 hover:cursor-pointer transition-colors"
+                  className="p-1 rounded-full hover:cursor-pointer transition-colors"
                   aria-label="Accept"
                 >
-                  <Check className="h-5 w-5 text-green-600" />
+                  <Check className="h-4 w-4 text-green-600" />
                 </button>
                 <button
                   onClick={handleDeclineRequest(user.id)}
-                  className="p-2 rounded-full hover:bg-red-100 hover:cursor-pointer transition-colors"
+                  className="p-1 rounded-full hover:cursor-pointer transition-colors"
                   aria-label="Decline"
                 >
-                  <X className="h-5 w-5 text-red-600" />
+                  <X className="h-4 w-4 text-red-600" />
                 </button>
               </div>
             </td>
@@ -186,6 +186,7 @@ import { toast } from "sonner";
       </tbody>
     </table>
   </ScrollArea>
+  </div>
 )}
           </div>
         </div>
