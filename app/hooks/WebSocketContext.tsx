@@ -28,6 +28,8 @@ interface WebSocketContextType {
   send: <T>(destination: string, body: T) => void;
   connectionState: ConnectionState;
   isConnected: boolean;
+  pendingRequests: boolean;
+  setPendingRequests: (value: boolean) => void;
 }
 
 /* ---------- CONTEXT ---------- */
@@ -39,6 +41,7 @@ export const WebSocketProvider = ({ children }: { children: React.ReactNode }) =
   const [connectionState, setConnectionState] = useState<ConnectionState>("disconnected");
 
   const isConnected = useMemo(() => connectionState === "connected", [connectionState]);
+  const [pendingRequests, setPendingRequests] = useState(false);
 
   // Initialize WebSocket connection
   useEffect(() => {
@@ -144,8 +147,10 @@ export const WebSocketProvider = ({ children }: { children: React.ReactNode }) =
       send,
       connectionState,
       isConnected,
+      pendingRequests,
+      setPendingRequests
     }),
-    [subscribe, unsubscribe, send, connectionState, isConnected]
+    [subscribe, unsubscribe, send, connectionState, isConnected, pendingRequests, setPendingRequests]
   );
 
   return (

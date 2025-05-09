@@ -64,7 +64,6 @@ export default function FriendsPage() {
             </Breadcrumb>
           </header>
   
-          {/* Full-screen Tabs and Table */}
           <div className="flex flex-col flex-grow w-full h-full">
             <Tabs
               value={tabValue}

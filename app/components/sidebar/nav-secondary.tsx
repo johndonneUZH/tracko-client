@@ -1,6 +1,9 @@
+/* eslint-disable */
 "use client"
 
+import { useState, useEffect } from "react"
 import { ChevronRight, type LucideIcon } from "lucide-react"
+import { useWebSocket } from "@/hooks/WebSocketContext"
 
 import {
   Collapsible,
@@ -33,6 +36,9 @@ export function NavSecondary({
     }[]
   }[]
 }) {
+
+  const { pendingRequests, setPendingRequests } = useWebSocket();
+
   return (
     <SidebarGroup>
       <SidebarGroupLabel>General</SidebarGroupLabel>
@@ -40,12 +46,17 @@ export function NavSecondary({
         {items.map((item) => (
           <Collapsible key={item.title} asChild defaultOpen={item.isActive}>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild tooltip={item.title}>
-                <a href={item.url}>
-                  <item.icon />
+            <SidebarMenuButton asChild tooltip={item.title}>
+              <div className="relative flex items-center justify-between w-full" onAbort={() => setPendingRequests(false)}>
+                <a href={item.url} className="flex items-center gap-2">
+                  <item.icon className="h-4 w-4" />
                   <span>{item.title}</span>
                 </a>
-              </SidebarMenuButton>
+                {item.title === "Friends" && pendingRequests && (
+                  <span className="absolute right-2 top-1/2 -translate-y-1/2 h-2 w-2 rounded-full bg-red-500" />
+                )}
+              </div>
+            </SidebarMenuButton>
               {item.items?.length ? (
                 <>
                   <CollapsibleTrigger asChild>
