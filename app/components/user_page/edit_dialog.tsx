@@ -38,7 +38,7 @@ const FormSchema = z.object({
   username: z.string().min(1),
   birthday: z.date().optional(),
   email: z.string().email().optional(),
-  newPassword: z.string().min(6, "Password must be at least 6 characters").optional(),
+  newPassword: z.string().optional(),
   confirmPassword: z.string().optional(),
 }).refine(data => {
   if (data.newPassword || data.confirmPassword) {
@@ -67,7 +67,6 @@ export function EditProfileDialog({ onProfileUpdated }: { onProfileUpdated: () =
       confirmPassword: "",
     },
   })
-  
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -129,15 +128,18 @@ export function EditProfileDialog({ onProfileUpdated }: { onProfileUpdated: () =
 
     try {
       await apiService.updateUser(userId, cleanedData)
-      await onProfileUpdated();
+      
+      const updatedUser = await apiService.getUser(userId) as User
+      setUser(updatedUser)
+    
+      await onProfileUpdated()
       toast.success("Profile updated successfully.")
-    }
-    catch (error) {
+    } catch (error) {
       console.error("Error updating user:", error)
       const errorMessage = error instanceof Error ? error.message : "An error occurred while updating the profile."
       toast.error(errorMessage)
-      return
     }
+    
   }
 
   if (loading) return <div>Loading...</div>
@@ -241,7 +243,7 @@ export function EditProfileDialog({ onProfileUpdated }: { onProfileUpdated: () =
               )}
             />
   
-            <FormField
+              <FormField
               control={form.control}
               name="confirmPassword"
               render={({ field }) => (
@@ -254,7 +256,6 @@ export function EditProfileDialog({ onProfileUpdated }: { onProfileUpdated: () =
                 </FormItem>
               )}
             />
-  
             <DialogFooter>
               <DialogClose asChild>
                 <Button type="submit">Save</Button>
