@@ -19,7 +19,7 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogClose,
-} from "@/components/project_browser/dialog"
+} from "@/components/ui/dialog"
 import {
   Form,
   FormControl,

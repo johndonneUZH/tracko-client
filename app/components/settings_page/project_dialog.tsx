@@ -22,7 +22,7 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogClose,
-} from "@/components/project_browser/dialog";
+} from "@/components/ui/dialog";
 import {
   Avatar,
   AvatarImage,
@@ -31,7 +31,7 @@ import { Plus, PlusCircle, UserPlus, X } from "lucide-react";
 import { DynamicIcon } from "lucide-react/dynamic";
 import { useEffect, useState } from "react";
 import { ApiService } from "@/api/apiService";
-import { Checkbox } from "@/components/project_browser/checkbox";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface Props {
   variant?: string;

@@ -13,9 +13,9 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogClose,
-} from "@/components/project_browser/dialog";
+} from "@/components/ui/dialog";
 import { Input } from "@/components/commons/input";
-import { Checkbox } from "@/components/project_browser/checkbox";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Idea } from "@/types/idea";
 import { ApiService } from "@/api/apiService";
 import { toast } from "sonner";

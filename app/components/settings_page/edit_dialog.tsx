@@ -12,7 +12,7 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogClose
-} from "@/components/project_browser/dialog"
+} from "@/components/ui/dialog"
 import { Input } from "@/components/commons/input"
 import { Label } from "@/components/commons/label"
 import { DynamicIcon } from 'lucide-react/dynamic';

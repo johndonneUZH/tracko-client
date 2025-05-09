@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { User } from "@/types/user";
 import { Button } from "@/components/commons/button";
-import { Checkbox } from "@/components/project_browser/checkbox";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@components/commons/input";
 import { useUserProjects } from "@/lib/browser_utils/useProjectStorage";
 import { toast } from "sonner";
@@ -18,7 +18,7 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogClose,
-} from "@/components/project_browser/dialog";
+} from "@/components/ui/dialog";
 import { UserPlus, X } from "lucide-react";
 import {
   Avatar,

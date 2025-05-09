@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/project_browser/dialog"
+} from "@/components/ui/dialog"
 
 import {
     Pencil,
