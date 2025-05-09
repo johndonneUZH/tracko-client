@@ -140,7 +140,22 @@ reason).
 | **RonaldDomi** | 01.05   | https://github.com/johndonneUZH/sopra-fs25-group-46-server/commit/11c1495a3a5680c9846ccf4b7d771e078898bb1f | SonarQube improvements | Make the code to standard |
 |                    | 01.05   | https://github.com/johndonneUZH/sopra-fs25-group-46-server/commit/3abce8219293e244fd004c922b7262c10741b95c | 68.5% test coverage | Sonarqube stuff |
 ---
+---
 
+## Contributions Week 12 - 2.05 to 9.05
+
+| **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
+| ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
+| **fabiotilor** | 5.05   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/pull/102/commits/3cd5a4d5bf70e4930cf86867ea7b5bf56a967861 | Cleaning the friends page| Components were all over the place and gave the users a headache |
+|                    |9.05  | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/1449e9202f551a42658b979b371bbf97598fbad3 | More uniform look and better user-experience when editing profile | Everything should work smoothly for M4 submission |
+| **[@githubUser2]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
+|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+
+---
 
 ## Template
 ---
