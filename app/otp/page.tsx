@@ -17,10 +17,12 @@ import {
   CardTitle,
 } from "@/components/commons/card"
 import { ApiService } from "@/api/apiService"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 
 export default function InputOTPDemo() {
   const apiService = new ApiService();
-  const expectedCode = "123456"; // Replace with dynamic OTP later
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [enteredCode, setEnteredCode] = useState("");
@@ -34,13 +36,26 @@ export default function InputOTPDemo() {
   }, []);
 
   useEffect(() => {
-    const tryLogin = async () => {
+    const verifyAndLogin = async () => {
       try {
         const response = await apiService.rawPost("/auth/login", {
           username,
-          password: expectedCode,
+          password: enteredCode,
         });
-        console.log("Login success:", response);
+
+        const token = response.headers.get("Authorization");
+        const userId = response.headers.get("Userid");
+
+        if (!token || !userId) {
+          throw new Error("Missing token or userId in response headers");
+        }
+
+        sessionStorage.setItem("userId", userId);
+        sessionStorage.setItem("token", token);
+
+        toast.success("Loin successful! Reset your password now.");
+        setStatus("success");
+        router.push(`/users/${userId}`);
       } catch (error) {
         console.error("Login failed:", error);
         setStatus("error");
@@ -48,16 +63,10 @@ export default function InputOTPDemo() {
     };
 
     if (enteredCode.length === 6) {
-      if (enteredCode === expectedCode) {
-        setStatus("success");
-        tryLogin();
-      } else {
-        setStatus("error");
-      }
-    } else {
       setStatus("idle");
+      verifyAndLogin();
     }
-  }, [enteredCode, expectedCode, username]);
+  }, [enteredCode, username, apiService, router]);
 
   return (
     <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
@@ -93,10 +102,10 @@ export default function InputOTPDemo() {
             </InputOTPGroup>
           </InputOTP>
           {status === "success" && (
-            <p className="text-green-600 font-medium">✅ Code verified successfully!</p>
+            <p className="text-green-600 font-medium">✅ Code verified and logged in successfully!</p>
           )}
           {status === "error" && (
-            <p className="text-red-600 font-medium">❌ Incorrect code or login failed. Please try again.</p>
+            <p className="text-red-600 font-medium">❌ Login failed. Please check the code and try again.</p>
           )}
         </CardContent>
       </Card>
