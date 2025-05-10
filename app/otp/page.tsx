@@ -102,7 +102,7 @@ export default function InputOTPDemo() {
             </InputOTPGroup>
           </InputOTP>
           {status === "success" && (
-            <p className="text-green-600 font-medium">✅ Code verified and logged in successfully!</p>
+            <p className="text-green-600 font-medium"></p>
           )}
           {status === "error" && (
             <p className="text-red-600 font-medium">❌ Login failed. Please check the code and try again.</p>
