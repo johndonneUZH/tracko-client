@@ -189,15 +189,7 @@ export function FriendsTable() {
                       </Avatar>
                       <span>{friend.name || friend.username}</span>
                     </td>
-                    <td className="px-2 py-1 text-right w-1">
-                      <span
-                        className={`h-3 w-3 rounded-full inline-block ${
-                          friend.status === "ONLINE"
-                            ? "bg-green-500"
-                            : "bg-red-500"
-                        }`}
-                      ></span>
-                    </td>
+                   
                   </tr>
                 ))}
               </tbody>
