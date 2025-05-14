@@ -49,9 +49,6 @@ export function NavSecondary({
               <a href={item.url} className="group relative flex items-center w-full gap-2 px-3 py-2 rounded-md hover:bg-accent transition-colors">
                 <item.icon className="h-4 w-4 shrink-0" />
                 <span className="sidebar-item-text truncate">{item.title}</span>
-                {item.title === "Friends" && pendingRequests && (
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 h-2 w-2 rounded-full bg-red-500" />
-                )}
               </a>
             </SidebarMenuButton>
               {item.items?.length ? (

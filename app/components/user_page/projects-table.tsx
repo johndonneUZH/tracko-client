@@ -3,6 +3,12 @@ import { ApiService } from "@/api/apiService"
 import { useRouter } from "next/navigation";
 import { getComponentFromString } from "@/components/sidebar/iconMappings";
 import { Project } from "@/types/project";
+import { 
+  Card, 
+  CardHeader, 
+  CardTitle, 
+  CardContent 
+} from "@/components/commons/card";
 
 export function ProjectsTable() {
   const apiService = new ApiService();
@@ -67,45 +73,43 @@ export function ProjectsTable() {
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full border-collapse">
-        <thead>
-          <tr className="bg-gray-50">
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Icon</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Members</th>
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
-          {projects.map((project) => (
-            <tr key={project.projectId} className="hover:bg-gray-50">
-              <td className="px-6 py-4 whitespace-nowrap">
-              <div className="flex items-center">
-                {(() => {
-                    const Icon = getComponentFromString(project.projectLogoUrl || "University");
-                    return Icon ? <Icon className="w-5 h-5 text-gray-500" /> : null;
-                })()}
-              </div>
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <div className="text-sm font-medium text-gray-900">
-                  {project.projectName}
+    <div>
+      <h2 className="text-lg font-semibold text-gray-900 mb-2">Projects</h2>
+      <div className="relative">
+        <div className="flex overflow-x-auto gap-1 pr-6">
+          {projects.map((project) => {
+            const Icon = getComponentFromString(project.projectLogoUrl || "University");
+            const isOwner = project.ownerId === userId;
+
+            return (
+              <div
+                key={project.projectId}
+                className="flex flex-col items-start"
+              >
+                <div className="flex items-center gap-2 mr-8">
+                  <div className="w-12 h-12 rounded-md bg-primary flex items-center justify-center">
+                    {Icon && <Icon className="w-6 h-6 text-white" />}
+                  </div>
+
+                  <div className="flex flex-col">
+                    <div className="text-sm font-semibold text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis max-w-[200px]">
+                      {project.projectName}
+                    </div>
+
+                    <div
+                      className={`mt-1 text-xs font-medium rounded-full px-2 py-0.5 inline-block self-start
+                        ${isOwner ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}`}
+                    >
+                      {isOwner ? 'Admin' : 'Contributor'}
+                    </div>
+                  </div>
                 </div>
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                    ${project.ownerId === userId ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}`}>
-                    {project.ownerId === userId ? 'Admin' : 'Contributor'}
-                </span>
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {project.projectMembers.length + 1 || 1}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+              </div>
+            );
+          })}
+        </div>
+        <div className="pointer-events-none absolute right-0 top-0 h-full w-20 bg-gradient-to-l from-white to-transparent" />
+      </div>
     </div>
   );
 }

@@ -150,14 +150,14 @@ export default function Page() {
             </Breadcrumb>
           </div>
         </header>
-        <div className="m-4 space-y-4">
+        <div className="m-4 mt-0 space-y-4">
           <div className="flex justify-between">
             <div className="flex space-x-4 items-center">
               <Avatar className="h-16 w-16 rounded-lg">
                 <AvatarImage src={userData?.avatarUrl || "https://avatar.vercel.sh/john"} />
               </Avatar>
               <div>
-                <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
+                <h3 className="text-2xl font-semibold tracking-tight">
                   {userData?.name || "Loading..."}
                 </h3>
                 <p className="leading-7">
@@ -173,22 +173,18 @@ export default function Page() {
             </div>
           </div>
           <div>
-            <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
-              About
-            </h3>
-            <Separator />
             <div className="space-y-2 my-4">
               <div className="flex gap-2 items-center">
                 <Mail />
                 <p className="leading-7">
-                  Email: {userData?.email}
+                  {userData?.email}
                 </p>
               </div>
               {userData?.birthday && (
                 <div className="flex gap-2 items-center">
                   <Gift />
                   <p className="leading-7">
-                    Birthday: {new Date(userData.birthday).toLocaleDateString("en-US", {
+                    {new Date(userData.birthday).toLocaleDateString("en-US", {
                     year: "numeric",
                     month: "long",
                     day: "numeric",
@@ -199,41 +195,23 @@ export default function Page() {
               <div className="flex gap-2 items-center">
                 <Calendar1 />
                 <p className="leading-7">
-                  Joined: {userData?.createAt ? new Date(userData.createAt).toLocaleDateString("en-US", {
+                  {userData?.createAt ? new Date(userData.createAt).toLocaleDateString("en-US", {
                     year: "numeric",
                     month: "long",
                     day: "numeric",
                   }) : "Unknown"}
                 </p>
               </div>
-              <div className="flex gap-2 items-center">
-                <ShieldCheck />
-                <p className="leading-7">
-                  Last Active: {makePrettyLastLogin(userData?.lastLoginAt)}
-                </p>
-              </div>
             </div>
           </div>
           <div>
-            <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
-              Projects
-            </h3>
-            <Separator />
-            <div className="space-y-2 my-4">
-              <div className="my-6 w-full overflow-y-auto">
-                <ProjectsTable/>
-              </div>
+            <div className="my-2 overflow-y-auto">
+              <ProjectsTable/>
             </div>
           </div>
           <div>
-            <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
-              Activity
-            </h3>
-            <Separator />
-            <div className="space-y-2 my-4">
-              <div className="my-6 w-full overflow-y-auto">
-                <ContributionsChart/>
-              </div>
+            <div className="w-full overflow-y-auto">
+              <ContributionsChart/>
             </div>
           </div>
         </div>
