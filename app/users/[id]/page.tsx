@@ -32,14 +32,11 @@ import {
 } from "@/components/commons/avatar"
 
 import { ProjectsTable } from "@/components/user_page/projects-table"
-import { FriendsTable } from "@/components/user_page/friends-table"
 
 import {
   Mail,
   Gift,
   Calendar1,
-  ShieldCheck,
-  Pencil,
   LogOut,
 } from "lucide-react"
 import { ContributionsChart } from "@/components/user_page/contributions-chart";
@@ -167,8 +164,9 @@ export default function Page() {
             </div>
             <div className="space-x-4 items-center">
               <EditProfileDialog onProfileUpdated={fetchUserData} />
-              <Button className="min-w-25 w-auto py-3" onClick= {handleLogout}>
-                <LogOut/> Log Out
+              <Button className="w-auto py-3" onClick={handleLogout}>
+                <LogOut />
+                <span className="hidden md:inline">Log Out</span>
               </Button>
             </div>
           </div>

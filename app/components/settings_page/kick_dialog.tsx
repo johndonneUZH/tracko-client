@@ -57,7 +57,7 @@ export function KickDialog({ members, onAddMembers, ownerId }: Props) {
       console.log("Removing members with IDs:", idsToRemove);
       await removeFriends(idsToRemove);
       await onAddMembers();
-      toast.success("Members successfully removed from the project.");
+      toast.success("Members removed successfully.");
     } catch (error) {
       toast.error("Failed to add friends to the project.");
       console.error(error);
@@ -75,14 +75,13 @@ export function KickDialog({ members, onAddMembers, ownerId }: Props) {
     <div>
       <Dialog>
         <DialogTrigger asChild>
-          <Button className="min-w-25 w-auto py-3" variant="destructive">
+          <Button className="w-auto py-3" variant="destructive">
             <UserMinus />
-            Kick Members
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Kick Members</DialogTitle>
+            <DialogTitle>Remove Members</DialogTitle>
             <DialogDescription>Select members to remove from your project.</DialogDescription>
           </DialogHeader>
 

@@ -54,7 +54,7 @@ export function FriendsDialog({ friends, onAddFriends }: Props) {
     try {
       await addFriends(idsToAdd);
       await onAddFriends();
-      toast.success("Friends successfully added to the project.");
+      toast.success("Friends added successfully.");
     } catch (error) {
       toast.error("Failed to add friends to the project.");
       console.error(error);
@@ -72,9 +72,8 @@ export function FriendsDialog({ friends, onAddFriends }: Props) {
     <div>
       <Dialog>
         <DialogTrigger asChild>
-          <Button className="min-w-25 w-auto py-3" variant="outline">
+          <Button className="w-auto py-3 ">
             <UserPlus />
-            Add Friends
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
@@ -173,7 +172,7 @@ export function FriendsDialog({ friends, onAddFriends }: Props) {
           <DialogFooter>
             <DialogClose asChild>
             <Button type="button" onClick={handleAddFriends}>
-                Select
+                Add
               </Button>
             </DialogClose>
           </DialogFooter>

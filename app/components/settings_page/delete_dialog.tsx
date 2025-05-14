@@ -27,7 +27,7 @@ export function DeleteDialog() {
       <DialogTrigger asChild>
         <Button variant="destructive">
           <Trash2/>
-          Delete Project
+          <span className="hidden md:inline">Delete</span>
         </Button>
       </DialogTrigger>
       <DialogContent>

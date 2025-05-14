@@ -6,13 +6,11 @@ import React, { useEffect, useState } from "react";
 import { SidebarProvider } from "@/components/sidebar/sidebar";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SidebarTrigger } from "@/components/sidebar/sidebar";
-import { Button } from "@/components/commons/button"
 import { useRouter } from "next/navigation";
 import { ApiService } from "@/api/apiService";
 import { MembersTable } from "@/components/settings_page/members_table";
 import { EditDialog } from "@/components/settings_page/edit_dialog";
-import { useProject } from '@/hooks/useProject'
-import { NewProject } from "@/components/commons/NewProject";
+import { useProject } from '@/hooks/useProject';
 import { FriendsDialog } from "@/components/settings_page/friends_dialog";
 import { KickDialog } from "@/components/settings_page/kick_dialog";
 import { User } from "@/types/user";
@@ -149,8 +147,7 @@ export default function SettingsPage() {
               </BreadcrumbList>
             </Breadcrumb>
           </header>
-          {!currentProjectId ? <NewProject/> : (
-            <div className="m-4 space-y-4">
+            <div className="m-4 mt-0 space-y-4">
               <div className="flex justify-between">
                 <div className="flex space-x-4 items-center">
                   <div className="flex aspect-square items-center justify-center rounded-lg text-sidebar-primary-foreground">
@@ -168,12 +165,12 @@ export default function SettingsPage() {
                 <div className="space-x-4 items-center">
                   {isOwner ? (
                     <div className="space-x-4">
-                      <DeleteDialog />
                       <EditDialog 
                         projectData={projectData}
                         reload={reload}
                         sidebarReload={sidebarReload}
                       />
+                      <DeleteDialog />
                     </div>
                   ) : (
                     <div className="space-x-4">
@@ -190,28 +187,22 @@ export default function SettingsPage() {
                     day: "numeric",
                   }) : "Unknown"}
                 </p>
-                <p className="leading-7">
-                  Last updated: {projectData?.updatedAt ? new Date(projectData.updatedAt).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  }) : "Unknown"}
-                </p>
               </div>
               <div>
-                <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight mb-2">
-                  Members
-                </h3>
-                <MembersTable ownerId={projectData?.ownerId} members={members}/>
-                {isOwner && (
-                  <div className="flex flex-row space-x-4 mt-8">
-                    <FriendsDialog friends={friends.filter(friend => !members.some(member => member.id === friend.id))} onAddFriends={reload} />
-                    <KickDialog members={members} onAddMembers={reload} ownerId={projectData?.ownerId} />
+                <div className="flex flex-row justify-between items-end mb-2">
+                  <div>
+                    <h3 className="text-sm font-semibold text-green-700 bg-green-100 rounded-full px-2 py-1 w-min">Admin</h3>
                   </div>
-                )}
+                  {isOwner && (
+                    <div className="flex flex-row space-x-4">
+                      <FriendsDialog friends={friends.filter(friend => !members.some(member => member.id === friend.id))} onAddFriends={reload} />
+                      <KickDialog members={members} onAddMembers={reload} ownerId={projectData?.ownerId} />
+                    </div>
+                  )}
+                </div>
+                <MembersTable ownerId={projectData?.ownerId} members={members}/>
               </div>
             </div>
-          )}
         </div>
       </div>
     </SidebarProvider>

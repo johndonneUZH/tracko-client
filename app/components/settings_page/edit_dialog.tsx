@@ -79,8 +79,9 @@ export function EditDialog( {projectData, reload, sidebarReload} : Props) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="min-w-25 w-auto py-3">
-            <Pencil/> Edit
+        <Button className="w-auto py-3">
+            <Pencil/> 
+            <span className="hidden md:inline">Edit</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">

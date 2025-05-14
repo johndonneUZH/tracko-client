@@ -4,8 +4,7 @@ import React, { use, useEffect, useState } from "react";
 import { User } from "@/types/user";
 import { useRouter } from "next/navigation";
 import { ApiService } from "@/api/apiService";
-import { Button } from "@/components/commons/button";
-import { UserMinus } from "lucide-react";
+import { useAutoAnimate } from '@formkit/auto-animate/react'
 
 import {
     Avatar,
@@ -21,6 +20,7 @@ export function MembersTable( { ownerId, members } : Props) {
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
     const apiService = new ApiService();
+    const [parent, enableAnimations] = useAutoAnimate()
     
     if (error) {
         return (
@@ -39,40 +39,61 @@ export function MembersTable( { ownerId, members } : Props) {
     }
     
     return (
-        <table className="w-full table-fixed">
-            <thead>
-                <tr className="bg-gray-50">
-                    <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Icon</th>
-                    <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                    <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                    <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                {members.map((member) => (
-                    <tr key={member.id} className="border-b">
-                        <td className="px-2 py-1 text-left w-full">
-                            <Avatar className="h-8 w-8 rounded-lg">
-                                <AvatarImage src={member.avatarUrl || `https://avatar.vercel.sh/${member.username}`} />
-                            </Avatar>
-                        </td>
-                        <td className="px-2 py-1 text-left w-full">
+        <div className="space-y-6">
+            
+            <div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                {members
+                    .filter((m) => m.id === ownerId)
+                    .map((member) => (
+                    <div key={member.id} className="flex items-start gap-3 p-3 border rounded-lg">
+                        <Avatar className="h-10 w-10 rounded-md">
+                        <AvatarImage
+                            src={member.avatarUrl || `https://avatar.vercel.sh/${member.username}`}
+                        />
+                        </Avatar>
+                        <div>
+                        <div className="text-sm font-semibold text-gray-900">
                             {member.name || member.username}
-                        </td>
-                        <td className="px-2 py-1 text-left w-full">
-                            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                ${ownerId === member.id ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}`}>
-                                {ownerId === member.id ? 'Admin' : 'Contributor'}
-                            </span>
-                        </td>
-                        <td className="px-2 py-1 text-left w-full">
-                            <span className={`h-3 w-3 rounded-full inline-block ${
-                                member.status === "ONLINE" ? "bg-green-500" : "bg-red-500"
-                            }`}></span>
-                        </td>
-                    </tr>
-                ))}
-            </tbody>
-        </table>
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                            @{member.username}
+                        </div>
+                        </div>
+                    </div>
+                    ))}
+                </div>
+            </div>
+            
+            {members.length > 1 && (
+            <div>
+                <h3 className="text-sm font-semibold text-blue-700 bg-blue-100 rounded-full mb-2 px-2 py-1 w-min">Contributors</h3>
+                <div 
+                    className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
+                    ref={parent}
+                >
+                {members
+                    .filter((m) => m.id !== ownerId)
+                    .map((member) => (
+                    <div key={member.id} className="flex items-start gap-3 p-3 border rounded-lg">
+                        <Avatar className="h-10 w-10 rounded-md">
+                        <AvatarImage
+                            src={member.avatarUrl || `https://avatar.vercel.sh/${member.username}`}
+                        />
+                        </Avatar>
+                        <div>
+                        <div className="text-sm font-semibold text-gray-900">
+                            {member.name || member.username}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                            @{member.username}
+                        </div>
+                        </div>
+                    </div>
+                    ))}
+                </div>
+            </div>
+            )}
+        </div>
     );
 }
