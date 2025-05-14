@@ -24,10 +24,6 @@ import {
   BreadcrumbSeparator,
 } from "@/components/commons/breadcrumb";
 
-import {
-  Trash2
-} from "lucide-react"
-
 import { DynamicIcon } from 'lucide-react/dynamic';
 import { DeleteDialog } from "@/components/settings_page/delete_dialog";
 import { LeaveDialog } from "@/components/settings_page/leave_dialog";
@@ -188,7 +184,7 @@ export default function SettingsPage() {
                   }) : "Unknown"}
                 </p>
               </div>
-              <div>
+              <div className="mb-8">
                 <div className="flex flex-row justify-between items-end mb-2">
                   <div>
                     <h3 className="text-sm font-semibold text-green-700 bg-green-100 rounded-full px-2 py-1 w-min">Admin</h3>
