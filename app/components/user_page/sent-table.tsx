@@ -151,16 +151,10 @@ export default function SentRequestsTable() {
                       </td>
                       <td className="px-4 py-3 text-right">
                         <div className="flex items-center justify-end space-x-4">
-                          <span
-                            className={`h-3 w-3 rounded-full ${
-                              user.status === "ONLINE"
-                                ? "bg-green-500"
-                                : "bg-red-500"
-                            }`}
-                          />
+                          
                           <button
                             onClick={() => handleCancelRequest(user.id)}
-                            className="text-sm text-red-600 hover:text-red-800 hover:underline"
+                            className="text-sm text-red-600 hover:text-red-800 hover:underline hover:cursor-pointer"
                             disabled={loading}
                           >
                             {loading ? "Canceling..." : "Cancel"}

@@ -18,8 +18,6 @@ import { InteractiveHoverButton } from "@/components/commons/interactive-hover-b
 import { useState } from "react";
 import { ApiService } from "@/api/apiService";
 import { generateUUID } from '@/utils/uuid';
-import { User } from "@/types/user";
-
 
 export function ForgotPasswordForm({
   className,
@@ -30,70 +28,59 @@ export function ForgotPasswordForm({
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  const sendOTPEmail = (otp: string, time: string, email: string ) => {
-   
+  // Function to send OTP to user's email using emailjs
+  const sendOTPEmail = (otp: string, time: string, email: string) => {
     const templateParams = {
       email: email,
-      passcode: otp, 
+      passcode: otp,
       time: time,
     };
-  
-    emailjs.send('service_r6ro5ll', 'template_wto094l', templateParams, 'lO_gHOhcpjg1xZ_09')
-      .then(response => {
+
+    emailjs
+      .send('service_r6ro5ll', 'template_wto094l', templateParams, 'lO_gHOhcpjg1xZ_09')
+      .then((response) => {
         console.log('Success!', response.status, response.text);
       })
-      .catch(err => {
+      .catch((err) => {
         console.error('Failed...', err);
       });
   };
 
   const handleForgotPassword = async (e: React.FormEvent) => {
-    e.preventDefault();  
+    e.preventDefault();
     setError(null);
-  
+
     if (!email) {
       setError("Please enter your email address.");
       return;
     }
-  
+
     try {
-      const response = await apiService.getUsers();
-      const users = response as User[];
-  
-      const existingUser = users.find(
-        (user) => user.email.toLowerCase() === email.toLowerCase()
-      );
-  
-      if (existingUser) {
-        console.log("User found:", existingUser);
-  
-        const now = new Date();
-        const expiryTime = new Date(now.getTime() + 15 * 60000); // 15 minutes
-        const time = expiryTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        const otp = generateUUID().trim().substring(0, 6); // 6-digit OTP
-        console.log("Generated OTP:", otp);
-  
-        await apiService.updateUser(existingUser.id, {
-          ...existingUser,
-          password: otp,
-        });
-  
-        // sendOTPEmail(otp, time, email);
-  
-        sessionStorage.setItem("email", existingUser.email);
-        sessionStorage.setItem("username", existingUser.username);
-  
+      const now = new Date();
+      const expiryTime = new Date(now.getTime() + 15 * 60000); // 15 minutes
+      const time = expiryTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const otp = generateUUID().trim().substring(0, 6); // 6-digit OTP
+
+      const response = await apiService.checkEmailExists(email) as { exists: boolean; username?: string };
+
+      if (response.exists) {
+        sendOTPEmail(otp, time, email);
+
+        await apiService.resetPasswordWithOTP(email, otp);
+
+        sessionStorage.setItem("email", email);
+        sessionStorage.setItem("username", response.username || "");
+
         router.push("/otp");
       } else {
-        setError("This email address is not associated with any account.");
+        setError("No account found with that email address.");
       }
     } catch (error) {
-      console.error("Error checking email or updating password:", error);
+      console.error("Error processing forgot password request:", error);
       setError("An error occurred while processing your request. Please try again later.");
     }
   };
-  
-  
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="relative rounded-lg">

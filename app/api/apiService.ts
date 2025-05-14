@@ -184,6 +184,22 @@ export class ApiService {
     );
   }
 
+  async checkEmailExists(email: string) {
+    const response = await fetch(`${getApiDomain()}/auth/check-email`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+    });
+
+    if (!response.ok) {
+        throw new Error('Failed to check email');
+    }
+
+    return response.json(); 
+}
+
   public async rawPost(endpoint: string, body: Record<string, unknown>): Promise<Response> {
     const response = await fetch(`${this.baseURL}${endpoint}`, {
       method: "POST",
@@ -265,18 +281,22 @@ export class ApiService {
    * @param data - The payload to update.
    * @returns JSON data of type T.
    */
-  public async put<T>(endpoint: string, data: unknown): Promise<T> {
+  public async put<T>(endpoint: string, data: unknown, options?: { skipAuth?: boolean }): Promise<T> {
     const url = `${this.baseURL}${endpoint}`;
+    const headers = options?.skipAuth
+        ? this.defaultHeaders 
+        : this.buildHeaders();
+
     const res = await fetch(url, {
-      method: "PUT",
-      headers: this.buildHeaders(),
-      body: JSON.stringify(data),
+        method: "PUT",
+        headers,
+        body: JSON.stringify(data),
     });
     return this.processResponse<T>(
-      res,
-      "An error occurred while updating the data.\n",
+        res,
+        "An error occurred while updating the data.\n",
     );
-  }
+}
 
   public async updateUser<T>(userId: string, data: unknown): Promise<T> {
     const url = `${this.baseURL}${'/users/'}${userId}`;
@@ -388,6 +408,23 @@ export class ApiService {
       "An error occurred while leaving the project.\n",
     );
   }
+
+  /**
+ * Method to reset the password using OTP.
+ * @param email - The user's email.
+ * @param otp - The OTP to set as the new password.
+ * @returns JSON response from the server.
+ */
+public async resetPasswordWithOTP(email: string, otp: string): Promise<any> {
+  const endpoint = "/auth/reset-password-with-otp";
+  const data = {
+    email,
+    otp,  
+  };
+
+  return this.put(endpoint, data, { skipAuth: true }); 
+}
+
 
   /**
    * DELETE request.
