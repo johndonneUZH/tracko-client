@@ -3,7 +3,6 @@
 
 import { useState, useEffect } from "react"
 import { ChevronRight, type LucideIcon } from "lucide-react"
-import { useWebSocket } from "@/hooks/WebSocketContext"
 
 import {
   Collapsible,
@@ -37,7 +36,7 @@ export function NavSecondary({
   }[]
 }) {
 
-  const { pendingRequests, setPendingRequests } = useWebSocket();
+  const [pendingRequests, setPendingRequests] = useState(true)
 
   return (
     <SidebarGroup>
@@ -47,15 +46,13 @@ export function NavSecondary({
           <Collapsible key={item.title} asChild defaultOpen={item.isActive}>
             <SidebarMenuItem>
             <SidebarMenuButton asChild tooltip={item.title}>
-              <div className="relative flex items-center justify-between w-full" onAbort={() => setPendingRequests(false)}>
-                <a href={item.url} className="flex items-center gap-2">
-                  <item.icon className="h-4 w-4" />
-                  <span>{item.title}</span>
-                </a>
+              <a href={item.url} className="group relative flex items-center w-full gap-2 px-3 py-2 rounded-md hover:bg-accent transition-colors">
+                <item.icon className="h-4 w-4 shrink-0" />
+                <span className="sidebar-item-text truncate">{item.title}</span>
                 {item.title === "Friends" && pendingRequests && (
-                  <span className="absolute right-2 top-1/2 -translate-y-1/2 h-2 w-2 rounded-full bg-red-500" />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 h-2 w-2 rounded-full bg-red-500" />
                 )}
-              </div>
+              </a>
             </SidebarMenuButton>
               {item.items?.length ? (
                 <>

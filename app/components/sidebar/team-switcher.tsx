@@ -77,7 +77,7 @@ export function TeamSwitcher({ teams }: {
   return (
     <>
     <SidebarMenu>
-      <SidebarMenuItem>
+      <SidebarMenuItem className="relative z-50">
         {!activeTeam ? (
           <ProjectsDialog variant="front"/>
         ) : (
