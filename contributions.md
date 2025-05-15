@@ -131,8 +131,8 @@ reason).
 | ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
 | **fabiotilor** | 30.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/pull/96/commits/c10da95a2793cc09727cb682a089183cfcf7a55f | Cleaning up the friends page and adding deleting friends | Friends are used to add to projects. |
 |                    | 01.05   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/c10da95a2793cc09727cb682a089183cfcf7a55f | Reworking UI and flow of one-time-password | To reduce number of pages |
-| **[@githubUser2]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **manueltuor** | 20.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/fa91683ecccca5685d44dc02ff0b8a003c04fae6 | Created the UI for the changelog table | to keep track of dashboard changes |
+|                    | 20.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/0c0f6ef3d3a13271d9d93d0a35ac7f4e9c941deb | setup all changelog charts | to distinguish between types of contributions |
 | **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
@@ -148,8 +148,8 @@ reason).
 | ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
 | **fabiotilor** | 5.05   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/pull/102/commits/3cd5a4d5bf70e4930cf86867ea7b5bf56a967861 | Cleaning the friends page| Components were all over the place and gave the users a headache |
 |                    |9.05  | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/1449e9202f551a42658b979b371bbf97598fbad3 | More uniform look and better user-experience when editing profile | Everything should work smoothly for M4 submission |
-| **[@githubUser2]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **manueltuor** | 24.4   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/f2b4ce7beaa8b2f55b4c231304a63c6e6d617e48 | refined the dashboard UI | to make the whole application look more uniform |
+|                    | 9.05   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/e8849af1ad2c18e27d2f60bcbb3bc2a082421ef6 | code cleanup | deleted unnecessary modules and files |
 | **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
@@ -160,12 +160,11 @@ reason).
 ## Template
 ---
 
-## Contributions Week X - [Begin Date] to [End Date]
+## Contributions Week 13 - 9.05 to 16.05
 
 | **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
 | ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
-| **[@githubUser1]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **manueltuor** |  9.05 - 15.05  | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/ac2867e75cc0482c89b702deab591d968201ba02 | refined entire UI | tried to make everything look more uniform and added last touches |
 | **[@githubUser2]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 | **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
