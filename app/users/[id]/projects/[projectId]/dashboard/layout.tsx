@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from "react";
-import { ChevronLeft, ChevronRight, MessageSquare } from "lucide-react";
+import { ChevronLeft, ChevronRight, MessageCircle } from "lucide-react";
 import { RealtimeCursors } from '@/components/magicui/realtime-cursors';
 import { RealtimeChat } from '@/components/magicui/realtime-chat';
 import { useParams, useRouter } from "next/navigation";
@@ -13,7 +13,8 @@ import { useIdeas } from "@/lib/dashboard_utils/useIdeaStorage";
 import ProjectDashboard from "@/components/dashboard_Project/ProjectDashboard";
 import NewIdeaButton from "@/components/dashboard_Project/NewIdeaButton";
 import AiIdeaButton from "@/components/dashboard_Project/AIIdeabutton";
-import { AiDialog } from "@/components/dashboard_Project/AIDialog"; 
+import { AiDialog } from "@/components/dashboard_Project/AIDialog";
+import { DynamicIcon } from 'lucide-react/dynamic';
 
 import IdeaModal from "@/components/dashboard_Project/IdeaModal";
 import { useEffect, useState, useMemo } from "react";
@@ -35,6 +36,16 @@ import {
 import { User } from '@/types/user';
 import NewReport from "@/components/dashboard_Project/NewReport";
 
+interface ProjectData {
+  projectName: string;
+  projectDescription: string;
+  projectMembers: string[];
+  ownerId: string;
+  createdAt: string;
+  updatedAt: string;
+  projectLogoUrl: string;
+}
+
 export default function ProjectLayout({
   children,
 }: {
@@ -51,6 +62,8 @@ export default function ProjectLayout({
   const [isRightSidebarCollapsed, setIsRightSidebarCollapsed] = useState(false);
   const [projectName, setProjectName] = useState<string>("");
   const [members, setMembers] = useState<User[]>([]);
+  const [projectData, setProjectData] = useState<ProjectData | null>(null);
+  const iconName = (projectData?.projectLogoUrl.toLowerCase() || "university") as any
 
   const apiService = useMemo(() => new ApiService(), []);
 
@@ -76,6 +89,27 @@ export default function ProjectLayout({
     }
     fetchUser();
   }, [id, apiService]);
+
+  useEffect(() => {
+    const fetchProjectData = async () => {
+      const projectId = sessionStorage.getItem("projectId");
+      const token = sessionStorage.getItem("token");
+  
+      if (!projectId || !token) {
+        router.push("/login");
+        return;
+      }
+  
+      try {
+        const data = await apiService.get<ProjectData>(`/projects/${projectId}`)
+        setProjectData(data);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+  
+    fetchProjectData();
+  }, [currentProjectId]);
 
   useEffect(() => {
     const fetchMembersData = async () => {
@@ -197,10 +231,8 @@ export default function ProjectLayout({
     <>
       <SidebarProvider>
         <div className="flex h-screen w-full mt-4 mb-4">
-          {/* Left sidebar */}
           <AppSidebar className="w-64 shrink-0" />
-          
-          {/* Main content */}
+        
           <div className="flex flex-col flex-1">
             <header className="flex h-16 items-center gap-2 px-4">
               <SidebarTrigger className="-ml-1 mr-2" />
@@ -218,14 +250,26 @@ export default function ProjectLayout({
             </header>
             
               <div className="flex flex-col flex-1 p-4">
-                <div className="flex flex-col items-center mb-10">
-                <h1 className="text-xl font-bold mb-4">Dashboard Project {projectName}</h1>
-                <div className="flex gap-2">
-                  <NewReport projectId={sessionStorage.getItem("projectId") || ""} />
-                  <NewIdeaButton onClick={handleCreate} />
-                  <AiDialog ideas={ideas} createIdea={createIdea} updateIdea={updateIdea} />
+                <div className="flex flex-col items-center mb-10 space-y-4">
+                  <div className="flex space-x-4 items-center">
+                    <div className="flex aspect-square items-center justify-center rounded-lg text-sidebar-primary-foreground">
+                      <DynamicIcon className="h-16 w-16 rounded-lg bg-primary p-2" name={iconName}/>
+                    </div>
+                    <div>
+                      <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
+                        {projectData?.projectName || "Loading..."}
+                      </h3>
+                      <p className="leading-7">
+                        {projectData?.projectDescription}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <NewReport projectId={sessionStorage.getItem("projectId") || ""} />
+                    <NewIdeaButton onClick={handleCreate} />
+                    <AiDialog ideas={ideas} createIdea={createIdea} updateIdea={updateIdea} />
+                  </div>
                 </div>
-              </div>
                 
                 <ProjectDashboard 
                   ideas={ideas}
@@ -269,10 +313,9 @@ export default function ProjectLayout({
 
          
 
-         {/* Right sidebar for chat */}
           <div 
             className={`fixed right-0 top-0 bottom-0 transition-all duration-300 ease-in-out ${
-              isRightSidebarCollapsed ? 'w-12' : 'w-80'
+              isRightSidebarCollapsed ? 'w-8' : 'w-80'
             } bg-white border-l border-gray-200 shadow-xl z-40 flex flex-col`}
           >
 
@@ -290,12 +333,11 @@ export default function ProjectLayout({
             {!isRightSidebarCollapsed && hasMounted && (
               <div className="flex flex-col h-full">
 
-                <div className="px-4 py-2 border-b text-sm font-medium text-gray-700 bg-gray-50">
-                  Live Collaboration
+                <div className="flex flex-row items-center gap-1 px-4 py-2 border-b text-sm font-medium text-gray-700 bg-gray-50">
+                  Chat <MessageCircle className="w-4 h-4"/>
                 </div>
                 
                 <div className="border-t border-gray-200 flex flex-col flex-1 min-h-0">
-                  <div className="text-xs text-gray-500 py-1 px-1">Chat</div>
                   <RealtimeChat 
                     roomName={roomName} 
                     username={user?.username ?? "Unknown user"} 
@@ -306,11 +348,8 @@ export default function ProjectLayout({
             )}
             
             {isRightSidebarCollapsed && (
-              <div className="flex flex-col items-center justify-center h-full space-y-4">
-                <MessageSquare className="h-5 w-5 text-gray-500" />
-                <span className="text-xs text-gray-500 rotate-90 whitespace-nowrap">
-                  Live Chat
-                </span>
+              <div className="flex flex-col items-center justify-center h-full space-y-2">
+                
               </div>
             )}
           </div>

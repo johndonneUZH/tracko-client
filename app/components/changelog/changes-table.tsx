@@ -24,7 +24,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/project_browser/table"
+} from "@/components/ui/table"
 import { ApiService } from "@/api/apiService"
 import { Change } from "@/types/change"
 import { User } from "@/types/user"

@@ -3,11 +3,12 @@
 import React, { useEffect, useState } from "react";
 import { User } from "@/types/user";
 import { Button } from "@/components/commons/button";
-import { Checkbox } from "@/components/project_browser/checkbox";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@components/commons/input";
 import { toast } from "sonner";
 import { useAutoAnimate } from '@formkit/auto-animate/react';
 import { ApiService } from "@/api/apiService";
+import { useRouter } from "next/navigation";
 import {
   Dialog,
   DialogContent,
@@ -17,7 +18,7 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogClose,
-} from "@/components/project_browser/dialog";
+} from "@/components/ui/dialog";
 import { UserPlus, X } from "lucide-react";
 import {
   Avatar,
@@ -28,8 +29,10 @@ type AllUsersDialogProps = {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   users?: User[];
+  triggerReload: () => void;
   onSelect?: (user: User) => void;
   children: React.ReactNode;
+  reload: boolean;
 };
 
 export function AllUsersDialog({
@@ -37,6 +40,8 @@ export function AllUsersDialog({
   onOpenChange,
   users: externalUsers,
   onSelect,
+  triggerReload,
+  reload,
   children,
 }: AllUsersDialogProps) {
   const [searchTerm, setSearchTerm] = useState("");
@@ -47,6 +52,9 @@ export function AllUsersDialog({
   const [isSendingRequests, setIsSendingRequests] = useState(false);
   const apiService = new ApiService();
   const [parent] = useAutoAnimate();
+  const [incomingRequests, setIncomingRequests] = useState<User[]>([]);
+  const router = useRouter();
+  const [sentRequests, setSentRequests] = useState<User[]>([]);
 
   useEffect(() => {
     const userId = sessionStorage.getItem("userId");
@@ -68,18 +76,48 @@ export function AllUsersDialog({
   }, []);
 
   useEffect(() => {
-    const fetchAllUsers = async () => {
+    const fetchData = async () => {
+      const storedUserId = sessionStorage.getItem("userId");
+      if (!storedUserId) {
+        router.push("/login");
+        return;
+      }
+  
       try {
-        const users = await apiService.getUsers<User[]>();
-        setAllUsers(users);
-      } catch (error) {
-        toast.error("Failed to fetch users.");
-        console.error(error);
+        const [currentUser, allUsers] = await Promise.all([
+          apiService.getUser<User>(storedUserId),
+          apiService.getUsers<User[]>(),
+        ]);
+  
+        const incomingIds = currentUser.friendRequestsIds || [];
+        const sentIds = currentUser.friendRequestsSentIds || [];
+  
+        const incomingUsers = await Promise.all(
+          incomingIds.map((id) => apiService.getUser<User>(id))
+        );
+        setIncomingRequests(incomingUsers);
+  
+        const sentRequestUsers = allUsers.filter(user =>
+          sentIds.includes(user.id)
+        );
+        setSentRequests(sentRequestUsers);
+  
+        const incomingSet = new Set(incomingIds);
+        const sentSet = new Set(sentIds);
+  
+        const filteredUsers = allUsers.filter(user =>
+          !incomingSet.has(user.id) && !sentSet.has(user.id)
+        );
+  
+        setAllUsers(filteredUsers);
+      } catch (err) {
+        console.error("Error fetching users and requests:", err);
+        toast.error("Failed to load users or friend requests");
       }
     };
-    
-    fetchAllUsers();
-  }, []);
+  
+    fetchData();
+  }, [router, reload]);
 
   const toggleUser = (id: string) => {
     setSelectedUserIds((prev) => {
@@ -125,6 +163,8 @@ export function AllUsersDialog({
   
       setSelectedUserIds(new Set());
       if (onOpenChange) onOpenChange(false);
+
+      triggerReload()
       
     } catch (error) {
       toast.error("Unexpected error occurred");
@@ -145,7 +185,7 @@ export function AllUsersDialog({
         );
       });
 
-  const selectedUsers = filteredUsers.filter(user => selectedUserIds.has(user.id));
+  const selectedUsers = allUsers.filter(user => selectedUserIds.has(user.id));
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -189,7 +229,7 @@ export function AllUsersDialog({
             </div>
           )}
 
-          <div className="border rounded-md max-h-64 overflow-y-auto">
+          <div className="rounded-md max-h-64 overflow-y-auto">
             {filteredUsers.length > 0 ? (
               <table className="w-full">
                 <tbody>
@@ -197,19 +237,19 @@ export function AllUsersDialog({
                     <tr
                       key={user.id}
                       onClick={() => toggleUser(user.id)}
-                      className="cursor-pointer hover:bg-gray-50"
+                      className="cursor-pointer"
                     >
-                      <td className="px-4 py-3 flex items-center space-x-3">
-                        <Avatar className="h-8 w-8">
+                      <td className="py-1 px-2 flex items-center space-x-3">
+                        <Avatar className="h-8 w-8 rounded-md">
                           <AvatarImage
                             src={user.avatarUrl || `https://avatar.vercel.sh/${user.username}`}
                           />
                         </Avatar>
                         <div>
-                          <div className="font-medium">{user.name || user.username}</div>
+                          <div>{user.name || user.username}</div>
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-right">
+                      <td className="py-1 px-2 text-right">
                         <Checkbox 
                           checked={selectedUserIds.has(user.id)} 
                           onChange={() => toggleUser(user.id)}
@@ -220,37 +260,40 @@ export function AllUsersDialog({
                 </tbody>
               </table>
             ) : (
-              <div className="p-4 text-center text-sm text-gray-500">
+              <div className="py-4 text-center text-sm text-gray-500">
                 {searchTerm ? "No users found" : "Start typing to search for users"}
               </div>
             )}
+            <div
+              className="sticky bottom-0 left-0 right-0 h-6 z-10 pointer-events-none"
+              style={{
+                background: "linear-gradient(to top, white, transparent)",
+              }}
+            />
           </div>
         </div>
 
         <DialogFooter>
-          <div className="flex justify-between w-full items-center">
-            <span className="text-sm text-gray-500">
-              {selectedUserIds.size} selected
-            </span>
-            <div className="space-x-2">
-              <DialogClose asChild>
-                <Button variant="outline">Cancel</Button>
-              </DialogClose>
-              <Button 
-                onClick={handleAddUsers}
-                disabled={selectedUserIds.size === 0 || isSendingRequests}
-              >
-                {isSendingRequests ? (
-                  "Sending..."
-                ) : (
-                  <>
-                    <UserPlus className="w-4 h-4 mr-2" />
-                    Send Requests
-                  </>
-                )}
-              </Button>
-            </div>
+        <div className="flex justify-end w-full items-center">
+          <div className="flex items-center space-x-2">
+            <DialogClose asChild>
+              <Button variant="outline">Cancel</Button>
+            </DialogClose>
+            <Button 
+              onClick={handleAddUsers}
+              disabled={selectedUserIds.size === 0 || isSendingRequests}
+            >
+              {isSendingRequests ? (
+                "Sending..."
+              ) : (
+                <>
+                  <UserPlus className="w-4 h-4" />
+                  Send Requests
+                </>
+              )}
+            </Button>
           </div>
+        </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>

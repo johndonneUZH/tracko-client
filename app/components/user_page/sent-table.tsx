@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import React, { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { User } from "@/types/user";
@@ -6,8 +8,15 @@ import { Avatar, AvatarImage } from "@/components/commons/avatar";
 import { Input } from "@/components/commons/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
+import { X } from "lucide-react";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 
-export default function SentRequestsTable() {
+type Props = {
+  reload: boolean;
+  triggerReload: () => void;
+};
+
+export default function SentRequestsTable( {reload, triggerReload} : Props ) {
   const apiService = new ApiService();
   const router = useRouter();
   const [sentRequests, setSentRequests] = useState<User[]>([]);
@@ -15,6 +24,7 @@ export default function SentRequestsTable() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [parent, enableAnimations] = useAutoAnimate()
 
   useEffect(() => {
     const storedUserId = sessionStorage.getItem("userId");
@@ -58,7 +68,7 @@ export default function SentRequestsTable() {
     };
 
     fetchData();
-  }, [currentUserId]);
+  }, [currentUserId, reload]);
 
   const filteredSent = useMemo(() => {
     return sentRequests.filter((user) =>
@@ -90,18 +100,6 @@ export default function SentRequestsTable() {
     }
   }
 
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full w-full">
-        <div className="flex space-x-2">
-          <div className="h-4 w-4 bg-blue-700 rounded-full animate-bounce"></div>
-          <div className="h-4 w-4 bg-blue-800 rounded-full animate-bounce delay-200"></div>
-          <div className="h-4 w-4 bg-blue-900 rounded-full animate-bounce delay-400"></div>
-        </div>
-      </div>
-    );
-  }
-
   if (error) {
     return (
       <div className="bg-red-50 border border-red-200 text-red-600 p-4 rounded h-full w-full flex items-center justify-center">
@@ -111,7 +109,7 @@ export default function SentRequestsTable() {
   }
 
   return (
-    <div className="flex flex-col h-full w-full px-4 py-6 space-y-4">
+    <div className="flex flex-col h-full w-full px-4 py-4 space-y-4">
       <div className="flex flex-col flex-grow">
         <Input
           placeholder="Search sent requests..."
@@ -128,36 +126,29 @@ export default function SentRequestsTable() {
           <ScrollArea className="flex-grow w-full rounded-md border">
             <div className="min-w-full">
               <table className="w-full table-auto">
-                <tbody>
+                <tbody ref={parent}>
                   {filteredSent.map((user) => (
-                    <tr key={user.id} className="hover:bg-gray-50 last:border-b-0">
-                      <td className="px-4 py-3">
-                        <div className="flex items-center space-x-3">
-                          <Avatar className="h-9 w-9">
-                            <AvatarImage
-                              src={
-                                user.avatarUrl ||
-                                `https://avatar.vercel.sh/${user.username}`
-                              }
-                            />
-                          </Avatar>
-                          <div>
-                            <p className="font-medium">{user.name || user.username}</p>
-                            <p className="text-sm text-gray-500">
-                              {user.status === "ONLINE" ? "Online" : "Offline"}
-                            </p>
-                          </div>
-                        </div>
+                    <tr key={user.id} className="last:border-b-0">
+                      <td className="px-2 py-1 text-left flex items-center gap-2">
+                        <Avatar className="h-6 w-6 rounded-md">
+                          <AvatarImage
+                            src={
+                              user.avatarUrl ||
+                              `https://avatar.vercel.sh/${user.username}`
+                            }
+                          />
+                        </Avatar>
+                        <span>{user.name || user.username}</span>
                       </td>
-                      <td className="px-4 py-3 text-right">
+                      <td className="px-2 py-1 text-right">
                         <div className="flex items-center justify-end space-x-4">
                           
                           <button
                             onClick={() => handleCancelRequest(user.id)}
-                            className="text-sm text-red-600 hover:text-red-800 hover:underline hover:cursor-pointer"
+                            className="text-sm text-red-600 hover:text-red-800 hover:cursor-pointer"
                             disabled={loading}
                           >
-                            {loading ? "Canceling..." : "Cancel"}
+                            <X className="h-5 w-5"/>
                           </button>
                         </div>
                       </td>

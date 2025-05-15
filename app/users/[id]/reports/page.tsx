@@ -8,7 +8,7 @@ import { Button } from "@/components/commons/button";
 import { Input } from "@/components/commons/input";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/sidebar/sidebar";
-import { Pencil } from "lucide-react";
+import { Pencil, Download, Check, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { createPdf } from "@components/dashboard_Project/NewReport";
 import { useState, useEffect, useMemo } from "react";
@@ -119,12 +119,9 @@ export default function ReportsPage() {
     return (
         <SidebarProvider>
             <div className="flex h-screen w-full">
-                {/* Sidebar */}
                 <AppSidebar className="w-64 shrink-0" />
         
-                {/* Main Content Wrapper */}
                 <div className="flex flex-col flex-1">
-                    {/* Fixed Header with Breadcrumb */}
                     <header className="flex h-16 items-center gap-2 px-4">
                         <SidebarTrigger className="-ml-1 mr-2" />
                         <Breadcrumb>
@@ -140,8 +137,7 @@ export default function ReportsPage() {
                         </Breadcrumb>
                     </header>
 
-                    {/* Main Content Area */}
-                    <div className="flex-1 p-4">
+                    <div className="flex-1 p-4 w-full">
    
                     {!loading && !error && reports.length > 0 && (
                     <ul className="space-y-4">
@@ -155,40 +151,41 @@ export default function ReportsPage() {
                                             className="flex-1"
                                         />
                                         <Button 
-                                            variant="outline" 
+                                            variant="ghost" 
                                             size="sm" 
                                             onClick={() => handleEdit(report.reportId)}
                                         >
-                                            Save
+                                            <Check/>
                                         </Button>
                                         <Button 
                                             variant="ghost" 
                                             size="sm" 
                                             onClick={cancelEditing}
                                         >
-                                            Cancel
+                                            <X/>
                                         </Button>
                                     </div>
                                 ) : (
-                                    <div className="flex justify-between items-center">
-                                        <h2 className="text-lg font-semibold">{report.reportName}</h2>
-                                        <div className="flex gap-2">
-                                            <Button 
-                                                variant="ghost" 
-                                                size="sm" 
-                                                onClick={() => handleDownload(report.reportId)}
-                                                className="text-muted-foreground hover:text-primary"
+                                    <div className="flex justify-between items-center gap-2 w-full overflow-hidden">
+                                        <h2 className="text-lg font-semibold truncate max-w-[60vw] sm:max-w-[50vw] md:max-w-[50vw]">
+                                            {report.reportName}
+                                        </h2>
+                                        <div className="flex gap-2 shrink-0">
+                                            <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => handleDownload(report.reportId)}
+                                            className="text-muted-foreground hover:text-primary"
                                             >
-                                                Download
+                                            <Download className="h-4 w-4" />
                                             </Button>
-                                            <Button 
-                                                variant="ghost" 
-                                                size="sm" 
-                                                onClick={() => startEditing(report)}
-                                                className="text-muted-foreground hover:text-primary"
+                                            <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => startEditing(report)}
+                                            className="text-muted-foreground hover:text-primary"
                                             >
-                                                <Pencil className="h-4 w-4 mr-1" />
-                                                Edit
+                                            <Pencil className="h-4 w-4" />
                                             </Button>
                                         </div>
                                     </div>

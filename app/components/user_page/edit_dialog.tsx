@@ -19,7 +19,7 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogClose,
-} from "@/components/project_browser/dialog"
+} from "@/components/ui/dialog"
 import {
   Form,
   FormControl,
@@ -149,7 +149,7 @@ export function EditProfileDialog({ onProfileUpdated }: { onProfileUpdated: () =
       <DialogTrigger asChild>
         <Button>
           <Pencil className="h-4 w-4" />
-          Edit
+          <span className="hidden md:inline">Edit</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">

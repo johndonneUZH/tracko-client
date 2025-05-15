@@ -3,9 +3,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/project_browser/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/commons/button";
-import { Trash2 } from "lucide-react";
+import { UserMinus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { ApiService } from "@/api/apiService";
 import { useUserProjects } from "@/lib/browser_utils/useProjectStorage";
@@ -25,8 +25,8 @@ export function LeaveDialog() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="destructive">
-          <Trash2/>
-          Leave Project
+          <UserMinus/>
+          <span className="hidden md:inline">Leave Project</span>
         </Button>
       </DialogTrigger>
       <DialogContent>

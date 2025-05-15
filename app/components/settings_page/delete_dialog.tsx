@@ -3,7 +3,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/project_browser/dialog";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/commons/button";
 import { Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -27,7 +27,7 @@ export function DeleteDialog() {
       <DialogTrigger asChild>
         <Button variant="destructive">
           <Trash2/>
-          Delete Project
+          <span className="hidden md:inline">Delete</span>
         </Button>
       </DialogTrigger>
       <DialogContent>

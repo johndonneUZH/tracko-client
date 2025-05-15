@@ -9,8 +9,14 @@ import { Input } from "@/components/commons/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Check, X } from "lucide-react";
 import { toast } from "sonner";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 
-  export default function PendingRequestsTable() {
+type Props = {
+  reload: boolean;
+  triggerReload: () => void;
+};
+
+  export default function PendingRequestsTable( {reload, triggerReload} : Props ) {
     const apiService = new ApiService();
     const router = useRouter();
     const [incomingRequests, setIncomingRequests] = useState<User[]>([]);
@@ -18,6 +24,7 @@ import { toast } from "sonner";
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
+    const [parent, enableAnimations] = useAutoAnimate()
 
     const fetchSentRequests = async () => {
       const storedUserId = sessionStorage.getItem("userId");
@@ -43,7 +50,7 @@ import { toast } from "sonner";
 
     useEffect(() => {
       fetchSentRequests();
-    }, [router]);
+    }, [router, reload]);
   
     const filteredSent = useMemo(() => {
       return incomingRequests.filter((user) =>
@@ -74,6 +81,7 @@ import { toast } from "sonner";
           await fetchSentRequests();
     
           toast.success("Friend request accepted!");
+          triggerReload()
         } catch (err) {
           console.error("Error accepting friend request:", err);
           setError("Failed to accept friend request");
@@ -110,18 +118,6 @@ import { toast } from "sonner";
       };
     }
     
-      
-    if (loading) {
-      return (
-        <div className="flex flex-col items-center justify-center h-full w-full">
-          <div className="flex space-x-2">
-            <div className="h-4 w-4 bg-blue-700 rounded-full animate-bounce"></div>
-            <div className="h-4 w-4 bg-blue-800 rounded-full animate-bounce delay-200"></div>
-            <div className="h-4 w-4 bg-blue-900 rounded-full animate-bounce delay-400"></div>
-          </div>
-        </div>
-      );
-    }
   
     if (error) {
       return (
@@ -131,7 +127,7 @@ import { toast } from "sonner";
       );
     }
     return (
-      <div className="flex flex-col h-full w-full px-4 py-6 space-y-4">
+      <div className="flex flex-col h-full w-full px-4 py-4 space-y-4">
           <Input
             placeholder="Search pending requests..."
             value={searchTerm}
@@ -145,12 +141,11 @@ import { toast } from "sonner";
 ) : (
   <ScrollArea className="h-full w-full rounded-md border">
     <table className="w-full">
-      <tbody>
+      <tbody ref={parent}>
         {filteredSent.map((user) => (
-          <tr key={user.id} className="hover:bg-gray-50 transition-colors">
-            <td className="px-2 py-1 text-left w-1"></td>
-            <td className="px-2 py-1 text-left w-1">
-              <Avatar className="h-8 w-8 rounded-lg">
+          <tr key={user.id} className="transition-colors">
+            <td className="px-2 py-1 text-left flex items-center gap-2">
+              <Avatar className="h-6 w-6 rounded-md">
                 <AvatarImage
                   src={
                     user.avatarUrl ||
@@ -158,25 +153,23 @@ import { toast } from "sonner";
                   }
                 />
               </Avatar>
-            </td>
-            <td className="px-2 py-1 text-left w-full">
-              {user.name || user.username}
+              <span>{user.name || user.username}</span>
             </td>
             <td className="px-2 py-1">
-              <div className="flex space-x-2">
+              <div className="flex space-x-2 justify-end gap-2">
                 <button
                   onClick={handleAcceptRequest(user.id)}
-                  className="p-2 rounded-full hover:bg-green-100 hover:cursor-pointer transition-colors"
+                  className="rounded-full hover:cursor-pointer text-green-600 hover:text-green-800 transition-colors bg-transparent"
                   aria-label="Accept"
                 >
-                  <Check className="h-5 w-5 text-green-600" />
+                  <Check className="h-5 w-5" />
                 </button>
                 <button
                   onClick={handleDeclineRequest(user.id)}
-                  className="p-2 rounded-full hover:bg-red-100 hover:cursor-pointer transition-colors"
+                  className="rounded-full hover:cursor-pointer text-red-600 hover:text-red-800 transition-colors bg-transparent"
                   aria-label="Decline"
                 >
-                  <X className="h-5 w-5 text-red-600" />
+                  <X className="h-5 w-5" />
                 </button>
               </div>
             </td>

@@ -12,7 +12,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/project_browser/dropdown-menu"
+} from "@/components/ui/dropdown-menu"
 import {
   SidebarMenu,
   SidebarMenuButton,
@@ -77,7 +77,7 @@ export function TeamSwitcher({ teams }: {
   return (
     <>
     <SidebarMenu>
-      <SidebarMenuItem>
+      <SidebarMenuItem className="relative z-50">
         {!activeTeam ? (
           <ProjectsDialog variant="front"/>
         ) : (

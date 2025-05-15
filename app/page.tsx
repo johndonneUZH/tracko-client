@@ -18,6 +18,7 @@ export default function Home() {
       <Card className="relative p-10 shadow-lg rounded-lg my-30 justify-center text-center items-center shadow-none border-none sm:max-w-150 md:max-w-200 lg:max-w-300 mx-auto">
         <div className="absolute inset-0 bg-white rounded-lg z-0" />
         <div className="relative z-10 flex flex-col items-center justify-center text-center">
+          <img src="Tracko.png" alt="Description" className="w-32" />
           <h1 className="text-4xl font-extrabold lg:text-5xl mb-2">
             Tracko
           </h1>

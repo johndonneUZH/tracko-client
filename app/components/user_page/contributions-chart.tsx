@@ -115,12 +115,12 @@ export function ContributionsChart() {
   ]));
   
   return (
-    <Card className="border-none">
+    <Card className="p-0 m-0">
       <CardHeader className="flex items-center gap-2 space-y-0 py-5 sm:flex-row">
-        <div className="grid flex-1 gap-1 text-center sm:text-left">
+        <div className="grid flex-1 gap-1 text-center text-left">
           <CardTitle>Contributions</CardTitle>
           <CardDescription>
-            Showing total contributions for the selected range
+            Showing total contributions for the selected range across projects
           </CardDescription>
         </div>
         <Select value={timeRange} onValueChange={setTimeRange}>
@@ -134,7 +134,7 @@ export function ContributionsChart() {
           </SelectContent>
         </Select>
       </CardHeader>
-      <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
+      <CardContent className="pt-4 sm:px-6 sm:pt-6">
         <ChartContainer config={chartConfig} className="aspect-auto h-[250px] w-full">
           <AreaChart data={filteredData}>
             <defs>
