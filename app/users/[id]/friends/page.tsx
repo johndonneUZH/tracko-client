@@ -29,6 +29,7 @@ export default function FriendsPage() {
   const [direction, setDirection] = useState(1);
   const apiService = new ApiService();
   const router = useRouter();
+  const [reload, setReload] = useState(false);
 
   useEffect(() => {
     const storedUserId = sessionStorage.getItem("userId");
@@ -41,6 +42,10 @@ export default function FriendsPage() {
 
     setUserId(storedUserId);
   }, [router]);
+
+  function triggerReload() {
+    setReload(!reload);
+  }
 
   return (
     <SidebarProvider>
@@ -64,81 +69,20 @@ export default function FriendsPage() {
             </Breadcrumb>
           </header>
   
-          <div className="flex flex-col flex-grow w-full h-full">
-            <Tabs
-              value={tabValue}
-              onValueChange={(newValue) => {
-                const newIndex = tabOrder.indexOf(newValue);
-                const currentIndex = tabOrder.indexOf(tabValue);
-                setPrevTabIndex(currentIndex);
-                setDirection(newIndex > currentIndex ? 1 : -1);
-                setTabValue(newValue);
-              }}
-              className="w-full h-full flex flex-col"
-            >
-              <div className="w-full">
-                <TabsList className="flex w-full">
-                  <TabsTrigger value="friends" className="flex-1 text-center cursor-pointer">
-                    Friends
-                  </TabsTrigger>
-                  <TabsTrigger value="pending" className="flex-1 text-center cursor-pointer">
-                    Pending
-                  </TabsTrigger>
-                  <TabsTrigger value="sent" className="flex-1 text-center cursor-pointer">
-                    Sent
-                  </TabsTrigger>
-                </TabsList>
+          <div className="flex flex-grow w-full h-full">
+            <div className="flex flex-row w-full">
+              <div className="w-1/2">
+                <FriendsTable reload={reload} triggerReload={triggerReload} />
               </div>
-  
-              <div className="relative w-full flex-grow h-full">
-                <AnimatePresence mode="wait">
-                  {tabValue === "friends" && (
-                    <motion.div
-                      key="friends"
-                      initial={{ x: direction * 100, opacity: 0 }}
-                      animate={{ x: 0, opacity: 1 }}
-                      exit={{ x: -direction * 100, opacity: 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="w-full h-full"
-                    >
-                      <div className="w-full h-full">
-                        <FriendsTable />
-                      </div>
-                    </motion.div>
-                  )}
-  
-                  {tabValue === "pending" && (
-                    <motion.div
-                      key="pending"
-                      initial={{ x: direction * 100, opacity: 0 }}
-                      animate={{ x: 0, opacity: 1 }}
-                      exit={{ x: -direction * 100, opacity: 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="w-full h-full"
-                    >
-                      <div className="w-full h-full">
-                        <PendingRequestsTable />
-                      </div>
-                    </motion.div>
-                  )}
-  
-                  {tabValue === "sent" && (
-                    <motion.div
-                      key="sent"
-                      initial={{ x: direction * 100, opacity: 0 }}
-                      animate={{ x: 0, opacity: 1 }}
-                      exit={{ x: -direction * 100, opacity: 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="w-full h-full"
-                    >
-                      <div className="w-full h-full">
-                        <SentRequestsTable />
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+              <div className="w-1/2">
+                <div className="h-1/2">
+                  <PendingRequestsTable reload={reload} triggerReload={triggerReload} />
+                </div>
+                <div className="h-1/2">
+                  <SentRequestsTable reload={reload} triggerReload={triggerReload} />
+                </div>
               </div>
-            </Tabs>
+            </div>
           </div>
         </div>
       </div>

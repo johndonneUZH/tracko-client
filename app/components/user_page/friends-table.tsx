@@ -9,11 +9,17 @@ import {
   AvatarImage,
 } from "@/components/commons/avatar";
 import { Input } from "@/components/commons/input";
-import { CirclePlus, Trash } from "lucide-react";
+import { UserPlus, Pencil, UserMinus } from "lucide-react";
 import { Button } from "@/components/commons/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 
-export function FriendsTable() {
+type Props = {
+  reload: boolean;
+  triggerReload: () => void;
+};
+
+export function FriendsTable( {reload, triggerReload} : Props ) {
   const apiService = new ApiService();
   const router = useRouter();
   const [friends, setFriends] = useState<User[]>([]);
@@ -26,10 +32,12 @@ export function FriendsTable() {
   const [selectedFriends, setSelectedFriends] = useState<string[]>([]);
   const [removing, setRemoving] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isEditOpen, setEditOpen] = useState(false);
+  const [parent, enableAnimations] = useAutoAnimate();
 
   useEffect(() => {
     fetchData();
-  }, [router]);
+  }, [router, reload]);
 
   async function fetchData() {
     const storedUserId = sessionStorage.getItem("userId");
@@ -59,9 +67,11 @@ export function FriendsTable() {
 
   const filteredFriends = useMemo(() => {
     return friends.filter((friend) =>
-      (friend.name || friend.username).toLowerCase()
+      (friend.name || friend.username)
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase())
     );
-  }, [friends]);
+  }, [friends, searchTerm]);
 
   const filteredUsers = useMemo(() => {
     if (!newFriendUsername.trim()) {
@@ -95,6 +105,20 @@ export function FriendsTable() {
     }
   }
 
+  async function removeFriend(friendId: string) {
+    const storedUserId = sessionStorage.getItem("userId");
+    if (!storedUserId) return;
+
+    try {
+      await apiService.removeFriend(storedUserId, friendId);
+      await fetchData();
+    } catch (err) {
+      console.error("Error removing friend:", err);
+    } finally {
+      setEditOpen(false);
+    }
+  }
+
   function toggleSelectFriend(id: string) {
     setSelectedFriends((prev) =>
       prev.includes(id) ? prev.filter((fid) => fid !== id) : [...prev, id]
@@ -109,16 +133,8 @@ export function FriendsTable() {
     }
   }
 
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full w-full">
-        <div className="flex space-x-2">
-          <div className="h-4 w-4 bg-blue-700 rounded-full animate-bounce"></div>
-          <div className="h-4 w-4 bg-blue-800 rounded-full animate-bounce delay-200"></div>
-          <div className="h-4 w-4 bg-blue-900 rounded-full animate-bounce delay-400"></div>
-        </div>
-      </div>
-    );
+  function toggleEdit() {
+    setEditOpen(!isEditOpen);
   }
 
   if (error) {
@@ -130,56 +146,67 @@ export function FriendsTable() {
   }
 
   return (
-    <div className="flex flex-col h-full w-full px-4 py-6 space-y-4">
+    <div className="flex flex-col h-full w-full py-4 px-4 space-y-4">
       <div className="flex flex-col flex-grow">
-        <Input
-          placeholder="Search friends..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full mb-4"
-        />
+        <div className="flex flex-row items-center gap-2 w-full mb-3">
+          <div className="w-full">
+            <Input
+              placeholder="Search friends..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full"
+            />
+          </div>
 
-        <div className="flex justify-between items-center mb-2">
-          {selectedFriends.length > 0 ? (
-            <div className="text-sm text-blue-600">
-              {selectedFriends.length} friend(s) selected
-            </div>
-          ) : (
-            <div></div>
-          )}
+          <div className="flex justify-end gap-2">
+            <AllUsersDialog
+              open={isDialogOpen}
+              onOpenChange={setIsDialogOpen}
+              users={filteredUsers}
+              triggerReload = {triggerReload}
+              reload = {reload}
+              onSelect={(user: User) => {
+                const storedUserId = sessionStorage.getItem("userId");
+                if (storedUserId && user) {
+                  apiService.sendFriendRequest(storedUserId, user.id).then(() => {
+                    setNewFriendUsername("");
+                    setIsDialogOpen(false);
+                    triggerReload();
+                  });
+                }
+              }}
+            >
+              <Button
+                className="h-9 flex items-center"
+                onClick={() => setIsDialogOpen(true)}
+              >
+                <UserPlus className="w-5 h-5" />
+              </Button>
+            </AllUsersDialog>
+
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={toggleEdit}
+              className="h-9 flex items-center"
+            >
+              <UserMinus className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
+
         {filteredFriends.length === 0 ? (
-         <div className="bg-gray-50 border border-gray-200 text-gray-600 p-4 rounded flex-grow flex items-center justify-center">
+          <div className="bg-gray-50 border border-gray-200 text-gray-600 p-4 rounded flex-grow flex items-center justify-center">
             Go touch some grass, you have no friends
           </div>
         ) : (
           <ScrollArea className="flex-grow w-full rounded-md border">
             <table className="w-full table-auto">
-              <thead>
-                <tr>
-                  <th className="text-left px-2 py-1 w-1">
-                    <input
-                      type="checkbox"
-                      checked={selectedFriends.length === filteredFriends.length}
-                      onChange={toggleSelectAll}
-                    />
-                  </th>
-                  <th className="text-left px-2 py-1">Select all</th>
-                </tr>
-              </thead>
-              <tbody>
+              <tbody ref={parent}>
                 {filteredFriends.map((friend) => (
                   <tr key={friend.id}>
-                    <td className="px-2 py-1 text-left w-1">
-                      <input
-                        type="checkbox"
-                        checked={selectedFriends.includes(friend.id)}
-                        onChange={() => toggleSelectFriend(friend.id)}
-                        className="form-checkbox rounded"
-                      />
-                    </td>
                     <td className="px-2 py-1 text-left flex items-center gap-2">
-                      <Avatar className="h-8 w-8 rounded-lg">
+                      <Avatar className="h-6 w-6 rounded-md">
                         <AvatarImage
                           src={
                             friend.avatarUrl ||
@@ -189,49 +216,27 @@ export function FriendsTable() {
                       </Avatar>
                       <span>{friend.name || friend.username}</span>
                     </td>
-                   
+                    <td className="px-2 py-1 text-left">
+                      {isEditOpen && (
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => {
+                              removeFriend(friend.id);
+                            }}
+                            className="rounded-full hover:cursor-pointer text-red-600 hover:text-red-800 transition-colors bg-transparent"
+                            aria-label="Remove"
+                          >
+                            <UserMinus className="h-5 w-5" />
+                          </button>
+                        </div>
+                      )}
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </ScrollArea>
         )}
-
-        <div className="flex justify-end pt-2 gap-4">
-          <AllUsersDialog
-            open={isDialogOpen}
-            onOpenChange={setIsDialogOpen}
-            users={filteredUsers}
-            onSelect={(user: User) => {
-              const storedUserId = sessionStorage.getItem("userId");
-              if (storedUserId && user) {
-                apiService.sendFriendRequest(storedUserId, user.id).then(() => {
-                  setNewFriendUsername("");
-                  setIsDialogOpen(false);
-                });
-              }
-            }}
-          >
-            <Button
-              className="h-10 flex items-center gap-2"
-              onClick={() => setIsDialogOpen(true)}
-            >
-              <CirclePlus className="w-5 h-5" />
-              Add Friends
-            </Button>
-          </AllUsersDialog>
-
-          <Button
-            variant="destructive"
-            size="sm"
-            onClick={handleRemoveSelected}
-            disabled={selectedFriends.length === 0 || removing}
-            className="h-10 flex items-center gap-2"
-          >
-            <Trash className="w-4 h-4" />
-            {removing ? "Removing..." : "Remove Selected"}
-          </Button>
-        </div>
       </div>
     </div>
   );

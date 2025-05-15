@@ -107,8 +107,6 @@ export default function Comments({
         {renderCommentList(comments)}
       </div>
 
-      <div className="sticky bottom-[5.5rem] left-0 right-0 h-4 bg-gradient-to-t from-white-300 to-transparent z-10 pointer-events-none" />
-
       <div className="bg-white pt-4 z-20">
         <label className="text-sm font-medium mb-1 block">
           {replyTargetId ? `Reply to comment:` : "Add new comment:"}
