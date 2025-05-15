@@ -135,8 +135,8 @@ reason).
 |                    | 20.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/0c0f6ef3d3a13271d9d93d0a35ac7f4e9c941deb | setup all changelog charts | to distinguish between types of contributions |
 | **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-| **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **JMAVITE** | 21.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-server/commit/6545f2561f892c6a2a246525d4569c172d3bb4fe | trying to set websockets correctly | Makes users experience interactive|
+|                    | 22.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-server/commit/41992c33ee29eccf9952e3f514b0db68a94355ef | right configuration of the app.yanl | Makes sure websockets are working |
 | **RonaldDomi** | 01.05   | https://github.com/johndonneUZH/sopra-fs25-group-46-server/commit/11c1495a3a5680c9846ccf4b7d771e078898bb1f | SonarQube improvements | Make the code to standard |
 |                    | 01.05   | https://github.com/johndonneUZH/sopra-fs25-group-46-server/commit/3abce8219293e244fd004c922b7262c10741b95c | 68.5% test coverage | Sonarqube stuff |
 ---
@@ -150,8 +150,8 @@ reason).
 |                    |9.05  | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/1449e9202f551a42658b979b371bbf97598fbad3 | More uniform look and better user-experience when editing profile | Everything should work smoothly for M4 submission |
 | **manueltuor** | 24.4   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/f2b4ce7beaa8b2f55b4c231304a63c6e6d617e48 | refined the dashboard UI | to make the whole application look more uniform |
 |                    | 9.05   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/e8849af1ad2c18e27d2f60bcbb3bc2a082421ef6 | code cleanup | deleted unnecessary modules and files |
-| **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **JMAVITE** | 28.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/109cd373838b18dc5b10bd90aff6ba4c8fba30ab |integrates A1 succesfully | Makes sure the client connects to the server and developed ai ideas|
+|                    | 09.05   | docs.google.com/document/d/1uk6OiK6fO_M5kl8vVFA1XYOjwtjFn9PhEuA7sYy9TOY/edit?usp=drive_web&ouid=102512583481830901419 | I did the started the final report | It is a key element of the end of the development |
 | **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
 |                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
 
