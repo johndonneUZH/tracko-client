@@ -3,12 +3,6 @@ import { ApiService } from "@/api/apiService"
 import { useRouter } from "next/navigation";
 import { getComponentFromString } from "@/components/sidebar/iconMappings";
 import { Project } from "@/types/project";
-import { 
-  Card, 
-  CardHeader, 
-  CardTitle, 
-  CardContent 
-} from "@/components/commons/card";
 
 export function ProjectsTable() {
   const apiService = new ApiService();

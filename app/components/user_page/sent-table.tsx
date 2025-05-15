@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import React, { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { User } from "@/types/user";

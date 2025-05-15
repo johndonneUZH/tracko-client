@@ -246,7 +246,7 @@ export function AllUsersDialog({
                           />
                         </Avatar>
                         <div>
-                          <div className="font-medium">{user.name || user.username}</div>
+                          <div>{user.name || user.username}</div>
                         </div>
                       </td>
                       <td className="py-1 px-2 text-right">
