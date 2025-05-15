@@ -50,7 +50,6 @@ export default function FriendsPage() {
   return (
     <SidebarProvider>
       <div className="flex h-screen w-full">
-        {/* Sidebar */}
         <AppSidebar className="w-64 shrink-0" />
   
         <div className="flex flex-col flex-1">

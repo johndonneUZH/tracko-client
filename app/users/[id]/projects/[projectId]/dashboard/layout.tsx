@@ -289,7 +289,7 @@ export default function ProjectLayout({
                 {selectedIdea && (
                   <IdeaModal
                     idea={selectedIdea}
-                    canEdit={true}
+                    canEdit={projectData?.ownerId === currentUserId}
                     onSave={(title, body) => { handleSave(selectedIdea.ideaId, title, body) }}
                     onDelete={() => handleDelete(selectedIdea.ideaId)}
                     onCancel={() => handleCancel(selectedIdea)}
