@@ -101,7 +101,7 @@ export default function Comments({
   }
 
   return (
-    <div className="relative h-[50vh] flex flex-col">
+    <div className="flex flex-col">
       <div 
         className="flex-1 overflow-auto pr-2"
         ref={parent}
@@ -109,7 +109,7 @@ export default function Comments({
         {renderCommentList(comments)}
       </div>
 
-      <div className="bg-white pt-4 z-20">
+      <div className="bg-white pt-4">
         <label className="text-sm font-medium mb-1 block">
           {replyTargetId ? `Reply to comment:` : "Add new comment:"}
         </label>
