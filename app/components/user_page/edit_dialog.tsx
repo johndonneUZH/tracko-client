@@ -36,7 +36,11 @@ import { toast } from "sonner"
 const FormSchema = z.object({
   name: z.string().min(1),
   username: z.string().min(1),
-  birthday: z.date().optional(),
+  birthday: z.date()
+    .optional()
+    .refine(date => !date || date <= new Date(), {
+      message: "Birthday cannot be in the future",
+    }),
   email: z.string().email().optional(),
   newPassword: z.string().optional(),
   confirmPassword: z.string().optional(),
@@ -49,7 +53,6 @@ const FormSchema = z.object({
   message: "Passwords do not match",
   path: ["confirmPassword"]
 })
-
 
 export function EditProfileDialog({ onProfileUpdated }: { onProfileUpdated: () => void }) {
   const [loading, setLoading] = useState(true)
