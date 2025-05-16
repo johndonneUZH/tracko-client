@@ -86,7 +86,7 @@ npm run dev  # Starts at http://localhost:3000
 ## **Walkthrough & Screenshots**  
 
 ### **1. Onboarding**  
-![image](https://github.com/user-attachments/assets/2c4705e9-fdff-4883-8c1a-1d4ee3d93a23)
+![image](https://github.com/user-attachments/assets/fc4449a4-e0e7-4eee-915c-06b0adb10266)
 
 ### **2. Sign in/up**  
 ![image](https://github.com/user-attachments/assets/6da5b11d-413b-48d7-9e73-fe55754a2bd7)
