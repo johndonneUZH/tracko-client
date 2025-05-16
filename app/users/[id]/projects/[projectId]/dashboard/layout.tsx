@@ -153,6 +153,7 @@ export default function ProjectLayout({
   const { addComment, deleteComment } = useComments(projectId as string, selectedIdeaId || "");
 
   const { commentMap, refreshComments } = useCommentFetcher(projectId as string, selectedIdeaId || "");
+  const [alreadyOpenSub, setAlreadyOpenSub] = useState(false);
 
   // ----------------------
   // HANDLER FUNCTIONS
@@ -160,6 +161,7 @@ export default function ProjectLayout({
 
   const handleCreate = async (title: string, body: string | null) => {
     try {
+      setAlreadyOpenSub(true)
       const newIdea = await createIdea(title, body);
       router.push(`/users/${id}/projects/${projectId}/dashboard/ideas/${newIdea.ideaId}`);
     } catch (error) {
@@ -290,9 +292,18 @@ export default function ProjectLayout({
                   <IdeaModal
                     idea={selectedIdea}
                     canEdit={projectData?.ownerId === currentUserId}
-                    onSave={(title, body) => { handleSave(selectedIdea.ideaId, title, body) }}
-                    onDelete={() => handleDelete(selectedIdea.ideaId)}
-                    onCancel={() => handleCancel(selectedIdea)}
+                    onSave={(title, body) => { 
+                      handleSave(selectedIdea.ideaId, title, body)
+                      setAlreadyOpenSub(false)  
+                    }}
+                    onDelete={() => {
+                      handleDelete(selectedIdea.ideaId)
+                      setAlreadyOpenSub(false)
+                    }}
+                    onCancel={() => {
+                      handleCancel(selectedIdea)
+                      setAlreadyOpenSub(false)
+                    }}
                     currentUserId={currentUserId}
                     onAddComment={async (content, parentId) => {
                       const newComment = await addComment(content, parentId);
@@ -306,6 +317,7 @@ export default function ProjectLayout({
                     onDeleteComment={(commentId) => deleteComment(commentId)}
                     commentMap={commentMap}
                     members={members}
+                    alreadyOpenSub={alreadyOpenSub}
                   />
                 )}
               </div>
