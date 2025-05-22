@@ -73,7 +73,7 @@ export function AllUsersDialog({
     };
   
     fetchFriends();
-  }, []);
+  }, [reload]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -177,7 +177,7 @@ export function AllUsersDialog({
   const filteredUsers = searchTerm.trim() === ""
     ? []
     : allUsers.filter((user) => {
-        const name = user.name || user.username;
+        const name = user.username;
         return (
           name.toLowerCase().includes(searchTerm.toLowerCase()) &&
           user.id !== currentUserId &&
@@ -217,7 +217,7 @@ export function AllUsersDialog({
                   <Avatar className="h-5 w-5">
                     <AvatarImage src={user.avatarUrl || `https://avatar.vercel.sh/${user.username}`} />
                   </Avatar>
-                  <span>{user.name || user.username}</span>
+                  <span>{user.username}</span>
                   <button
                     onClick={() => toggleUser(user.id)}
                     className="hover:text-red-500"
@@ -246,7 +246,7 @@ export function AllUsersDialog({
                           />
                         </Avatar>
                         <div>
-                          <div>{user.name || user.username}</div>
+                          <div>{user.username}</div>
                         </div>
                       </td>
                       <td className="py-1 px-2 text-right">

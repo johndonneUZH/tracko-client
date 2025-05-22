@@ -54,7 +54,7 @@ type Props = {
   
     const filteredSent = useMemo(() => {
       return incomingRequests.filter((user) =>
-        (user.name || user.username)
+        (user.username)
           .toLowerCase()
           .includes(searchTerm.toLowerCase())
       );
@@ -153,7 +153,7 @@ type Props = {
                   }
                 />
               </Avatar>
-              <span>{user.name || user.username}</span>
+              <span>{user.username}</span>
             </td>
             <td className="px-2 py-1">
               <div className="flex space-x-2 justify-end gap-2">

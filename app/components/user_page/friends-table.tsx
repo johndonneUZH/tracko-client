@@ -67,7 +67,7 @@ export function FriendsTable( {reload, triggerReload} : Props ) {
 
   const filteredFriends = useMemo(() => {
     return friends.filter((friend) =>
-      (friend.name || friend.username)
+      (friend.username)
         .toLowerCase()
         .includes(searchTerm.toLowerCase())
     );
@@ -116,6 +116,7 @@ export function FriendsTable( {reload, triggerReload} : Props ) {
       console.error("Error removing friend:", err);
     } finally {
       setEditOpen(false);
+      triggerReload();
     }
   }
 
@@ -214,7 +215,7 @@ export function FriendsTable( {reload, triggerReload} : Props ) {
                           }
                         />
                       </Avatar>
-                      <span>{friend.name || friend.username}</span>
+                      <span>{friend.username}</span>
                     </td>
                     <td className="px-2 py-1 text-left">
                       {isEditOpen && (

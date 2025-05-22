@@ -95,8 +95,12 @@ export default function ProjectLayout({
       const projectId = sessionStorage.getItem("projectId");
       const token = sessionStorage.getItem("token");
   
-      if (!projectId || !token) {
+      if (!token) {
         router.push("/login");
+        return;
+      }
+      if (!projectId) {
+        router.push("/users/" + sessionStorage.getItem("userId"));
         return;
       }
   
@@ -112,17 +116,22 @@ export default function ProjectLayout({
   }, [currentProjectId]);
 
   useEffect(() => {
+    const token = sessionStorage.getItem("token");
+    const projectId = sessionStorage.getItem("projectId");
+
+    if (!token) {
+      router.push("/login");
+      return;
+    }
+
+    if (!projectId) {
+      router.push("/users/" + sessionStorage.getItem("userId"));
+      return;
+    }
+
     const fetchMembersData = async () => {
-      const projectId = sessionStorage.getItem("projectId");
-      const token = sessionStorage.getItem("token");
-
-      if (!projectId || !token) {
-        router.push("/login");
-        return;
-      }
-
       try {
-        const data = await apiService.get<User[]>(`/projects/${projectId}/members`)
+        const data = await apiService.get<User[]>(`/projects/${projectId}/members`);
         setMembers(data);
         console.log("Members data:", data);
       } catch (error) {
@@ -131,7 +140,8 @@ export default function ProjectLayout({
     };
 
     fetchMembersData();
-  }, []); 
+  }, []);
+
 
   useEffect(() => {
     async function fetchProjectName() {
@@ -267,7 +277,7 @@ export default function ProjectLayout({
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <NewReport projectId={sessionStorage.getItem("projectId") || ""} />
+                    <NewReport projectId={roomName || ""} />
                     <NewIdeaButton onClick={handleCreate} />
                     <AiDialog ideas={ideas} createIdea={createIdea} updateIdea={updateIdea} />
                   </div>

@@ -201,7 +201,7 @@ export function AiDialog({ ideas, createIdea, updateIdea }: AiDialogProps) {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-4 w-full mt-4">
           <Button
             variant={action === "refine" ? "default" : "outline"}
             onClick={() => setAction("refine")}
@@ -242,7 +242,7 @@ export function AiDialog({ ideas, createIdea, updateIdea }: AiDialogProps) {
                   onClick={() => handleIdeaToggle(idea.ideaId)}
                   className="flex items-center justify-between px-3 py-2 border rounded hover:bg-muted cursor-pointer"
                 >
-                  <span className="truncate">{idea.ideaName}</span>
+                  <span className="truncate max-w-[220px]">{idea.ideaName}</span>
                   <Checkbox checked={selectedIdeaIds.has(idea.ideaId)} />
                 </div>
               ))}

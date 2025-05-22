@@ -69,7 +69,7 @@ export function ContributorsBarchart() {
             edit: (acc.edit || 0) + (entry.editIdea || 0),
             close: (acc.close || 0) + (entry.closeIdea || 0),
             comment: (acc.comment || 0) + (entry.addComment || 0),
-            upvote: (acc.upvote || 0) + (entry.upvote || 0),
+            vote: (acc.upvote || 0) + (entry.upvote || 0) + (acc.downvote || 0) + (entry.downvote || 0),
             downvote: (acc.downvote || 0) + (entry.downvote || 0)
           }), {})
         
@@ -149,19 +149,24 @@ export function ContributorsBarchart() {
             data={chartData}
             layout="vertical"
             margin={{
-              left: 0,
+              top: 0,
+              right: 0,
+              bottom: 0,
+              left: 25, // Increased from 0 to 120 to give room for usernames
             }}
           >
             <YAxis
               dataKey="user"
               type="category"
               tickLine={false}
-              tickMargin={10}
+              tickMargin={12} // Optional, adds space between tick and axis
               axisLine={false}
+              width={80} // Ensures enough width for long usernames
               tickFormatter={(value) =>
                 chartConfig[value]?.label || value
               }
             />
+
             <XAxis dataKey="contributions" type="number" hide />
             <ChartTooltip
               cursor={false}
@@ -169,8 +174,7 @@ export function ContributorsBarchart() {
             />
             <Bar dataKey="edit" stackId="a" layout="vertical" fill={"#155e75"}/>
             <Bar dataKey="add" stackId="a" layout="vertical" fill={"#0e7490"}/>
-            <Bar dataKey="upvote" stackId="a" layout="vertical" fill={"#0891b2"}/>
-            <Bar dataKey="downvote" stackId="a" layout="vertical" fill={"#06b6d4"}/>
+            <Bar dataKey="vote" stackId="a" layout="vertical" fill={"#0891b2"}/>
             <Bar dataKey="comment" stackId="a" layout="vertical" fill={"#22d3ee"}/>
             <Bar dataKey="close" stackId="a" layout="vertical" fill={"#67e8f9"}/>
           </BarChart>

@@ -80,8 +80,7 @@ export function ChangesChart() {
           date: item.date,
           edit: item.editIdea || item.edit || 0,
           add: item.addIdea || item.add || 0,
-          upvote: item.upvote || 0,
-          downvote: item.downvote || 0,
+          vote: item.upvote + item.downvote || 0,
           comment: item.addComment || item.comment || 0,
           close: item.closeIdea || item.close || 0
         }))
@@ -163,8 +162,7 @@ export function ChangesChart() {
                 />
                 <Bar dataKey="edit" stackId="a" fill={"#155e75"} />
                 <Bar dataKey="add" stackId="a" fill={"#0e7490"} />
-                <Bar dataKey="upvote" stackId="a" fill={"#0891b2"} />
-                <Bar dataKey="downvote" stackId="a" fill={"#06b6d4"} />
+                <Bar dataKey="vote" stackId="a" fill={"#0891b2"} />
                 <Bar dataKey="comment" stackId="a" fill={"#22d3ee"} />
                 <Bar dataKey="close" stackId="a" fill={"#67e8f9"} />
               </BarChart>

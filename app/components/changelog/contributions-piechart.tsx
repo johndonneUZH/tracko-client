@@ -45,16 +45,12 @@ const chartConfig = {
     color: "hsl(var(--chart-2))",
   },
   upvote: {
-    label: "Upvote",
+    label: "Vote",
     color: "hsl(var(--chart-3))",
-  },
-  downvote: {
-    label: "Downvote",
-    color: "hsl(var(--chart-4))",
   },
   comment: {
     label: "Comment",
-    color: "hsl(var(--chart-5))",
+    color: "hsl(var(--chart-4))",
   },
   close: {
     label: "Close",
@@ -88,8 +84,7 @@ export function ContributionsPiechart() {
             edit: (acc.edit || 0) + (entry.editIdea || 0),
             close: (acc.close || 0) + (entry.closeIdea || 0),
             comment: (acc.comment || 0) + (entry.addComment || 0),
-            upvote: (acc.upvote || 0) + (entry.upvote || 0),
-            downvote: (acc.downvote || 0) + (entry.downvote || 0),
+            vote: (acc.upvote || 0) + (entry.upvote || 0) + (acc.downvote || 0) + (entry.downvote || 0),
           }), {});
 
           const contributions = (Object.values(totals) as number[]).reduce((sum, val) => sum + val, 0)
@@ -107,21 +102,19 @@ export function ContributionsPiechart() {
           (acc, user) => ({
             edit: acc.edit + (user.edit || 0),
             add: acc.add + (user.add || 0),
-            upvote: acc.upvote + (user.upvote || 0),
-            downvote: acc.downvote + (user.downvote || 0),
+            vote: acc.vote + (user.vote || 0),
             comment: acc.comment + (user.comment || 0),
             close: acc.close + (user.close || 0),
           }),
-          { edit: 0, add: 0, upvote: 0, downvote: 0, comment: 0, close: 0 }
+          { edit: 0, add: 0, vote: 0, downvote: 0, comment: 0, close: 0 }
         );
 
         const transformedData = [
-          { type: "edit", count: totalAnalytics.edit, fill: "#155e75" },
-          { type: "add", count: totalAnalytics.add, fill: "#0e7490" },
-          { type: "upvote", count: totalAnalytics.upvote, fill: "#0891b2" },
-          { type: "downvote", count: totalAnalytics.downvote, fill: "#06b6d4" },
-          { type: "comment", count: totalAnalytics.comment, fill: "#22d3ee" },
-          { type: "close", count: totalAnalytics.close, fill: "#67e8f9" },
+          { type: "Edit", count: totalAnalytics.edit, fill: "#155e75" },
+          { type: "Add", count: totalAnalytics.add, fill: "#0e7490" },
+          { type: "Vote", count: totalAnalytics.vote, fill: "#0891b2" },
+          { type: "Comment", count: totalAnalytics.comment, fill: "#22d3ee" },
+          { type: "Close", count: totalAnalytics.close, fill: "#67e8f9" },
         ];
         setChartData(transformedData);
       } catch (error) {

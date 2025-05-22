@@ -65,6 +65,7 @@ export function useUserProjects(userId: string) {
     try {
       // Delete projects in sequence (better error handling than Promise.all)
       await apiService.delete(`/projects/${projectId}`);
+      sessionStorage.removeItem("projectId"); // Remove the project ID from session storage
       setProjects((prevProjects) => prevProjects.filter(project => project.projectId !== projectId));
       return true; // Indicate success
     } catch (err) {

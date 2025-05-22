@@ -41,7 +41,7 @@ type AppSidebarProps = Omit<React.ComponentProps<typeof Sidebar>, "triggerReload
 export function AppSidebar({ triggerReload = null, ...props }: AppSidebarProps) {
   const [data, setData] = useState<any>(null);
   const [userId, setUserId] = useState<string | null>("");
-  const { projectId: currentProjectId } = useProject()
+  const { projectId: currentProjectId, updateProjectId } = useProject()
   const router = useRouter();
 
   useEffect(() => {
@@ -99,13 +99,25 @@ export function AppSidebar({ triggerReload = null, ...props }: AppSidebarProps) 
           apiService.getProjects<Project[]>(userId),
         ]);
 
-        const activeProjectId = currentProjectId || projects[0]?.projectId || "";
-        
-        // Only update sessionStorage if it's empty
-        if (!sessionStorage.getItem("projectId") && activeProjectId) {
-          sessionStorage.setItem("projectId", activeProjectId);
-        }
+        // Determine active projectId
+        const validProjectIds = projects.map(p => p.projectId);
+        let activeProjectId = currentProjectId;
 
+        if (!validProjectIds.includes(currentProjectId)) {
+          // Fallback to first available project
+          activeProjectId = projects[0]?.projectId || "";
+
+          // Update session and hook
+          if (activeProjectId) {
+            sessionStorage.setItem("projectId", activeProjectId);
+            updateProjectId(activeProjectId);
+          } else {
+            // No valid project at all
+            sessionStorage.removeItem("projectId");
+            updateProjectId("");
+          }
+        }
+        
         const teams = projects.map(project => ({
           id: project.projectId,
           name: project.projectName,
@@ -145,26 +157,25 @@ export function AppSidebar({ triggerReload = null, ...props }: AppSidebarProps) 
     );
   }
 
-  const projectId = sessionStorage.getItem("projectId") || currentProjectId;
-
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
-      
+
       <SidebarContent>
-      { projectId && (
-        <NavMain items={data.navMain} />
-      )}
-        <NavSecondary items={data.navSecondary} />      
+        {currentProjectId && (
+          <NavMain items={data.navMain} />
+        )}
+        <NavSecondary items={data.navSecondary} />
       </SidebarContent>
-      
+
       <SidebarFooter>
         <NavUser user={data.user} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
   );
+
 }
 

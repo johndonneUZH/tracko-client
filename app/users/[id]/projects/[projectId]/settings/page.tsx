@@ -65,8 +65,13 @@ export default function SettingsPage() {
       const projectId = sessionStorage.getItem("projectId");
       const token = sessionStorage.getItem("token");
   
-      if (!projectId || !token) {
+      if (!token) {
         router.push("/login");
+        return;
+      }
+
+      if (!projectId) {
+        router.push("/users/" + sessionStorage.getItem("userId"));
         return;
       }
   
@@ -107,10 +112,11 @@ export default function SettingsPage() {
       const projectId = sessionStorage.getItem("projectId");
       const token = sessionStorage.getItem("token");
 
-      if (!projectId || !token) {
+      if (!token) {
         router.push("/login");
         return;
       }
+      
 
       try {
         const data = await apiService.get<User[]>(`/projects/${projectId}/members`)

@@ -447,7 +447,7 @@ public async resetPasswordWithOTP(email: string, otp: string): Promise<any> {
   public async deleteProjectChanges(projectId: string): Promise<void> {
     const url = `${this.baseURL}${`/projects/`}${projectId}/changes`;
     const res = await fetch(url, {
-      method: "DELETE",
+      method: "DELETE", 
       headers: this.buildHeaders(),
     });
     return this.processResponse<void>(
