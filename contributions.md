@@ -115,7 +115,7 @@ reason).
 |                    |  17.04  | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/e20d5794e8b72b38f18e6aaf22cb628ace9f3c9a | Add leave project functionality with confirmation dialog | Integration |
 |                    | 17.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/fd66670baa7509288b922b62244ca49e8b72532e | Add functionality to add friends to a project and update related components | Integration |
 |                    | 17.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/968a14b8248e8d19aa3ca25c2856dcdd794636cf | Add functionality to remove friends from a project and update related components | Integration |
-|                    | 17.04   | Add user profile update functionality and improve user data fetching | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/f1f9609a2b60ea3bacf5206742aaf5e91ce3940d | Integration |
+|                    | 17.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/f1f9609a2b60ea3bacf5206742aaf5e91ce3940d | Add user profile update functionality and improve user data fetching  | Integration |
 |                    | 17.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/b1225f4a5720260d868ac1b4c99713c73b680007 | Add project creation functionality with friend selection and dialog| Integration |
 | **manueltuor** | 14.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/128ab9f4a23433885db13efae6667b91a347979f | moved create project into project switcher for better UI | improved user experience |
 |                    | 15.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/6894baea298250099d795ee9485f8885a46b2ae8 | Created settings page UI and corresponding dialogs | enables users to manage their projects |
@@ -133,8 +133,8 @@ reason).
 |                    | 01.05   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/c10da95a2793cc09727cb682a089183cfcf7a55f | Reworking UI and flow of one-time-password | To reduce number of pages |
 | **manueltuor** | 20.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/fa91683ecccca5685d44dc02ff0b8a003c04fae6 | Created the UI for the changelog table | to keep track of dashboard changes |
 |                    | 20.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/0c0f6ef3d3a13271d9d93d0a35ac7f4e9c941deb | setup all changelog charts | to distinguish between types of contributions |
-| **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **johndonneUZH** | 03.05  | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/df9b8343835893a37b8776119366f1dc59f44b4a | Update README.md | Deliverables |
+|                    | 01.05   | https://github.com/johndonneUZH/sopra-fs25-group-46-server/commit/b031b04215bb627300a851b814ec028e51753d5b | Refactor UserService constructor to include UserRepository; update related tests for improved dependency injection and functionality | Bug fixes |
 | **JMAVITE** | 21.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-server/commit/6545f2561f892c6a2a246525d4569c172d3bb4fe | trying to set websockets correctly | Makes users experience interactive|
 |                    | 22.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-server/commit/41992c33ee29eccf9952e3f514b0db68a94355ef | right configuration of the app.yanl | Makes sure websockets are working |
 | **RonaldDomi** | 01.05   | https://github.com/johndonneUZH/sopra-fs25-group-46-server/commit/11c1495a3a5680c9846ccf4b7d771e078898bb1f | SonarQube improvements | Make the code to standard |
@@ -152,24 +152,7 @@ reason).
 |                    | 9.05   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/e8849af1ad2c18e27d2f60bcbb3bc2a082421ef6 | code cleanup | deleted unnecessary modules and files |
 | **JMAVITE** | 28.04   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/109cd373838b18dc5b10bd90aff6ba4c8fba30ab |integrates A1 succesfully | Makes sure the client connects to the server and developed ai ideas|
 |                    | 09.05   | docs.google.com/document/d/1uk6OiK6fO_M5kl8vVFA1XYOjwtjFn9PhEuA7sYy9TOY/edit?usp=drive_web&ouid=102512583481830901419 | I did the started the final report | It is a key element of the end of the development |
-| **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-
----
-
-## Template
----
-
-## Contributions Week 13 - 9.05 to 16.05
-
-| **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
-| ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
-| **manueltuor** |  9.05 - 15.05  | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/ac2867e75cc0482c89b702deab591d968201ba02 | refined entire UI | tried to make everything look more uniform and added last touches |
-| **[@githubUser2]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-| **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-| **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **johndonneUZH** | 08.05   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/2266368783c1714638a0c7db0458194718717618 | refactor: enhance WebSocket integration and improve user request handling | Bug fixes |
+|                    | 09.05   | https://github.com/johndonneUZH/sopra-fs25-group-46-client/commit/dd5b83c9d50e60bcc8325aeda933d3bf9b0abdbc | Update README.md | Deliverables |
 
 ---
