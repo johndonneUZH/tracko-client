@@ -7,7 +7,7 @@ import { isProduction } from "../utils/environment";
  */
 export function getApiDomain(): string {
   const prodUrl = process.env.NEXT_PUBLIC_PROD_API_URL ||
-    "http://antonlee.dedyn.io:8080"; // TODO: update with your production URL as needed.
-  const devUrl = "http://antonlee.dedyn.io:8080";
+    "https://antonlee.dedyn.io"; // TODO: update with your production URL as needed.
+  const devUrl = "https://antonlee.dedyn.io";
   return isProduction() ? prodUrl : devUrl;
 }
