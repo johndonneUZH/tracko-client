@@ -3,8 +3,6 @@
 
 import * as React from "react";
 import { ChevronLeft, ChevronRight, MessageCircle } from "lucide-react";
-import { RealtimeCursors } from '@/components/magicui/realtime-cursors';
-import { RealtimeChat } from '@/components/magicui/realtime-chat';
 import { useParams, useRouter } from "next/navigation";
 import { useCurrentUserId } from "@/lib/commons/useCurrentUserId";
 import { useComments } from "@/lib/dashboard_utils/useCommentStorage";
@@ -292,10 +290,7 @@ export default function ProjectLayout({
                   members={members}
                 />
                 
-                <RealtimeCursors 
-                  roomName={roomName} 
-                  username={user?.username ?? "Unknown user"} 
-                />
+                
                 {children}            
 
                 {selectedIdea && (
@@ -360,11 +355,7 @@ export default function ProjectLayout({
                 </div>
                 
                 <div className="border-t border-gray-200 flex flex-col flex-1 min-h-0">
-                  <RealtimeChat 
-                    roomName={roomName} 
-                    username={user?.username ?? "Unknown user"} 
-                    className="flex-1 min-h-0"
-                  />
+                 
                 </div>
               </div>
             )}
