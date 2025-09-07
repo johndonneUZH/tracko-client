@@ -1,4 +1,3 @@
-import process from "process";
 import { isProduction } from "../utils/environment";
 /**
  * Returns the API base URL based on the current environment.
