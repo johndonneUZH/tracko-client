@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { getApiDomain } from "@/utils/domain";
 import { ApplicationError } from "@/types/error";
-import { ApiResponse } from "@/components/dashboard_Project/AIDialog";
+
 export class ApiService {
   private baseURL: string;
   private defaultHeaders: HeadersInit;
@@ -457,28 +457,28 @@ public async resetPasswordWithOTP(email: string, otp: string): Promise<any> {
     );
   }
 
- // AI ENDPOINTS
+ // AI ENDPOINTS - Now return simple strings
 
-  public async refineIdea(ideaContent: string): Promise<ApiResponse> {
-    return this.post<ApiResponse>("/api/ai/refine", { ideaContent });
+  public async refineIdea(ideaContent: string): Promise<string> {
+    return this.post<string>("/api/ai/refine", { ideaContent });
   }
 
   public async suggestWithTwist(
     originalIdea: string,
     twist: string
-  ): Promise<ApiResponse> {
-    return this.post<ApiResponse>("/api/ai/twist", { originalIdea, twist });
+  ): Promise<string> {
+    return this.post<string>("/api/ai/twist", { originalIdea, twist });
   }
 
   public async combineIdeas(
     ideaOne: string,
     ideaTwo: string
-  ): Promise<ApiResponse> {
-    return this.post<ApiResponse>("/api/ai/combine", { ideaOne, ideaTwo });
+  ): Promise<string> {
+    return this.post<string>("/api/ai/combine", { ideaOne, ideaTwo });
   }
 
-  public async generateFromTemplate(template: string): Promise<ApiResponse> {
-    return this.post<ApiResponse>("/api/ai/template", { template });
-  }  
+  public async generateFromTemplate(template: string): Promise<string> {
+    return this.post<string>("/api/ai/template", { template });
+  }
 
 }

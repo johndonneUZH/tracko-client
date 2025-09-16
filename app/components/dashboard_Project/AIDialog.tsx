@@ -28,20 +28,7 @@ interface AiDialogProps {
   updateIdea: (ideaId: string, data: Partial<Idea>) => Promise<Idea | undefined>;
 }
 
-export interface ApiResponse {
-  id: string;
-  type: string;
-  role: string;
-  content: Array<{
-    type: string;
-    text: string;
-  }>;
-  model: string;
-  usage: {
-    inputTokens: number;
-    outputTokens: number;
-  };
-}
+// AI endpoints now return simple strings
 
 type AiAction = "refine" | "twist" | "combine" | "generate" | null;
 
@@ -61,13 +48,12 @@ export function AiDialog({ ideas, createIdea, updateIdea }: AiDialogProps) {
     });
   };
 
-  const extractAIContent = (response: ApiResponse): string => {
-    if (!response?.content?.[0]?.text) {
-      throw new Error("Invalid AI response format - missing text content");
+  const extractAIContent = (response: string): string => {
+    if (!response || typeof response !== 'string') {
+      throw new Error("Invalid AI response format - expected string");
     }
 
-    const contentText = response.content[0].text;
-    const lines = contentText
+    const lines = response
       .split('\n')
       .map(line => line.trim())
       .filter(line => line.length > 0)
@@ -80,13 +66,12 @@ export function AiDialog({ ideas, createIdea, updateIdea }: AiDialogProps) {
     return lines.join('\n');
   };
 
-  const extractGeneratedContent = (response: ApiResponse): { title: string; description: string } => {
-    if (!response?.content?.[0]?.text) {
-      throw new Error("Invalid AI response format - missing text content");
+  const extractGeneratedContent = (response: string): { title: string; description: string } => {
+    if (!response || typeof response !== 'string') {
+      throw new Error("Invalid AI response format - expected string");
     }
 
-    const contentText = response.content[0].text;
-    const lines = contentText
+    const lines = response
       .split('\n')
       .map(line => line.trim())
       .filter(line => line.length > 0);
@@ -126,7 +111,7 @@ export function AiDialog({ ideas, createIdea, updateIdea }: AiDialogProps) {
         const response = await apiService.refineIdea(
           `Title: ${idea.ideaName}\nDescription: ${idea.ideaDescription}`
         );
-        const newBody = extractAIContent(response);
+        const newBody = extractAIContent(response as string);
         await updateIdea(ideaId, { ideaDescription: newBody });
         toast.success("Idea refined successfully");
 
@@ -139,7 +124,7 @@ export function AiDialog({ ideas, createIdea, updateIdea }: AiDialogProps) {
           idea.ideaDescription,
           promptText
         );
-        const twistedBody = extractAIContent(response);
+        const twistedBody = extractAIContent(response as string);
         await updateIdea(ideaId, { ideaDescription: twistedBody });
         toast.success("Idea twisted successfully");
 
@@ -153,7 +138,7 @@ export function AiDialog({ ideas, createIdea, updateIdea }: AiDialogProps) {
           ideaOne.ideaDescription,
           ideaTwo.ideaDescription
         );
-        const combinedBody = extractAIContent(response);
+        const combinedBody = extractAIContent(response as string);
         await createIdea(
           `${ideaOne.ideaName} + ${ideaTwo.ideaName}`,
           combinedBody
@@ -162,7 +147,7 @@ export function AiDialog({ ideas, createIdea, updateIdea }: AiDialogProps) {
 
       } else if (action === "generate") {
         const response = await apiService.generateFromTemplate(promptText);
-        const { title, description } = extractGeneratedContent(response);
+        const { title, description } = extractGeneratedContent(response as string);
         await createIdea(title, description);
         toast.success("Idea generated successfully");
       }
