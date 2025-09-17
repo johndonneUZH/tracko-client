@@ -109,10 +109,10 @@ export function AiDialog({ ideas, createIdea, updateIdea }: AiDialogProps) {
         if (!idea) throw new Error("Idea not found");
         
         const response = await apiService.refineIdea(
-          `Title: ${idea.ideaName}\nDescription: ${idea.ideaDescription}`
+          idea.ideaDescription
         );
         const newBody = extractAIContent(response as string);
-        await updateIdea(ideaId, { ideaDescription: newBody });
+        await updateIdea(idea.ideaId, { ideaDescription: newBody });
         toast.success("Idea refined successfully");
 
       } else if (action === "twist") {
@@ -125,7 +125,7 @@ export function AiDialog({ ideas, createIdea, updateIdea }: AiDialogProps) {
           promptText
         );
         const twistedBody = extractAIContent(response as string);
-        await updateIdea(ideaId, { ideaDescription: twistedBody });
+        await updateIdea(idea.ideaId, { ideaDescription: twistedBody });
         toast.success("Idea twisted successfully");
 
       } else if (action === "combine") {

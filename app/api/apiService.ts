@@ -464,10 +464,10 @@ public async resetPasswordWithOTP(email: string, otp: string): Promise<any> {
   }
 
   public async suggestWithTwist(
-    originalIdea: string,
-    twist: string
+    ideaContent: string,
+    ideaTwist: string
   ): Promise<string> {
-    return this.post<string>("/api/ai/twist", { originalIdea, twist });
+    return this.post<string>("/api/ai/twist", { ideaContent, ideaTwist });
   }
 
   public async combineIdeas(
@@ -477,8 +477,8 @@ public async resetPasswordWithOTP(email: string, otp: string): Promise<any> {
     return this.post<string>("/api/ai/combine", { ideaOne, ideaTwo });
   }
 
-  public async generateFromTemplate(template: string): Promise<string> {
-    return this.post<string>("/api/ai/template", { template });
+  public async generateFromTemplate(ideaContent: string): Promise<string> {
+    return this.post<string>("/api/ai/template", { ideaContent });
   }
 
 }
