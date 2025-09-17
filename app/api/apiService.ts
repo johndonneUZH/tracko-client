@@ -460,25 +460,69 @@ public async resetPasswordWithOTP(email: string, otp: string): Promise<any> {
  // AI ENDPOINTS - Now return simple strings
 
   public async refineIdea(ideaContent: string): Promise<string> {
-    return this.post<string>("/api/ai/refine", { ideaContent });
+    const url = `${this.baseURL}/api/ai/refine`;
+    const res = await fetch(url, {
+      method: "POST",
+      headers: this.buildHeaders(),
+      body: JSON.stringify({ ideaContent }),
+    });
+    
+    if (!res.ok) {
+      throw new Error(`AI refine request failed: ${res.status} ${res.statusText}`);
+    }
+    
+    return await res.text();
   }
 
   public async suggestWithTwist(
     ideaContent: string,
     ideaTwist: string
   ): Promise<string> {
-    return this.post<string>("/api/ai/twist", { ideaContent, ideaTwist });
+    const url = `${this.baseURL}/api/ai/twist`;
+    const res = await fetch(url, {
+      method: "POST",
+      headers: this.buildHeaders(),
+      body: JSON.stringify({ ideaContent, ideaTwist }),
+    });
+    
+    if (!res.ok) {
+      throw new Error(`AI twist request failed: ${res.status} ${res.statusText}`);
+    }
+    
+    return await res.text();
   }
 
   public async combineIdeas(
     ideaOne: string,
     ideaTwo: string
   ): Promise<string> {
-    return this.post<string>("/api/ai/combine", { ideaOne, ideaTwo });
+    const url = `${this.baseURL}/api/ai/combine`;
+    const res = await fetch(url, {
+      method: "POST",
+      headers: this.buildHeaders(),
+      body: JSON.stringify({ ideaOne, ideaTwo }),
+    });
+    
+    if (!res.ok) {
+      throw new Error(`AI combine request failed: ${res.status} ${res.statusText}`);
+    }
+    
+    return await res.text();
   }
 
   public async generateFromTemplate(ideaContent: string): Promise<string> {
-    return this.post<string>("/api/ai/template", { ideaContent });
+    const url = `${this.baseURL}/api/ai/template`;
+    const res = await fetch(url, {
+      method: "POST",
+      headers: this.buildHeaders(),
+      body: JSON.stringify({ ideaContent }),
+    });
+    
+    if (!res.ok) {
+      throw new Error(`AI template request failed: ${res.status} ${res.statusText}`);
+    }
+    
+    return await res.text();
   }
 
 }
