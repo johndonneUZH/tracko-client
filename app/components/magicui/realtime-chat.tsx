@@ -2,10 +2,7 @@
 
 import { ChatMessageItem } from '@/components/magicui/chat-message'
 import { useChatScroll } from '@/hooks/use-chat-scroll'
-import {
-  type ChatMessage,
-  useRealtimeChat,
-} from '@/hooks/use-realtime-chat'
+import { type ChatMessage, useRealtimeChat } from '@/hooks/use-realtime-chat'
 import { Input } from '@/components/ui/input'
 import { Send } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -31,19 +28,18 @@ export const RealtimeChat = ({
   const {
     messages: realtimeMessages,
     sendMessage,
-    isConnected,
   } = useRealtimeChat({
     roomName,
     username,
   })
 
-  // Merge and deduplicate messages
+  // Merge y dedupe por id (mantiene orden por fecha)
   const allMessages = useMemo(() => {
-    const messageMap = new Map<string, ChatMessage>()
-    initialMessages.forEach(msg => messageMap.set(msg.id, msg))
-    realtimeMessages.forEach(msg => messageMap.set(msg.id, msg))
-    return Array.from(messageMap.values()).sort((a, b) => 
-      new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    const map = new Map<string, ChatMessage>()
+    initialMessages.forEach((m) => map.set(m.id, m))
+    realtimeMessages.forEach((m) => map.set(m.id, m))
+    return Array.from(map.values()).sort(
+      (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
     )
   }, [initialMessages, realtimeMessages])
 
@@ -58,24 +54,22 @@ export const RealtimeChat = ({
   const handleSendMessage = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault()
-      if (!newMessage.trim() || !isConnected) return
+      const content = newMessage.trim()
+      if (!content) return
       try {
-        await sendMessage(newMessage)
+        await sendMessage(content) // REST guarda y el server emite al topic
         setNewMessage('')
       } catch (error) {
         console.error('Failed to send message:', error)
       }
     },
-    [newMessage, isConnected, sendMessage]
+    [newMessage, sendMessage]
   )
 
   return (
     <div className={`flex flex-col h-full w-full bg-background text-foreground antialiased ${className}`}>
-      {/* Messages container - takes all available space */}
-      <div 
-        ref={containerRef} 
-        className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0"
-      >
+      {/* Mensajes */}
+      <div ref={containerRef} className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
         {allMessages.length === 0 ? (
           <div className="flex items-center justify-center h-full text-center text-sm text-muted-foreground">
             No messages yet. Start the conversation!
@@ -95,26 +89,25 @@ export const RealtimeChat = ({
         )}
       </div>
 
-      {/* Input area - fixed at bottom */}
-      <form 
-        onSubmit={handleSendMessage} 
-        className="sticky bottom-0 bg-background border-t border-border p-4"
-      >
+      {/* Input fijo abajo */}
+      <form onSubmit={handleSendMessage} className="sticky bottom-0 bg-background border-t border-border p-4">
         <div className="flex items-center gap-2">
           <Input
             className="flex-1 rounded-full bg-background text-sm transition-all duration-300"
             type="text"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault()
+                ;(e.currentTarget.form as HTMLFormElement | null)?.requestSubmit()
+              }
+            }}
             placeholder="Type a message..."
-            disabled={!isConnected}
+            aria-label="Type your message"
           />
-          {isConnected && newMessage.trim() && (
-            <button
-              type="submit"
-              className="aspect-square rounded-full"
-              disabled={!isConnected}
-            >
+          {newMessage.trim() && (
+            <button type="submit" className="aspect-square rounded-full" aria-label="Send message">
               <Send className="size-4" />
             </button>
           )}

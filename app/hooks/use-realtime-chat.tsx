@@ -1,8 +1,9 @@
 'use client'
 
 import { ApiService } from '@/api/apiService'
-import { createClient } from '@/lib/supabase/client'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import * as StompJs from '@stomp/stompjs'
+import SockJS from 'sockjs-client'
 
 interface UseRealtimeChatProps {
   roomName: string
@@ -18,65 +19,75 @@ export interface ChatMessage {
   createdAt: string
 }
 
-const EVENT_MESSAGE_TYPE = 'message'
+const TOPIC_PREFIX = '/topic/chat.'
+const WS_ENDPOINT = '/ws' // MISMO endpoint del backend
 
 export function useRealtimeChat({ roomName, username }: UseRealtimeChatProps) {
-  const supabase = createClient()
   const [messages, setMessages] = useState<ChatMessage[]>([])
-  const [channel, setChannel] = useState<ReturnType<typeof supabase.channel> | null>(null)
   const [isConnected, setIsConnected] = useState(false)
+  const clientRef = useRef<StompJs.Client | null>(null)
   const apiService = new ApiService()
 
+  // 1) Historial inicial por REST
   useEffect(() => {
-    const fetchMessages = async () => {
+    let alive = true
+    ;(async () => {
       try {
         const initialMessages = await apiService.getMessages<ChatMessage[]>(roomName)
-        setMessages(initialMessages)
+        if (alive) setMessages(initialMessages)
       } catch (error) {
         console.error('Failed to fetch initial messages:', error)
       }
-    }
-  
-    fetchMessages()
+    })()
+    return () => { alive = false }
   }, [roomName])
-  
-  useEffect(() => {
-    const newChannel = supabase.channel(roomName)
 
-    newChannel
-      .on('broadcast', { event: EVENT_MESSAGE_TYPE }, (payload) => {
-        const message = payload.payload as ChatMessage
-        setMessages((current) => [...current, message])
-      })
-      .subscribe(async (status) => {
-        if (status === 'SUBSCRIBED') {
-          setIsConnected(true)
+  // 2) Conexión STOMP -> mismo /ws
+  useEffect(() => {
+    const baseUrl = process.env.NEXT_PUBLIC_WS_BASE_URL || 'http://localhost:8081'
+    const client = new StompJs.Client({
+      webSocketFactory: () => new SockJS(`${baseUrl}${WS_ENDPOINT}`),
+      reconnectDelay: 2000,
+      heartbeatIncoming: 4000,
+      heartbeatOutgoing: 4000,
+      // Si tu interceptor lee Authorization del CONNECT, agrega aquí:
+      // connectHeaders: { Authorization: `Bearer ${token}` },
+      debug: () => {}
+    })
+
+    client.onConnect = () => {
+      setIsConnected(true)
+      client.subscribe(`${TOPIC_PREFIX}${roomName}`, (frame) => {
+        try {
+          const msg = JSON.parse(frame.body) as ChatMessage
+          setMessages((curr) => [...curr, msg])
+        } catch (e) {
+          console.error('Bad message frame:', e)
         }
       })
+    }
 
-    setChannel(newChannel)
+    client.onWebSocketClose = () => setIsConnected(false)
+
+    client.activate()
+    clientRef.current = client
 
     return () => {
-      supabase.removeChannel(newChannel)
+      client.deactivate()
+      clientRef.current = null
+      setIsConnected(false)
     }
-  }, [roomName, username, supabase])
+  }, [roomName])
 
+  // 3) Enviar por REST (tu flujo actual ya persiste y emite)
   const sendMessage = useCallback(
     async (content: string) => {
-      if (!channel || !isConnected) return
-
-      const message = await apiService.sendMessage<ChatMessage>(content, roomName)
-
-      // Update local state immediately for the sender
-      setMessages((current) => [...current, message])
-
-      await channel.send({
-        type: 'broadcast',
-        event: EVENT_MESSAGE_TYPE,
-        payload: message,
-      })
+      if (!content.trim()) return
+      const saved = await apiService.sendMessage<ChatMessage>(content, roomName)
+      // push optimista; el broadcast regresará igual
+      setMessages((curr) => [...curr, saved])
     },
-    [channel, isConnected, username]
+    [roomName]
   )
 
   return { messages, sendMessage, isConnected }

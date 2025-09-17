@@ -6,6 +6,6 @@ import { isProduction } from "../utils/environment";
  */
 export function getApiDomain(): string {
   const prodUrl = "https://antonlee.dedyn.io"; // TODO: update with your production URL as needed.
-  const devUrl = "https://antonlee.dedyn.io";
+  const devUrl = "http://localhost:8081";
   return isProduction() ? prodUrl : devUrl;
 }
