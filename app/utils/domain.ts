@@ -5,7 +5,7 @@ import { isProduction } from "../utils/environment";
  * In development, it returns "http://localhost:8080".
  */
 export function getApiDomain(): string {
-  const prodUrl = "https://antonlee.dedyn.io"; // TODO: update with your production URL as needed.
-  const devUrl = "https://antonlee.dedyn.io";
+  const prodUrl = process.env.NEXT_PUBLIC_PROD_API_URL ?? "http://localhost:8080";
+  const devUrl  = process.env.NEXT_PUBLIC_PROD_API_URL ?? "http://localhost:8080";
   return isProduction() ? prodUrl : devUrl;
 }
